@@ -50,7 +50,10 @@ export default function ParentProfileScreen() {
           <Text style={styles.sectionTitle}>Settings</Text>
 
           <Card variant="elevated">
-            <TouchableOpacity style={styles.menuItem}>
+            <TouchableOpacity
+              style={styles.menuItem}
+              onPress={() => router.push("/shared/edit-profile" as any)}
+            >
               <Ionicons
                 name="person-outline"
                 size={24}

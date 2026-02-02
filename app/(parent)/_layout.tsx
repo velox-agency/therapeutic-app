@@ -84,6 +84,12 @@ export default function ParentLayout() {
         }}
       />
       <Tabs.Screen
+        name="therapists"
+        options={{
+          href: null, // Hide from tab bar - accessed via dashboard
+        }}
+      />
+      <Tabs.Screen
         name="profile"
         options={{
           title: "Profile",

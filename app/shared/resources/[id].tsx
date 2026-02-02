@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import Markdown from "react-native-markdown-display";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -149,7 +150,7 @@ export default function ResourceDetailScreen() {
           style={styles.contentCard}
         >
           {resource.content ? (
-            <Text style={styles.bodyText}>{resource.content}</Text>
+            <Markdown style={markdownStyles}>{resource.content}</Markdown>
           ) : (
             <View style={styles.noContent}>
               <Ionicons
@@ -321,5 +322,146 @@ const styles = StyleSheet.create({
     fontSize: Typography.fontSize.body,
     color: Colors.secondary[700],
     lineHeight: 22,
+  },
+});
+
+// Markdown styles for beautiful content rendering
+const markdownStyles = StyleSheet.create({
+  body: {
+    fontFamily: Typography.fontFamily.primary,
+    fontSize: Typography.fontSize.body,
+    color: Colors.text.primary,
+    lineHeight: 26,
+  },
+  heading1: {
+    fontFamily: Typography.fontFamily.primaryBold,
+    fontSize: Typography.fontSize.h1,
+    fontWeight: Typography.fontWeight.bold,
+    color: Colors.text.primary,
+    marginTop: Spacing.lg,
+    marginBottom: Spacing.md,
+  },
+  heading2: {
+    fontFamily: Typography.fontFamily.primaryBold,
+    fontSize: Typography.fontSize.h2,
+    fontWeight: Typography.fontWeight.bold,
+    color: Colors.text.primary,
+    marginTop: Spacing.lg,
+    marginBottom: Spacing.sm,
+  },
+  heading3: {
+    fontFamily: Typography.fontFamily.primaryBold,
+    fontSize: Typography.fontSize.h3,
+    fontWeight: Typography.fontWeight.bold,
+    color: Colors.text.primary,
+    marginTop: Spacing.md,
+    marginBottom: Spacing.sm,
+  },
+  heading4: {
+    fontFamily: Typography.fontFamily.primaryBold,
+    fontSize: Typography.fontSize.h4,
+    fontWeight: Typography.fontWeight.bold,
+    color: Colors.text.primary,
+    marginTop: Spacing.md,
+    marginBottom: Spacing.xs,
+  },
+  paragraph: {
+    fontFamily: Typography.fontFamily.primary,
+    fontSize: Typography.fontSize.body,
+    color: Colors.text.primary,
+    lineHeight: 26,
+    marginBottom: Spacing.md,
+  },
+  strong: {
+    fontFamily: Typography.fontFamily.primaryBold,
+    fontWeight: Typography.fontWeight.bold,
+  },
+  em: {
+    fontStyle: "italic",
+  },
+  link: {
+    color: Colors.primary[500],
+    textDecorationLine: "underline",
+  },
+  blockquote: {
+    backgroundColor: Colors.primary[50],
+    borderLeftWidth: 4,
+    borderLeftColor: Colors.primary[500],
+    paddingLeft: Spacing.md,
+    paddingVertical: Spacing.sm,
+    marginVertical: Spacing.md,
+  },
+  code_inline: {
+    fontFamily: "monospace",
+    backgroundColor: Colors.surfaceVariant,
+    paddingHorizontal: Spacing.xs,
+    paddingVertical: 2,
+    borderRadius: 4,
+    color: Colors.secondary[600],
+  },
+  code_block: {
+    fontFamily: "monospace",
+    backgroundColor: Colors.surfaceVariant,
+    padding: Spacing.md,
+    borderRadius: 8,
+    marginVertical: Spacing.md,
+    color: Colors.text.primary,
+  },
+  fence: {
+    fontFamily: "monospace",
+    backgroundColor: Colors.surfaceVariant,
+    padding: Spacing.md,
+    borderRadius: 8,
+    marginVertical: Spacing.md,
+    color: Colors.text.primary,
+  },
+  list_item: {
+    flexDirection: "row",
+    marginVertical: Spacing.xs,
+  },
+  bullet_list: {
+    marginVertical: Spacing.sm,
+  },
+  ordered_list: {
+    marginVertical: Spacing.sm,
+  },
+  bullet_list_icon: {
+    color: Colors.primary[500],
+    marginRight: Spacing.sm,
+  },
+  ordered_list_icon: {
+    color: Colors.primary[500],
+    marginRight: Spacing.sm,
+    fontWeight: Typography.fontWeight.bold,
+  },
+  hr: {
+    backgroundColor: Colors.divider,
+    height: 1,
+    marginVertical: Spacing.lg,
+  },
+  table: {
+    borderWidth: 1,
+    borderColor: Colors.border,
+    borderRadius: 8,
+    marginVertical: Spacing.md,
+  },
+  thead: {
+    backgroundColor: Colors.surfaceVariant,
+  },
+  th: {
+    fontFamily: Typography.fontFamily.primaryBold,
+    fontWeight: Typography.fontWeight.bold,
+    padding: Spacing.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
+  },
+  td: {
+    padding: Spacing.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
+  },
+  image: {
+    borderRadius: 8,
+    marginVertical: Spacing.md,
   },
 });

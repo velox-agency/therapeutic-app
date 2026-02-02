@@ -157,7 +157,7 @@ export default function ParentDashboard() {
 
             <TouchableOpacity
               style={styles.actionCard}
-              onPress={() => router.push("/(parent)/screening/start")}
+              onPress={() => router.push("/(parent)/screening")}
             >
               <View
                 style={[
@@ -174,23 +174,25 @@ export default function ParentDashboard() {
               <Text style={styles.actionText}>M-CHAT-R</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.actionCard}>
+            <TouchableOpacity
+              style={styles.actionCard}
+              onPress={() => router.push("/(parent)/therapists" as any)}
+            >
               <View
                 style={[
                   styles.actionIcon,
                   { backgroundColor: Colors.success[50] },
                 ]}
               >
-                <Ionicons
-                  name="trending-up"
-                  size={28}
-                  color={Colors.success[500]}
-                />
+                <Ionicons name="search" size={28} color={Colors.success[500]} />
               </View>
-              <Text style={styles.actionText}>Progress</Text>
+              <Text style={styles.actionText}>Therapists</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.actionCard}>
+            <TouchableOpacity
+              style={styles.actionCard}
+              onPress={() => router.push("/shared/resources")}
+            >
               <View
                 style={[
                   styles.actionIcon,

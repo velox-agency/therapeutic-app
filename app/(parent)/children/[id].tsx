@@ -92,7 +92,9 @@ export default function ChildDetailScreen() {
           <View style={styles.actionsRow}>
             <TouchableOpacity
               style={styles.actionButton}
-              onPress={() => router.push("/(parent)/screening/start")}
+              onPress={() =>
+                router.push(`/(parent)/screening/start?childId=${id}`)
+              }
             >
               <View
                 style={[
@@ -109,7 +111,12 @@ export default function ChildDetailScreen() {
               <Text style={styles.actionText}>Start Screening</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.actionButton}>
+            <TouchableOpacity
+              style={styles.actionButton}
+              onPress={() =>
+                router.push(`/(parent)/children/gamification?id=${id}`)
+              }
+            >
               <View
                 style={[
                   styles.actionIcon,
@@ -125,7 +132,12 @@ export default function ChildDetailScreen() {
               <Text style={styles.actionText}>View Progress</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.actionButton}>
+            <TouchableOpacity
+              style={styles.actionButton}
+              onPress={() =>
+                router.push(`/(parent)/children/gamification?id=${id}`)
+              }
+            >
               <View
                 style={[
                   styles.actionIcon,
