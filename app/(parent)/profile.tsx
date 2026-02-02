@@ -98,6 +98,30 @@ export default function ParentProfileScreen() {
           </Card>
         </View>
 
+        {/* Resources */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Learn</Text>
+
+          <Card variant="elevated">
+            <TouchableOpacity
+              style={styles.menuItem}
+              onPress={() => router.push("/shared/resources" as any)}
+            >
+              <Ionicons
+                name="library-outline"
+                size={24}
+                color={Colors.text.secondary}
+              />
+              <Text style={styles.menuText}>Resources</Text>
+              <Ionicons
+                name="chevron-forward"
+                size={20}
+                color={Colors.text.tertiary}
+              />
+            </TouchableOpacity>
+          </Card>
+        </View>
+
         {/* Support */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Support</Text>

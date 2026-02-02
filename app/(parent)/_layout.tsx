@@ -8,18 +8,33 @@ export default function ParentLayout() {
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: Colors.primary[500],
-        tabBarInactiveTintColor: Colors.text.secondary,
+        tabBarInactiveTintColor: Colors.text.disabled,
         tabBarStyle: {
           backgroundColor: Colors.surface,
-          borderTopColor: Colors.border,
-          borderTopWidth: 1,
+          borderTopWidth: 0,
+          elevation: 8,
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: -2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 8,
+          height: 65,
+          paddingBottom: 10,
           paddingTop: 8,
-          paddingBottom: 8,
-          height: 60,
         },
         tabBarLabelStyle: {
           fontFamily: Typography.fontFamily.primary,
           fontSize: Typography.fontSize.tiny,
+          fontWeight: Typography.fontWeight.semibold,
+        },
+        headerStyle: {
+          backgroundColor: Colors.surface,
+          elevation: 0,
+          shadowOpacity: 0,
+        },
+        headerTitleStyle: {
+          fontFamily: Typography.fontFamily.primaryBold,
+          fontWeight: Typography.fontWeight.bold,
+          fontSize: Typography.fontSize.h3,
         },
       }}
     >
@@ -27,8 +42,12 @@ export default function ParentLayout() {
         name="dashboard"
         options={{
           title: "Home",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="home" size={size} color={color} />
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons
+              name={focused ? "home" : "home-outline"}
+              size={24}
+              color={color}
+            />
           ),
         }}
       />
@@ -36,26 +55,44 @@ export default function ParentLayout() {
         name="children"
         options={{
           title: "Children",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="people" size={size} color={color} />
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons
+              name={focused ? "people" : "people-outline"}
+              size={24}
+              color={color}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="sessions"
+        options={{
+          title: "Sessions",
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons
+              name={focused ? "calendar" : "calendar-outline"}
+              size={24}
+              color={color}
+            />
           ),
         }}
       />
       <Tabs.Screen
         name="screening"
         options={{
-          title: "Screening",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="clipboard" size={size} color={color} />
-          ),
+          href: null, // Hide from tab bar - accessed via dashboard
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
           title: "Profile",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person" size={size} color={color} />
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons
+              name={focused ? "person" : "person-outline"}
+              size={24}
+              color={color}
+            />
           ),
         }}
       />
