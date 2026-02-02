@@ -156,7 +156,7 @@ export default function AddChildScreen() {
             <View style={styles.inputSpacing}>
               <Text style={styles.label}>Gender (Optional)</Text>
               <View style={styles.genderOptions}>
-                {["Male", "Female", "Other"].map((option) => (
+                {["Male", "Female"].map((option) => (
                   <TouchableOpacity
                     key={option}
                     style={[
