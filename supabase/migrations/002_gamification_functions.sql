@@ -123,20 +123,24 @@ CREATE TRIGGER on_daily_log_check_goal
 -- Seed Default Badges
 -- ============================================
 
--- Insert default badges if they don't exist
-INSERT INTO badges (id, name, description, icon_name, requirement_type, requirement_value)
-VALUES
-  ('first_steps', 'First Steps', 'Earned your first star!', '🌟', 'stars_total', 1),
-  ('rising_star', 'Rising Star', 'Collected 10 stars', '⭐', 'stars_total', 10),
-  ('star_explorer', 'Star Explorer', 'Collected 25 stars!', '✨', 'stars_total', 25),
-  ('super_star', 'Super Star', 'Collected 50 stars!', '🌠', 'stars_total', 50),
-  ('star_champion', 'Star Champion', 'Collected 100 stars!', '🏆', 'stars_total', 100),
-  ('goal_getter', 'Goal Getter', 'Completed first goal', '🎯', 'goals_completed', 1),
-  ('goal_master', 'Goal Master', 'Completed 5 goals', '🏅', 'goals_completed', 5),
-  ('consistent', 'Consistent Champion', '3-day logging streak', '🔥', 'streak_days', 3),
-  ('week_warrior', 'Week Warrior', '7-day logging streak', '💪', 'streak_days', 7),
-  ('streak_master', 'Streak Master', '14-day logging streak', '🌈', 'streak_days', 14)
-ON CONFLICT (id) DO NOTHING;
+-- Insert default badges if table is empty
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM badges LIMIT 1) THEN
+    INSERT INTO badges (name, description, icon_name, requirement_type, requirement_value)
+    VALUES
+      ('First Steps', 'Earned your first star!', '🌟', 'stars_total', 1),
+      ('Rising Star', 'Collected 10 stars', '⭐', 'stars_total', 10),
+      ('Star Explorer', 'Collected 25 stars!', '✨', 'stars_total', 25),
+      ('Super Star', 'Collected 50 stars!', '🌠', 'stars_total', 50),
+      ('Star Champion', 'Collected 100 stars!', '🏆', 'stars_total', 100),
+      ('Goal Getter', 'Completed first goal', '🎯', 'goals_completed', 1),
+      ('Goal Master', 'Completed 5 goals', '🏅', 'goals_completed', 5),
+      ('Consistent Champion', '3-day logging streak', '🔥', 'streak_days', 3),
+      ('Week Warrior', '7-day logging streak', '💪', 'streak_days', 7),
+      ('Streak Master', '14-day logging streak', '🌈', 'streak_days', 14);
+  END IF;
+END $$;
 
 -- ============================================
 -- Comments for documentation
