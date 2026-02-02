@@ -3,25 +3,30 @@ import * as Haptics from "expo-haptics";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import {
+  ActivityIndicator,
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
-import Animated, { FadeInDown } from "react-native-reanimated";
+import Animated, { FadeInDown, ZoomIn } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { StarBurst } from "@/components/gamification";
 import { Button, Card, Input } from "@/components/ui";
 import { Colors, Spacing, Typography } from "@/constants/theme";
-import { useGoals } from "@/hooks/useGoals";
+import { useGoal, useGoals } from "@/hooks/useGoals";
+import { awardStars } from "@/lib/gamification";
+import { supabase } from "@/lib/supabase";
 
 const MOODS = [
-  { id: "great", emoji: "😊", label: "Great" },
-  { id: "good", emoji: "🙂", label: "Good" },
-  { id: "okay", emoji: "😐", label: "Okay" },
-  { id: "difficult", emoji: "😕", label: "Difficult" },
-  { id: "challenging", emoji: "😔", label: "Challenging" },
+  { id: "great", emoji: "😊", label: "Great", stars: 3 },
+  { id: "good", emoji: "🙂", label: "Good", stars: 2 },
+  { id: "okay", emoji: "😐", label: "Okay", stars: 1 },
+  { id: "difficult", emoji: "😕", label: "Difficult", stars: 1 },
+  { id: "challenging", emoji: "😔", label: "Challenging", stars: 0 },
 ];
 
 export default function DailyLogScreen() {
@@ -29,27 +34,115 @@ export default function DailyLogScreen() {
     childId: string;
     goalId: string;
   }>();
+  const { goal, loading: goalLoading } = useGoal(goalId);
   const { logProgress, loading } = useGoals(childId || "");
 
   const [completed, setCompleted] = useState(true);
+  const [achievedValue, setAchievedValue] = useState("");
   const [mood, setMood] = useState("good");
   const [notes, setNotes] = useState("");
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [starsAwarded, setStarsAwarded] = useState(0);
+
+  // Calculate stars based on performance
+  const calculateStars = (): number => {
+    if (!completed) return 0;
+
+    // If goal has target value, calculate based on achievement percentage
+    if (goal?.target_value && achievedValue) {
+      const percentage = (parseInt(achievedValue) / goal.target_value) * 100;
+      if (percentage >= 100) return 3;
+      if (percentage >= 75) return 2;
+      if (percentage >= 50) return 1;
+      return 1;
+    }
+
+    // Otherwise use mood-based calculation
+    const moodData = MOODS.find((m) => m.id === mood);
+    return moodData?.stars || 1;
+  };
 
   const handleSubmit = async () => {
     if (!goalId || !childId) return;
 
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    const stars = calculateStars();
+    setStarsAwarded(stars);
 
-    await logProgress({
-      goalId,
-      childId,
-      achievedValue: completed ? 1 : 0,
-      notes: notes.trim() || undefined,
-      starsEarned: completed ? 1 : 0,
-    });
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
-    router.back();
+      // Log the progress
+      const { error: logError } = await supabase.from("daily_logs").insert({
+        goal_id: goalId,
+        child_id: childId,
+        logged_by: user?.id,
+        achieved_value: achievedValue
+          ? parseInt(achievedValue)
+          : completed
+            ? 1
+            : 0,
+        notes: notes.trim() || null,
+        stars_earned: stars,
+        log_date: new Date().toISOString().split("T")[0],
+      });
+
+      if (logError) throw logError;
+
+      // Award stars to child
+      if (stars > 0) {
+        await awardStars({
+          childId,
+          starsEarned: stars,
+          reason: `Progress on: ${goal?.title || "Goal"}`,
+        });
+      }
+
+      // Show success animation
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      setShowSuccess(true);
+
+      // Navigate back after animation
+      setTimeout(() => {
+        router.back();
+      }, 2500);
+    } catch (error) {
+      console.error("Error logging progress:", error);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+    }
   };
+
+  // Show loading state
+  if (goalLoading) {
+    return (
+      <SafeAreaView style={[styles.container, styles.centerContent]}>
+        <ActivityIndicator size="large" color={Colors.primary[500]} />
+        <Text style={styles.loadingText}>Loading goal...</Text>
+      </SafeAreaView>
+    );
+  }
+
+  // Show success celebration
+  if (showSuccess) {
+    return (
+      <SafeAreaView style={[styles.container, styles.successContainer]}>
+        <Animated.View
+          entering={ZoomIn.springify()}
+          style={styles.successContent}
+        >
+          <Text style={styles.successIcon}>🎉</Text>
+          <Text style={styles.successTitle}>Great Job!</Text>
+          <Text style={styles.successText}>Progress logged successfully</Text>
+          {starsAwarded > 0 && (
+            <View style={styles.starBurstContainer}>
+              <StarBurst totalStars={starsAwarded} />
+            </View>
+          )}
+        </Animated.View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -126,6 +219,67 @@ export default function DailyLogScreen() {
             </TouchableOpacity>
           </View>
         </Animated.View>
+
+        {/* Goal Info Card */}
+        {goal && (
+          <Animated.View
+            entering={FadeInDown.delay(150).duration(500)}
+            style={styles.section}
+          >
+            <Card variant="filled" style={styles.goalInfoCard}>
+              <Text style={styles.goalTitle}>{goal.title}</Text>
+              {goal.target_value && goal.unit && (
+                <Text style={styles.goalTarget}>
+                  🎯 Target: {goal.target_value} {goal.unit}
+                </Text>
+              )}
+            </Card>
+          </Animated.View>
+        )}
+
+        {/* Achievement Value (only if goal has target) */}
+        {goal?.target_value && completed && (
+          <Animated.View
+            entering={FadeInDown.delay(180).duration(500)}
+            style={styles.section}
+          >
+            <Text style={styles.sectionTitle}>How much did they achieve?</Text>
+            <View style={styles.valueInputContainer}>
+              <TextInput
+                value={achievedValue}
+                onChangeText={setAchievedValue}
+                style={styles.valueInput}
+                placeholder="0"
+                placeholderTextColor={Colors.text.tertiary}
+                keyboardType="number-pad"
+              />
+              <Text style={styles.unitLabel}>{goal.unit}</Text>
+            </View>
+
+            {/* Progress Preview */}
+            {achievedValue && (
+              <View style={styles.progressPreview}>
+                <View style={styles.progressBar}>
+                  <View
+                    style={[
+                      styles.progressFill,
+                      {
+                        width: `${Math.min((parseInt(achievedValue) / (goal.target_value || 1)) * 100, 100)}%`,
+                        backgroundColor:
+                          parseInt(achievedValue) >= (goal.target_value || 0)
+                            ? Colors.success[500]
+                            : Colors.primary[500],
+                      },
+                    ]}
+                  />
+                </View>
+                <Text style={styles.progressText}>
+                  {achievedValue} / {goal.target_value} {goal.unit}
+                </Text>
+              </View>
+            )}
+          </Animated.View>
+        )}
 
         {/* Mood */}
         <Animated.View
@@ -325,5 +479,105 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     marginTop: Spacing.xl,
+  },
+  centerContent: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    fontFamily: Typography.fontFamily.primary,
+    fontSize: Typography.fontSize.body,
+    color: Colors.text.secondary,
+    marginTop: Spacing.md,
+  },
+  successContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: Colors.background,
+  },
+  successContent: {
+    alignItems: "center",
+    padding: Spacing.xl,
+  },
+  successIcon: {
+    fontSize: 80,
+    marginBottom: Spacing.md,
+  },
+  successTitle: {
+    fontFamily: Typography.fontFamily.primaryBold,
+    fontSize: Typography.fontSize.h1,
+    fontWeight: Typography.fontWeight.bold,
+    color: Colors.text.primary,
+    marginBottom: Spacing.xs,
+  },
+  successText: {
+    fontFamily: Typography.fontFamily.primary,
+    fontSize: Typography.fontSize.body,
+    color: Colors.text.secondary,
+    marginBottom: Spacing.lg,
+  },
+  starBurstContainer: {
+    marginTop: Spacing.md,
+  },
+  goalInfoCard: {
+    backgroundColor: Colors.primary[50],
+    padding: Spacing.lg,
+    alignItems: "center",
+  },
+  goalTitle: {
+    fontFamily: Typography.fontFamily.primaryBold,
+    fontSize: Typography.fontSize.body,
+    fontWeight: Typography.fontWeight.bold,
+    color: Colors.primary[700],
+    textAlign: "center",
+    marginBottom: Spacing.xs,
+  },
+  goalTarget: {
+    fontFamily: Typography.fontFamily.primary,
+    fontSize: Typography.fontSize.small,
+    color: Colors.primary[600],
+  },
+  valueInputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: Colors.surface,
+    borderRadius: 16,
+    borderWidth: 2,
+    borderColor: Colors.primary[500],
+    paddingHorizontal: Spacing.md,
+  },
+  valueInput: {
+    flex: 1,
+    padding: Spacing.lg,
+    fontSize: 32,
+    fontFamily: Typography.fontFamily.primaryBold,
+    fontWeight: Typography.fontWeight.bold,
+    color: Colors.text.primary,
+    textAlign: "center",
+  },
+  unitLabel: {
+    fontFamily: Typography.fontFamily.primaryBold,
+    fontSize: Typography.fontSize.h4,
+    color: Colors.text.secondary,
+  },
+  progressPreview: {
+    marginTop: Spacing.md,
+    gap: Spacing.sm,
+  },
+  progressBar: {
+    height: 12,
+    backgroundColor: Colors.primary[50],
+    borderRadius: 6,
+    overflow: "hidden",
+  },
+  progressFill: {
+    height: "100%",
+    borderRadius: 6,
+  },
+  progressText: {
+    fontFamily: Typography.fontFamily.primary,
+    fontSize: Typography.fontSize.small,
+    color: Colors.text.secondary,
+    textAlign: "center",
   },
 });

@@ -53,6 +53,8 @@ export default function CreateGoalScreen() {
   const [priority, setPriority] = useState<GoalPriority>("medium");
   const [frequency, setFrequency] = useState<FrequencyPeriod>("daily");
   const [targetFrequency, setTargetFrequency] = useState("1");
+  const [targetValue, setTargetValue] = useState("");
+  const [unit, setUnit] = useState("");
 
   const handleCreate = async () => {
     if (!title.trim() || !childId) return;
@@ -65,6 +67,8 @@ export default function CreateGoalScreen() {
       priority,
       target_frequency: parseInt(targetFrequency) || 1,
       frequency_period: frequency,
+      target_value: targetValue ? parseInt(targetValue) : null,
+      unit: unit.trim() || null,
       status: "active",
     });
 
@@ -229,9 +233,43 @@ export default function CreateGoalScreen() {
             </View>
           </Animated.View>
 
-          {/* Create Button */}
+          {/* Target Value & Unit */}
           <Animated.View
             entering={FadeInDown.delay(350).duration(500)}
+            style={styles.section}
+          >
+            <Text style={styles.sectionTitle}>
+              Target Measurement (Optional)
+            </Text>
+            <Text style={styles.sectionSubtitle}>
+              Set a specific target for progress tracking
+            </Text>
+            <View style={styles.targetRow}>
+              <View style={styles.targetInputContainer}>
+                <Input
+                  placeholder="5"
+                  value={targetValue}
+                  onChangeText={setTargetValue}
+                  keyboardType="number-pad"
+                  leftIcon="trending-up"
+                />
+              </View>
+              <View style={styles.unitInputContainer}>
+                <Input
+                  placeholder="seconds"
+                  value={unit}
+                  onChangeText={setUnit}
+                />
+              </View>
+            </View>
+            <Text style={styles.exampleText}>
+              💡 Example: "5 seconds" of eye contact, "10 words" spoken
+            </Text>
+          </Animated.View>
+
+          {/* Create Button */}
+          <Animated.View
+            entering={FadeInDown.delay(400).duration(500)}
             style={styles.buttonContainer}
           >
             <Button
@@ -379,6 +417,30 @@ const styles = StyleSheet.create({
     fontFamily: Typography.fontFamily.primaryBold,
     fontWeight: Typography.fontWeight.bold,
     color: Colors.surface,
+  },
+  sectionSubtitle: {
+    fontFamily: Typography.fontFamily.primary,
+    fontSize: Typography.fontSize.small,
+    color: Colors.text.secondary,
+    marginBottom: Spacing.md,
+    marginTop: -Spacing.xs,
+  },
+  targetRow: {
+    flexDirection: "row",
+    gap: Spacing.md,
+  },
+  targetInputContainer: {
+    flex: 1,
+  },
+  unitInputContainer: {
+    flex: 2,
+  },
+  exampleText: {
+    fontFamily: Typography.fontFamily.primary,
+    fontSize: Typography.fontSize.small,
+    color: Colors.text.tertiary,
+    marginTop: Spacing.sm,
+    fontStyle: "italic",
   },
   buttonContainer: {
     marginTop: Spacing.xl,
