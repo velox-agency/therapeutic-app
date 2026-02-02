@@ -287,4 +287,119 @@ export function useDailyLogs(goalId?: string): UseDailyLogsResult {
   };
 }
 
+/**
+ * Hook for fetching goals for all children of a parent
+ * Used on parent dashboard for Goal Tracker Preview
+ */
+interface UseParentGoalsResult {
+  goals: (Goal & { child?: { first_name: string; id: string } })[];
+  loading: boolean;
+  error: any;
+  refetch: () => Promise<void>;
+}
+
+export function useParentGoals(childIds: string[]): UseParentGoalsResult {
+  const [goals, setGoals] = useState<(Goal & { child?: { first_name: string; id: string } })[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<any>(null);
+
+  const fetchGoals = useCallback(async () => {
+    if (!childIds.length) {
+      setGoals([]);
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    // Fetch goals where the child is in our list
+    const { data, error: fetchError } = await supabase
+      .from('goals')
+      .select(`
+        *,
+        child:children!inner(id, first_name)
+      `)
+      .in('child_id', childIds)
+      .eq('is_active', true)
+      .order('created_at', { ascending: false })
+      .limit(5);
+
+    if (fetchError) {
+      setError(fetchError);
+    } else {
+      setGoals(data || []);
+    }
+
+    setLoading(false);
+  }, [childIds.join(',')]);
+
+  useEffect(() => {
+    fetchGoals();
+  }, [fetchGoals]);
+
+  return {
+    goals,
+    loading,
+    error,
+    refetch: fetchGoals,
+  };
+}
+
+/**
+ * Hook for fetching goals created by a therapist
+ * Used on therapist dashboard for Goal Tracker Preview
+ */
+interface UseTherapistGoalsResult {
+  goals: Goal[];
+  loading: boolean;
+  error: any;
+  refetch: () => Promise<void>;
+}
+
+export function useTherapistGoals(): UseTherapistGoalsResult {
+  const { user } = useAuth();
+  const [goals, setGoals] = useState<Goal[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<any>(null);
+
+  const fetchGoals = useCallback(async () => {
+    if (!user) {
+      setGoals([]);
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    const { data, error: fetchError } = await supabase
+      .from('goals')
+      .select('*')
+      .eq('created_by', user.id)
+      .eq('is_active', true)
+      .order('created_at', { ascending: false })
+      .limit(5);
+
+    if (fetchError) {
+      setError(fetchError);
+    } else {
+      setGoals(data || []);
+    }
+
+    setLoading(false);
+  }, [user?.id]);
+
+  useEffect(() => {
+    fetchGoals();
+  }, [fetchGoals]);
+
+  return {
+    goals,
+    loading,
+    error,
+    refetch: fetchGoals,
+  };
+}
+
 export default useGoals;

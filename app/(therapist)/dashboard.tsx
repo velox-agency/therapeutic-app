@@ -12,18 +12,21 @@ import {
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { GoalProgressCard } from "@/components/goals";
 import { Avatar, Card } from "@/components/ui";
 import { Colors, Spacing, Typography } from "@/constants/theme";
 import { useAuth } from "@/hooks/useAuth";
+import { useTherapistGoals } from "@/hooks/useGoals";
 
 export default function TherapistDashboard() {
   const { profile } = useAuth();
+  const { goals: therapistGoals, refetch: refetchGoals } = useTherapistGoals();
   const [refreshing, setRefreshing] = React.useState(false);
 
   const onRefresh = async () => {
     setRefreshing(true);
-    // Refresh data here
-    setTimeout(() => setRefreshing(false), 1000);
+    await refetchGoals();
+    setTimeout(() => setRefreshing(false), 500);
   };
 
   return (
@@ -174,6 +177,49 @@ export default function TherapistDashboard() {
               Add patients to start managing their therapy goals
             </Text>
           </Card>
+        </Animated.View>
+
+        {/* Goal Tracker Preview */}
+        <Animated.View
+          entering={FadeInDown.delay(450).duration(500)}
+          style={styles.section}
+        >
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Active Goals</Text>
+            {therapistGoals.length > 0 && (
+              <TouchableOpacity
+                onPress={() => router.push("/shared/goals" as any)}
+              >
+                <Text style={styles.seeAllText}>See All</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+
+          {therapistGoals.length === 0 ? (
+            <Card variant="outlined" style={styles.emptyCard}>
+              <Ionicons
+                name="flag-outline"
+                size={48}
+                color={Colors.text.tertiary}
+              />
+              <Text style={styles.emptyTitle}>No active goals</Text>
+              <Text style={styles.emptySubtitle}>
+                Create goals for your patients to track progress
+              </Text>
+            </Card>
+          ) : (
+            therapistGoals
+              .slice(0, 3)
+              .map((goal, index) => (
+                <GoalProgressCard
+                  key={goal.id}
+                  goal={goal}
+                  progress={0}
+                  delay={index * 100}
+                  onPress={() => router.push(`/shared/goals/${goal.id}` as any)}
+                />
+              ))
+          )}
         </Animated.View>
 
         {/* Upcoming Sessions */}

@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import React from "react";
+import React, { useMemo } from "react";
 import {
   RefreshControl,
   ScrollView,
@@ -12,19 +12,26 @@ import {
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { GoalProgressCard } from "@/components/goals";
 import { Avatar, Button, Card } from "@/components/ui";
 import { Colors, Spacing, Typography } from "@/constants/theme";
 import { useAuth } from "@/hooks/useAuth";
 import { useChildren } from "@/hooks/useChildren";
+import { useParentGoals } from "@/hooks/useGoals";
 
 export default function ParentDashboard() {
   const { profile, signOut } = useAuth();
   const { children, loading, refetch } = useChildren();
   const [refreshing, setRefreshing] = React.useState(false);
 
+  // Get child IDs for goal fetching
+  const childIds = useMemo(() => children.map((c) => c.id), [children]);
+  const { goals: parentGoals, refetch: refetchGoals } =
+    useParentGoals(childIds);
+
   const onRefresh = async () => {
     setRefreshing(true);
-    await refetch();
+    await Promise.all([refetch(), refetchGoals()]);
     setRefreshing(false);
   };
 
@@ -32,6 +39,11 @@ export default function ParentDashboard() {
     (sum, child) => sum + (child.total_stars || 0),
     0,
   );
+
+  // Count completed goals
+  const goalsMetCount = parentGoals.filter(
+    (g) => g.status === "completed",
+  ).length;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -110,7 +122,7 @@ export default function ParentDashboard() {
                     color={Colors.success[500]}
                   />
                 </View>
-                <Text style={styles.statValue}>0</Text>
+                <Text style={styles.statValue}>{goalsMetCount}</Text>
                 <Text style={styles.statLabel}>Goals Met</Text>
               </View>
             </View>
@@ -261,9 +273,52 @@ export default function ParentDashboard() {
           )}
         </Animated.View>
 
+        {/* Goal Tracker Preview */}
+        {children.length > 0 && (
+          <Animated.View
+            entering={FadeInDown.delay(500).duration(500)}
+            style={styles.section}
+          >
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>Active Goals</Text>
+              {parentGoals.length > 0 && (
+                <TouchableOpacity
+                  onPress={() => router.push("/shared/goals" as any)}
+                >
+                  <Text style={styles.seeAllText}>See All</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+
+            {parentGoals.length === 0 ? (
+              <Card variant="outlined" style={styles.emptyCard}>
+                <Ionicons
+                  name="flag-outline"
+                  size={48}
+                  color={Colors.text.tertiary}
+                />
+                <Text style={styles.emptyTitle}>No active goals yet</Text>
+                <Text style={styles.emptySubtitle}>
+                  Goals set by therapists will appear here
+                </Text>
+              </Card>
+            ) : (
+              parentGoals.slice(0, 3).map((goal, index) => (
+                <GoalProgressCard
+                  key={goal.id}
+                  goal={goal}
+                  progress={0} // Progress is calculated from daily logs
+                  delay={index * 100}
+                  onPress={() => router.push(`/shared/goals/${goal.id}` as any)}
+                />
+              ))
+            )}
+          </Animated.View>
+        )}
+
         {/* Tip of the Day */}
         <Animated.View
-          entering={FadeInDown.delay(500).duration(500)}
+          entering={FadeInDown.delay(600).duration(500)}
           style={styles.section}
         >
           <Card variant="filled" style={styles.tipCard}>
