@@ -272,7 +272,8 @@
     "noActivePatients": "لا يوجد مرضى نشطين",
     "connectVerified": "تواصل مع المتخصصين الموثقين",
     "adjustFilters": "حاول تعديل البحث أو الفلاتر",
-    "therapistsWillAppear": "سيظهر المعالجون هنا بعد تسجيلهم"
+    "therapistsWillAppear": "سيظهر المعالجون هنا بعد تسجيلهم",
+    "pendingReviews": "مراجعات معلقة"
   },
   "profile": {
     "myProfile": "ملفي الشخصي",

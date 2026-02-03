@@ -272,7 +272,8 @@
     "noActivePatients": "No active patients",
     "connectVerified": "Connect with verified specialists",
     "adjustFilters": "Try adjusting your search or filters",
-    "therapistsWillAppear": "Therapists will appear here once they register"
+    "therapistsWillAppear": "Therapists will appear here once they register",
+    "pendingReviews": "Pending Reviews"
   },
   "profile": {
     "myProfile": "My Profile",

@@ -87,7 +87,10 @@ export default function TherapistDashboard() {
         >
           <Card
             variant="elevated"
-            style={[styles.overviewCard, { backgroundColor: colors.surface }]}
+            style={StyleSheet.flatten([
+              styles.overviewCard,
+              { backgroundColor: colors.surface },
+            ])}
           >
             <Text style={[styles.cardTitle, { color: colors.text }]}>
               {t("therapist.todaySchedule")}
@@ -242,7 +245,10 @@ export default function TherapistDashboard() {
 
           <Card
             variant="outlined"
-            style={[styles.emptyCard, { borderColor: colors.border }]}
+            style={StyleSheet.flatten([
+              styles.emptyCard,
+              { borderColor: colors.border },
+            ])}
           >
             <Ionicons
               name="people-outline"
@@ -284,7 +290,10 @@ export default function TherapistDashboard() {
           {therapistGoals.length === 0 ? (
             <Card
               variant="outlined"
-              style={[styles.emptyCard, { borderColor: colors.border }]}
+              style={StyleSheet.flatten([
+                styles.emptyCard,
+                { borderColor: colors.border },
+              ])}
             >
               <Ionicons
                 name="flag-outline"
@@ -336,7 +345,10 @@ export default function TherapistDashboard() {
 
           <Card
             variant="outlined"
-            style={[styles.emptyCard, { borderColor: colors.border }]}
+            style={StyleSheet.flatten([
+              styles.emptyCard,
+              { borderColor: colors.border },
+            ])}
           >
             <Ionicons
               name="calendar-outline"
@@ -362,10 +374,10 @@ export default function TherapistDashboard() {
         >
           <Card
             variant="filled"
-            style={[
+            style={StyleSheet.flatten([
               styles.reviewCard,
               { backgroundColor: colors.primaryLight },
-            ]}
+            ])}
           >
             <View style={styles.reviewHeader}>
               <Ionicons name="clipboard" size={24} color={colors.primary} />
