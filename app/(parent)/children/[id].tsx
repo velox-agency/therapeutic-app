@@ -12,18 +12,24 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Avatar, Card, ProgressBar } from "@/components/ui";
 import { Colors, Spacing, Typography } from "@/constants/theme";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useTheme } from "@/contexts/ThemeContext";
 import { useChild } from "@/hooks/useChildren";
 import { getNextMilestone } from "@/lib/gamification";
 
 export default function ChildDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { child, loading } = useChild(id);
+  const { colors } = useTheme();
+  const { t } = useLanguage();
 
   if (loading || !child) {
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: colors.background }]}
+      >
         <View style={styles.loadingContainer}>
-          <Text>Loading...</Text>
+          <Text style={{ color: colors.text }}>{t("common.loading")}...</Text>
         </View>
       </SafeAreaView>
     );
@@ -36,20 +42,20 @@ export default function ChildDetailScreen() {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity onPress={() => router.back()}>
-            <Ionicons name="arrow-back" size={24} color={Colors.text.primary} />
+            <Ionicons name="arrow-back" size={24} color={colors.text} />
           </TouchableOpacity>
-          <Text style={styles.title}>Profile</Text>
+          <Text style={[styles.title, { color: colors.text }]}>
+            {t("navigation.profile")}
+          </Text>
           <TouchableOpacity>
-            <Ionicons
-              name="settings-outline"
-              size={24}
-              color={Colors.text.primary}
-            />
+            <Ionicons name="settings-outline" size={24} color={colors.text} />
           </TouchableOpacity>
         </View>
 
@@ -60,14 +66,22 @@ export default function ChildDetailScreen() {
             seed={child.avatar_seed || child.id}
             size="xxl"
           />
-          <Text style={styles.childName}>{child.first_name}</Text>
-          <Text style={styles.childAge}>{age} years old</Text>
+          <Text style={[styles.childName, { color: colors.text }]}>
+            {child.first_name}
+          </Text>
+          <Text style={[styles.childAge, { color: colors.textSecondary }]}>
+            {age} {t("children.yearsOld")}
+          </Text>
 
           {/* Stars Progress */}
-          <View style={styles.starsSection}>
+          <View
+            style={[styles.starsSection, { borderTopColor: colors.border }]}
+          >
             <View style={styles.starsHeader}>
               <Text style={styles.starEmoji}>⭐</Text>
-              <Text style={styles.starsCount}>{child.total_stars} Stars</Text>
+              <Text style={[styles.starsCount, { color: Colors.star }]}>
+                {child.total_stars} {t("children.stars")}
+              </Text>
             </View>
             {nextMilestone && (
               <View style={styles.milestoneProgress}>
@@ -75,11 +89,16 @@ export default function ChildDetailScreen() {
                   progress={nextMilestone.progress}
                   variant="success"
                   showLabel
-                  label={`Next: ${nextMilestone.title}`}
+                  label={`${t("children.next")}: ${nextMilestone.title}`}
                   showPercentage
                 />
-                <Text style={styles.milestoneHint}>
-                  {nextMilestone.remaining} more stars to go!
+                <Text
+                  style={[
+                    styles.milestoneHint,
+                    { color: colors.textSecondary },
+                  ]}
+                >
+                  {nextMilestone.remaining} {t("children.moreStarsToGo")}
                 </Text>
               </View>
             )}
@@ -88,7 +107,9 @@ export default function ChildDetailScreen() {
 
         {/* Quick Actions */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Actions</Text>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>
+            {t("children.actions")}
+          </Text>
           <View style={styles.actionsRow}>
             <TouchableOpacity
               style={styles.actionButton}
@@ -108,7 +129,11 @@ export default function ChildDetailScreen() {
                   color={Colors.secondary[500]}
                 />
               </View>
-              <Text style={styles.actionText}>Start Screening</Text>
+              <Text
+                style={[styles.actionText, { color: colors.textSecondary }]}
+              >
+                {t("children.startScreening")}
+              </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -129,7 +154,11 @@ export default function ChildDetailScreen() {
                   color={Colors.success[500]}
                 />
               </View>
-              <Text style={styles.actionText}>View Progress</Text>
+              <Text
+                style={[styles.actionText, { color: colors.textSecondary }]}
+              >
+                {t("children.viewProgress")}
+              </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -146,23 +175,33 @@ export default function ChildDetailScreen() {
               >
                 <Ionicons name="trophy" size={24} color={Colors.primary[500]} />
               </View>
-              <Text style={styles.actionText}>Badges</Text>
+              <Text
+                style={[styles.actionText, { color: colors.textSecondary }]}
+              >
+                {t("children.badges")}
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
 
         {/* Recent Activity */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Recent Activity</Text>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>
+            {t("children.recentActivity")}
+          </Text>
           <Card variant="outlined" style={styles.emptyActivity}>
             <Ionicons
               name="time-outline"
               size={48}
-              color={Colors.text.tertiary}
+              color={colors.textSecondary}
             />
-            <Text style={styles.emptyText}>No recent activity</Text>
-            <Text style={styles.emptySubtext}>
-              Complete goals and screenings to see activity here
+            <Text style={[styles.emptyText, { color: colors.text }]}>
+              {t("children.noRecentActivity")}
+            </Text>
+            <Text
+              style={[styles.emptySubtext, { color: colors.textSecondary }]}
+            >
+              {t("children.completeGoalsToSee")}
             </Text>
           </Card>
         </View>
@@ -170,20 +209,28 @@ export default function ChildDetailScreen() {
         {/* Active Goals */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Active Goals</Text>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>
+              {t("children.activeGoals")}
+            </Text>
             <TouchableOpacity>
-              <Text style={styles.seeAllText}>Add Goal</Text>
+              <Text style={[styles.seeAllText, { color: colors.primary }]}>
+                {t("children.addGoal")}
+              </Text>
             </TouchableOpacity>
           </View>
           <Card variant="outlined" style={styles.emptyActivity}>
             <Ionicons
               name="flag-outline"
               size={48}
-              color={Colors.text.tertiary}
+              color={colors.textSecondary}
             />
-            <Text style={styles.emptyText}>No active goals</Text>
-            <Text style={styles.emptySubtext}>
-              Connect with a therapist to set therapy goals
+            <Text style={[styles.emptyText, { color: colors.text }]}>
+              {t("children.noActiveGoals")}
+            </Text>
+            <Text
+              style={[styles.emptySubtext, { color: colors.textSecondary }]}
+            >
+              {t("children.connectWithTherapist")}
             </Text>
           </Card>
         </View>

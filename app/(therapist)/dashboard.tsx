@@ -1,4 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import React from "react";
 import {
@@ -15,11 +16,15 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { GoalProgressCard } from "@/components/goals";
 import { Avatar, Card } from "@/components/ui";
 import { Colors, Spacing, Typography } from "@/constants/theme";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useTheme } from "@/contexts/ThemeContext";
 import { useAuth } from "@/hooks/useAuth";
 import { useTherapistGoals } from "@/hooks/useGoals";
 
 export default function TherapistDashboard() {
   const { profile } = useAuth();
+  const { colors } = useTheme();
+  const { t } = useLanguage();
   const { goals: therapistGoals, refetch: refetchGoals } = useTherapistGoals();
   const [refreshing, setRefreshing] = React.useState(false);
 
@@ -30,7 +35,40 @@ export default function TherapistDashboard() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      {/* Gradient Header */}
+      <LinearGradient
+        colors={[colors.secondary, Colors.secondary[600]]}
+        style={styles.gradientHeader}
+      >
+        <SafeAreaView edges={["top"]}>
+          <Animated.View
+            entering={FadeInDown.delay(100).duration(500)}
+            style={styles.header}
+          >
+            <View>
+              <Text style={styles.greeting}>{t("therapist.welcome")}</Text>
+              <Text style={styles.name}>
+                Dr.{" "}
+                {profile?.full_name?.split(" ")[0] ||
+                  t("common.therapist") ||
+                  "Therapist"}{" "}
+                👋
+              </Text>
+            </View>
+            <TouchableOpacity
+              onPress={() => router.push("/(therapist)/profile")}
+            >
+              <Avatar
+                name={profile?.full_name}
+                source={profile?.avatar_url}
+                size="md"
+              />
+            </TouchableOpacity>
+          </Animated.View>
+        </SafeAreaView>
+      </LinearGradient>
+
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
@@ -38,48 +76,64 @@ export default function TherapistDashboard() {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintColor={Colors.secondary[500]}
+            tintColor={colors.secondary}
           />
         }
       >
-        {/* Header */}
-        <Animated.View
-          entering={FadeInDown.delay(100).duration(500)}
-          style={styles.header}
-        >
-          <View>
-            <Text style={styles.greeting}>Welcome back,</Text>
-            <Text style={styles.name}>
-              Dr. {profile?.full_name?.split(" ")[0] || "Therapist"} 👋
-            </Text>
-          </View>
-          <TouchableOpacity onPress={() => router.push("/(therapist)/profile")}>
-            <Avatar
-              name={profile?.full_name}
-              source={profile?.avatar_url}
-              size="md"
-            />
-          </TouchableOpacity>
-        </Animated.View>
-
         {/* Today's Overview */}
-        <Animated.View entering={FadeInDown.delay(200).duration(500)}>
-          <Card variant="elevated" style={styles.overviewCard}>
-            <Text style={styles.cardTitle}>Today's Schedule</Text>
+        <Animated.View
+          entering={FadeInDown.delay(200).duration(500)}
+          style={styles.overviewCardContainer}
+        >
+          <Card
+            variant="elevated"
+            style={[styles.overviewCard, { backgroundColor: colors.surface }]}
+          >
+            <Text style={[styles.cardTitle, { color: colors.text }]}>
+              {t("therapist.todaySchedule")}
+            </Text>
             <View style={styles.statsRow}>
               <View style={styles.statItem}>
-                <Text style={styles.statValue}>0</Text>
-                <Text style={styles.statLabel}>Sessions</Text>
+                <Text style={[styles.statValue, { color: colors.text }]}>
+                  0
+                </Text>
+                <Text
+                  style={[styles.statLabel, { color: colors.textSecondary }]}
+                >
+                  {t("navigation.sessions")}
+                </Text>
               </View>
-              <View style={styles.statDivider} />
+              <View
+                style={[
+                  styles.statDivider,
+                  { backgroundColor: colors.divider },
+                ]}
+              />
               <View style={styles.statItem}>
-                <Text style={styles.statValue}>0</Text>
-                <Text style={styles.statLabel}>Patients</Text>
+                <Text style={[styles.statValue, { color: colors.text }]}>
+                  0
+                </Text>
+                <Text
+                  style={[styles.statLabel, { color: colors.textSecondary }]}
+                >
+                  {t("navigation.patients")}
+                </Text>
               </View>
-              <View style={styles.statDivider} />
+              <View
+                style={[
+                  styles.statDivider,
+                  { backgroundColor: colors.divider },
+                ]}
+              />
               <View style={styles.statItem}>
-                <Text style={styles.statValue}>0</Text>
-                <Text style={styles.statLabel}>Goals Due</Text>
+                <Text style={[styles.statValue, { color: colors.text }]}>
+                  0
+                </Text>
+                <Text
+                  style={[styles.statLabel, { color: colors.textSecondary }]}
+                >
+                  {t("goals.goalsDue") || "Goals Due"}
+                </Text>
               </View>
             </View>
           </Card>
@@ -90,66 +144,80 @@ export default function TherapistDashboard() {
           entering={FadeInDown.delay(300).duration(500)}
           style={styles.section}
         >
-          <Text style={styles.sectionTitle}>Quick Actions</Text>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>
+            {t("common.quickActions") || "Quick Actions"}
+          </Text>
           <View style={styles.actionsGrid}>
-            <TouchableOpacity style={styles.actionCard}>
+            <TouchableOpacity
+              style={[styles.actionCard, { backgroundColor: colors.surface }]}
+              onPress={() => router.push("/(therapist)/patients" as any)}
+            >
               <View
                 style={[
                   styles.actionIcon,
-                  { backgroundColor: Colors.secondary[50] },
+                  { backgroundColor: colors.secondaryLight },
                 ]}
               >
-                <Ionicons
-                  name="person-add"
-                  size={28}
-                  color={Colors.secondary[500]}
-                />
+                <Ionicons name="people" size={28} color={colors.secondary} />
               </View>
-              <Text style={styles.actionText}>Add Patient</Text>
+              <Text style={[styles.actionText, { color: colors.text }]}>
+                {t("therapist.myPatients") || "My Patients"}
+              </Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.actionCard}>
+            <TouchableOpacity
+              style={[styles.actionCard, { backgroundColor: colors.surface }]}
+              onPress={() => router.push("/(therapist)/sessions" as any)}
+            >
               <View
                 style={[
                   styles.actionIcon,
-                  { backgroundColor: Colors.primary[50] },
+                  { backgroundColor: colors.primaryLight },
                 ]}
               >
                 <Ionicons
                   name="calendar-outline"
                   size={28}
-                  color={Colors.primary[500]}
+                  color={colors.primary}
                 />
               </View>
-              <Text style={styles.actionText}>Schedule</Text>
+              <Text style={[styles.actionText, { color: colors.text }]}>
+                {t("navigation.sessions")}
+              </Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.actionCard}>
+            <TouchableOpacity
+              style={[styles.actionCard, { backgroundColor: colors.surface }]}
+              onPress={() => router.push("/shared/goals" as any)}
+            >
               <View
                 style={[
                   styles.actionIcon,
-                  { backgroundColor: Colors.success[50] },
+                  { backgroundColor: colors.successLight },
                 ]}
               >
-                <Ionicons name="flag" size={28} color={Colors.success[500]} />
+                <Ionicons name="flag" size={28} color={colors.success} />
               </View>
-              <Text style={styles.actionText}>Set Goal</Text>
+              <Text style={[styles.actionText, { color: colors.text }]}>
+                {t("navigation.goals")}
+              </Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.actionCard}>
+            <TouchableOpacity
+              style={[styles.actionCard, { backgroundColor: colors.surface }]}
+              onPress={() => router.push("/shared/resources" as any)}
+            >
               <View
                 style={[
                   styles.actionIcon,
-                  { backgroundColor: Colors.error[50] },
+                  { backgroundColor: colors.errorLight },
                 ]}
               >
-                <Ionicons
-                  name="document-text"
-                  size={28}
-                  color={Colors.error[500]}
-                />
+                <Ionicons name="library" size={28} color={colors.error} />
               </View>
-              <Text style={styles.actionText}>Reports</Text>
+              <Text style={[styles.actionText, { color: colors.text }]}>
+                {t("navigation.resources")}
+              </Text>
             </TouchableOpacity>
           </View>
         </Animated.View>
@@ -160,21 +228,35 @@ export default function TherapistDashboard() {
           style={styles.section}
         >
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Active Patients</Text>
-            <TouchableOpacity>
-              <Text style={styles.seeAllText}>See All</Text>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>
+              {t("therapist.activePatients")}
+            </Text>
+            <TouchableOpacity
+              onPress={() => router.push("/(therapist)/patients" as any)}
+            >
+              <Text style={[styles.seeAllText, { color: colors.primary }]}>
+                {t("common.seeAll")}
+              </Text>
             </TouchableOpacity>
           </View>
 
-          <Card variant="outlined" style={styles.emptyCard}>
+          <Card
+            variant="outlined"
+            style={[styles.emptyCard, { borderColor: colors.border }]}
+          >
             <Ionicons
               name="people-outline"
               size={48}
-              color={Colors.text.tertiary}
+              color={colors.textTertiary}
             />
-            <Text style={styles.emptyTitle}>No patients yet</Text>
-            <Text style={styles.emptySubtitle}>
-              Add patients to start managing their therapy goals
+            <Text style={[styles.emptyTitle, { color: colors.text }]}>
+              {t("therapist.noPatients")}
+            </Text>
+            <Text
+              style={[styles.emptySubtitle, { color: colors.textSecondary }]}
+            >
+              {t("therapist.parentsEnrollChildren") ||
+                "Parents will enroll their children with you"}
             </Text>
           </Card>
         </Animated.View>
@@ -185,26 +267,38 @@ export default function TherapistDashboard() {
           style={styles.section}
         >
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Active Goals</Text>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>
+              {t("goals.activeGoals")}
+            </Text>
             {therapistGoals.length > 0 && (
               <TouchableOpacity
                 onPress={() => router.push("/shared/goals" as any)}
               >
-                <Text style={styles.seeAllText}>See All</Text>
+                <Text style={[styles.seeAllText, { color: colors.primary }]}>
+                  {t("common.seeAll")}
+                </Text>
               </TouchableOpacity>
             )}
           </View>
 
           {therapistGoals.length === 0 ? (
-            <Card variant="outlined" style={styles.emptyCard}>
+            <Card
+              variant="outlined"
+              style={[styles.emptyCard, { borderColor: colors.border }]}
+            >
               <Ionicons
                 name="flag-outline"
                 size={48}
-                color={Colors.text.tertiary}
+                color={colors.textTertiary}
               />
-              <Text style={styles.emptyTitle}>No active goals</Text>
-              <Text style={styles.emptySubtitle}>
-                Create goals for your patients to track progress
+              <Text style={[styles.emptyTitle, { color: colors.text }]}>
+                {t("goals.noActiveGoals")}
+              </Text>
+              <Text
+                style={[styles.emptySubtitle, { color: colors.textSecondary }]}
+              >
+                {t("goals.createGoalsToTrack") ||
+                  "Create goals for your patients to track progress"}
               </Text>
             </Card>
           ) : (
@@ -228,21 +322,35 @@ export default function TherapistDashboard() {
           style={styles.section}
         >
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Upcoming Sessions</Text>
-            <TouchableOpacity>
-              <Text style={styles.seeAllText}>See All</Text>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>
+              {t("sessions.upcomingSessions")}
+            </Text>
+            <TouchableOpacity
+              onPress={() => router.push("/(therapist)/sessions" as any)}
+            >
+              <Text style={[styles.seeAllText, { color: colors.primary }]}>
+                {t("common.seeAll")}
+              </Text>
             </TouchableOpacity>
           </View>
 
-          <Card variant="outlined" style={styles.emptyCard}>
+          <Card
+            variant="outlined"
+            style={[styles.emptyCard, { borderColor: colors.border }]}
+          >
             <Ionicons
               name="calendar-outline"
               size={48}
-              color={Colors.text.tertiary}
+              color={colors.textTertiary}
             />
-            <Text style={styles.emptyTitle}>No upcoming sessions</Text>
-            <Text style={styles.emptySubtitle}>
-              Schedule sessions with your patients
+            <Text style={[styles.emptyTitle, { color: colors.text }]}>
+              {t("sessions.noSessions")}
+            </Text>
+            <Text
+              style={[styles.emptySubtitle, { color: colors.textSecondary }]}
+            >
+              {t("sessions.scheduleWithPatients") ||
+                "Schedule sessions with your patients"}
             </Text>
           </Card>
         </Animated.View>
@@ -252,50 +360,64 @@ export default function TherapistDashboard() {
           entering={FadeInDown.delay(600).duration(500)}
           style={styles.section}
         >
-          <Card variant="filled" style={styles.reviewCard}>
+          <Card
+            variant="filled"
+            style={[
+              styles.reviewCard,
+              { backgroundColor: colors.primaryLight },
+            ]}
+          >
             <View style={styles.reviewHeader}>
-              <Ionicons
-                name="clipboard"
-                size={24}
-                color={Colors.primary[500]}
-              />
-              <Text style={styles.reviewTitle}>Screening Reviews</Text>
+              <Ionicons name="clipboard" size={24} color={colors.primary} />
+              <Text style={[styles.reviewTitle, { color: colors.text }]}>
+                {t("therapist.screeningReviews") || "Screening Reviews"}
+              </Text>
             </View>
-            <Text style={styles.reviewText}>
-              0 screenings pending your review
+            <Text style={[styles.reviewText, { color: colors.textSecondary }]}>
+              {t("therapist.pendingReviews", { count: 0 }) ||
+                "0 screenings pending your review"}
             </Text>
           </Card>
         </Animated.View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
+  },
+  gradientHeader: {
+    paddingBottom: Spacing.lg,
+    borderBottomLeftRadius: 24,
+    borderBottomRightRadius: 24,
   },
   scrollContent: {
     paddingHorizontal: Spacing.lg,
     paddingBottom: Spacing.xxl,
+    marginTop: -Spacing.md,
+  },
+  overviewCardContainer: {
+    marginBottom: Spacing.md,
   },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingVertical: Spacing.lg,
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.lg,
   },
   greeting: {
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.body,
-    color: Colors.text.secondary,
+    color: "rgba(255, 255, 255, 0.85)",
   },
   name: {
     fontFamily: Typography.fontFamily.primaryBold,
     fontSize: Typography.fontSize.h2,
     fontWeight: Typography.fontWeight.bold,
-    color: Colors.text.primary,
+    color: "#FFFFFF",
   },
   overviewCard: {
     marginBottom: Spacing.lg,
@@ -304,7 +426,6 @@ const styles = StyleSheet.create({
     fontFamily: Typography.fontFamily.primaryBold,
     fontSize: Typography.fontSize.h4,
     fontWeight: Typography.fontWeight.bold,
-    color: Colors.text.primary,
     marginBottom: Spacing.md,
     textAlign: "center",
   },
@@ -321,17 +442,14 @@ const styles = StyleSheet.create({
     fontFamily: Typography.fontFamily.primaryBold,
     fontSize: Typography.fontSize.h2,
     fontWeight: Typography.fontWeight.bold,
-    color: Colors.secondary[500],
   },
   statLabel: {
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.tiny,
-    color: Colors.text.secondary,
   },
   statDivider: {
     width: 1,
     height: 40,
-    backgroundColor: Colors.border,
   },
   section: {
     marginBottom: Spacing.lg,
@@ -346,13 +464,11 @@ const styles = StyleSheet.create({
     fontFamily: Typography.fontFamily.primaryBold,
     fontSize: Typography.fontSize.h4,
     fontWeight: Typography.fontWeight.bold,
-    color: Colors.text.primary,
     marginBottom: Spacing.md,
   },
   seeAllText: {
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.small,
-    color: Colors.secondary[500],
   },
   actionsGrid: {
     flexDirection: "row",
@@ -361,7 +477,6 @@ const styles = StyleSheet.create({
   },
   actionCard: {
     width: "47%",
-    backgroundColor: Colors.surface,
     borderRadius: 16,
     padding: Spacing.md,
     alignItems: "center",
@@ -384,7 +499,6 @@ const styles = StyleSheet.create({
   actionText: {
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.small,
-    color: Colors.text.primary,
     textAlign: "center",
   },
   emptyCard: {
@@ -395,19 +509,15 @@ const styles = StyleSheet.create({
     fontFamily: Typography.fontFamily.primaryBold,
     fontSize: Typography.fontSize.body,
     fontWeight: Typography.fontWeight.bold,
-    color: Colors.text.primary,
     marginTop: Spacing.md,
   },
   emptySubtitle: {
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.small,
-    color: Colors.text.secondary,
     textAlign: "center",
     marginTop: Spacing.xs,
   },
-  reviewCard: {
-    backgroundColor: Colors.primary[50],
-  },
+  reviewCard: {},
   reviewHeader: {
     flexDirection: "row",
     alignItems: "center",
@@ -417,12 +527,10 @@ const styles = StyleSheet.create({
     fontFamily: Typography.fontFamily.primaryBold,
     fontSize: Typography.fontSize.body,
     fontWeight: Typography.fontWeight.bold,
-    color: Colors.primary[700],
     marginLeft: Spacing.sm,
   },
   reviewText: {
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.small,
-    color: Colors.text.secondary,
   },
 });

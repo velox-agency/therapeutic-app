@@ -1,16 +1,21 @@
-import { Colors, Typography } from "@/constants/theme";
+import { Typography } from "@/constants/theme";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useTheme } from "@/contexts/ThemeContext";
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 
 export default function ParentLayout() {
+  const { colors } = useTheme();
+  const { t } = useLanguage();
+
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: Colors.primary[500],
-        tabBarInactiveTintColor: Colors.text.disabled,
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.textSecondary,
         tabBarStyle: {
-          backgroundColor: Colors.surface,
+          backgroundColor: colors.surface,
           borderTopWidth: 0,
           elevation: 8,
           shadowColor: "#000",
@@ -27,7 +32,7 @@ export default function ParentLayout() {
           fontWeight: Typography.fontWeight.semibold,
         },
         headerStyle: {
-          backgroundColor: Colors.surface,
+          backgroundColor: colors.surface,
           elevation: 0,
           shadowOpacity: 0,
         },
@@ -41,7 +46,7 @@ export default function ParentLayout() {
       <Tabs.Screen
         name="dashboard"
         options={{
-          title: "Home",
+          title: t("navigation.home"),
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
               name={focused ? "home" : "home-outline"}
@@ -54,7 +59,7 @@ export default function ParentLayout() {
       <Tabs.Screen
         name="children"
         options={{
-          title: "Children",
+          title: t("navigation.children"),
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
               name={focused ? "people" : "people-outline"}
@@ -67,7 +72,7 @@ export default function ParentLayout() {
       <Tabs.Screen
         name="sessions"
         options={{
-          title: "Sessions",
+          title: t("navigation.sessions"),
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
               name={focused ? "calendar" : "calendar-outline"}
@@ -92,7 +97,7 @@ export default function ParentLayout() {
       <Tabs.Screen
         name="profile"
         options={{
-          title: "Profile",
+          title: t("navigation.profile"),
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
               name={focused ? "person" : "person-outline"}

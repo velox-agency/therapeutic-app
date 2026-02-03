@@ -11,61 +11,102 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Button, Card } from "@/components/ui";
 import { Colors, Spacing, Typography } from "@/constants/theme";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useTheme } from "@/contexts/ThemeContext";
 
 export default function SessionsScreen() {
   const sessions: any[] = []; // TODO: Fetch from Supabase
+  const { colors } = useTheme();
+  const { t } = useLanguage();
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.header}>
-          <Text style={styles.title}>Sessions</Text>
-          <TouchableOpacity style={styles.addButton}>
-            <Ionicons name="add" size={24} color={Colors.secondary[500]} />
+          <Text style={[styles.title, { color: colors.text }]}>
+            {t("navigation.sessions")}
+          </Text>
+          <TouchableOpacity
+            style={[
+              styles.addButton,
+              { backgroundColor: colors.secondary + "20" },
+            ]}
+          >
+            <Ionicons name="add" size={24} color={colors.secondary} />
           </TouchableOpacity>
         </View>
 
         {/* Calendar View Toggle */}
-        <View style={styles.viewToggle}>
-          <TouchableOpacity style={[styles.toggleButton, styles.toggleActive]}>
-            <Text style={[styles.toggleText, styles.toggleTextActive]}>
-              List
+        <View style={[styles.viewToggle, { backgroundColor: colors.surface }]}>
+          <TouchableOpacity
+            style={[
+              styles.toggleButton,
+              styles.toggleActive,
+              { backgroundColor: colors.background },
+            ]}
+          >
+            <Text
+              style={[
+                styles.toggleText,
+                styles.toggleTextActive,
+                { color: colors.text },
+              ]}
+            >
+              {t("common.list")}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.toggleButton}>
-            <Text style={styles.toggleText}>Calendar</Text>
+            <Text style={[styles.toggleText, { color: colors.textSecondary }]}>
+              {t("common.calendar")}
+            </Text>
           </TouchableOpacity>
         </View>
 
         {/* Today's Sessions */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Today</Text>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>
+            {t("sessions.today")}
+          </Text>
           <Card variant="outlined" style={styles.emptyCard}>
             <Ionicons
               name="calendar-outline"
               size={48}
-              color={Colors.text.tertiary}
+              color={colors.textSecondary}
             />
-            <Text style={styles.emptyTitle}>No sessions today</Text>
-            <Text style={styles.emptySubtitle}>Your schedule is clear</Text>
+            <Text style={[styles.emptyTitle, { color: colors.text }]}>
+              {t("sessions.noSessionsToday")}
+            </Text>
+            <Text
+              style={[styles.emptySubtitle, { color: colors.textSecondary }]}
+            >
+              {t("sessions.scheduleIsClear")}
+            </Text>
           </Card>
         </View>
 
         {/* Upcoming Sessions */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Upcoming</Text>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>
+            {t("sessions.upcoming")}
+          </Text>
           <Card variant="outlined" style={styles.emptyCard}>
             <Ionicons
               name="time-outline"
               size={48}
-              color={Colors.text.tertiary}
+              color={colors.textSecondary}
             />
-            <Text style={styles.emptyTitle}>No upcoming sessions</Text>
-            <Text style={styles.emptySubtitle}>
-              Schedule sessions with your patients
+            <Text style={[styles.emptyTitle, { color: colors.text }]}>
+              {t("sessions.noUpcomingSessions")}
+            </Text>
+            <Text
+              style={[styles.emptySubtitle, { color: colors.textSecondary }]}
+            >
+              {t("sessions.scheduleWithPatients")}
             </Text>
             <Button
-              title="Schedule Session"
+              title={t("sessions.scheduleSession")}
               variant="secondary"
               size="small"
               onPress={() => {}}

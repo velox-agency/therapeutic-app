@@ -12,10 +12,14 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Avatar, Button, Card } from "@/components/ui";
 import { Colors, Spacing, Typography } from "@/constants/theme";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useTheme } from "@/contexts/ThemeContext";
 import { useAuth } from "@/hooks/useAuth";
 
 export default function ParentProfileScreen() {
   const { profile, signOut, loading } = useAuth();
+  const { colors } = useTheme();
+  const { t } = useLanguage();
 
   const handleSignOut = async () => {
     await signOut();
@@ -23,11 +27,15 @@ export default function ParentProfileScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.title}>Profile</Text>
+          <Text style={[styles.title, { color: colors.text }]}>
+            {t("navigation.profile")}
+          </Text>
         </View>
 
         {/* Profile Card */}
@@ -38,16 +46,27 @@ export default function ParentProfileScreen() {
               source={profile?.avatar_url}
               size="xl"
             />
-            <Text style={styles.profileName}>{profile?.full_name}</Text>
-            <View style={styles.roleBadge}>
-              <Text style={styles.roleText}>Parent</Text>
+            <Text style={[styles.profileName, { color: colors.text }]}>
+              {profile?.full_name}
+            </Text>
+            <View
+              style={[
+                styles.roleBadge,
+                { backgroundColor: colors.primary + "20" },
+              ]}
+            >
+              <Text style={[styles.roleText, { color: colors.primary }]}>
+                {t("common.parent")}
+              </Text>
             </View>
           </View>
         </Card>
 
         {/* Settings */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Settings</Text>
+          <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>
+            {t("profile.settings")}
+          </Text>
 
           <Card variant="elevated">
             <TouchableOpacity
@@ -57,45 +76,78 @@ export default function ParentProfileScreen() {
               <Ionicons
                 name="person-outline"
                 size={24}
-                color={Colors.text.secondary}
+                color={colors.textSecondary}
               />
-              <Text style={styles.menuText}>Edit Profile</Text>
+              <Text style={[styles.menuText, { color: colors.text }]}>
+                {t("profile.editProfile")}
+              </Text>
               <Ionicons
                 name="chevron-forward"
                 size={20}
-                color={Colors.text.tertiary}
+                color={colors.textSecondary}
               />
             </TouchableOpacity>
 
-            <View style={styles.menuDivider} />
+            <View
+              style={[styles.menuDivider, { backgroundColor: colors.border }]}
+            />
+
+            <TouchableOpacity
+              style={styles.menuItem}
+              onPress={() => router.push("/shared/settings" as any)}
+            >
+              <Ionicons
+                name="settings-outline"
+                size={24}
+                color={colors.textSecondary}
+              />
+              <Text style={[styles.menuText, { color: colors.text }]}>
+                {t("profile.appSettings")}
+              </Text>
+              <Ionicons
+                name="chevron-forward"
+                size={20}
+                color={colors.textSecondary}
+              />
+            </TouchableOpacity>
+
+            <View
+              style={[styles.menuDivider, { backgroundColor: colors.border }]}
+            />
 
             <TouchableOpacity style={styles.menuItem}>
               <Ionicons
                 name="notifications-outline"
                 size={24}
-                color={Colors.text.secondary}
+                color={colors.textSecondary}
               />
-              <Text style={styles.menuText}>Notifications</Text>
+              <Text style={[styles.menuText, { color: colors.text }]}>
+                {t("profile.notifications")}
+              </Text>
               <Ionicons
                 name="chevron-forward"
                 size={20}
-                color={Colors.text.tertiary}
+                color={colors.textSecondary}
               />
             </TouchableOpacity>
 
-            <View style={styles.menuDivider} />
+            <View
+              style={[styles.menuDivider, { backgroundColor: colors.border }]}
+            />
 
             <TouchableOpacity style={styles.menuItem}>
               <Ionicons
                 name="shield-outline"
                 size={24}
-                color={Colors.text.secondary}
+                color={colors.textSecondary}
               />
-              <Text style={styles.menuText}>Privacy</Text>
+              <Text style={[styles.menuText, { color: colors.text }]}>
+                {t("profile.privacy")}
+              </Text>
               <Ionicons
                 name="chevron-forward"
                 size={20}
-                color={Colors.text.tertiary}
+                color={colors.textSecondary}
               />
             </TouchableOpacity>
           </Card>
@@ -103,7 +155,9 @@ export default function ParentProfileScreen() {
 
         {/* Resources */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Learn</Text>
+          <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>
+            {t("profile.learn")}
+          </Text>
 
           <Card variant="elevated">
             <TouchableOpacity
@@ -113,13 +167,15 @@ export default function ParentProfileScreen() {
               <Ionicons
                 name="library-outline"
                 size={24}
-                color={Colors.text.secondary}
+                color={colors.textSecondary}
               />
-              <Text style={styles.menuText}>Resources</Text>
+              <Text style={[styles.menuText, { color: colors.text }]}>
+                {t("profile.resources")}
+              </Text>
               <Ionicons
                 name="chevron-forward"
                 size={20}
-                color={Colors.text.tertiary}
+                color={colors.textSecondary}
               />
             </TouchableOpacity>
           </Card>
@@ -127,52 +183,66 @@ export default function ParentProfileScreen() {
 
         {/* Support */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Support</Text>
+          <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>
+            {t("profile.support")}
+          </Text>
 
           <Card variant="elevated">
             <TouchableOpacity style={styles.menuItem}>
               <Ionicons
                 name="help-circle-outline"
                 size={24}
-                color={Colors.text.secondary}
+                color={colors.textSecondary}
               />
-              <Text style={styles.menuText}>Help Center</Text>
+              <Text style={[styles.menuText, { color: colors.text }]}>
+                {t("profile.helpCenter")}
+              </Text>
               <Ionicons
                 name="chevron-forward"
                 size={20}
-                color={Colors.text.tertiary}
+                color={colors.textSecondary}
               />
             </TouchableOpacity>
 
-            <View style={styles.menuDivider} />
+            <View
+              style={[styles.menuDivider, { backgroundColor: colors.border }]}
+            />
 
             <TouchableOpacity style={styles.menuItem}>
               <Ionicons
                 name="document-text-outline"
                 size={24}
-                color={Colors.text.secondary}
+                color={colors.textSecondary}
               />
-              <Text style={styles.menuText}>Terms of Service</Text>
+              <Text style={[styles.menuText, { color: colors.text }]}>
+                {t("profile.termsOfService")}
+              </Text>
               <Ionicons
                 name="chevron-forward"
                 size={20}
-                color={Colors.text.tertiary}
+                color={colors.textSecondary}
               />
             </TouchableOpacity>
           </Card>
         </View>
 
         {/* Sign Out */}
-        <Button
-          title="Sign Out"
-          onPress={handleSignOut}
-          variant="outline"
-          fullWidth
-          loading={loading}
-          style={styles.signOutButton}
-        />
+        <View
+          style={[styles.signOutSection, { borderTopColor: colors.border }]}
+        >
+          <Button
+            title={t("auth.signOut")}
+            onPress={handleSignOut}
+            variant="danger"
+            fullWidth
+            loading={loading}
+            icon="log-out-outline"
+          />
+        </View>
 
-        <Text style={styles.version}>Version 1.0.0</Text>
+        <Text style={[styles.version, { color: colors.textSecondary }]}>
+          Version 1.0.0
+        </Text>
       </ScrollView>
     </SafeAreaView>
   );
@@ -250,8 +320,11 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.border,
     marginLeft: 40,
   },
-  signOutButton: {
-    marginTop: Spacing.md,
+  signOutSection: {
+    marginTop: Spacing.lg,
+    paddingTop: Spacing.md,
+    borderTopWidth: 1,
+    borderTopColor: Colors.border,
   },
   version: {
     fontFamily: Typography.fontFamily.primary,

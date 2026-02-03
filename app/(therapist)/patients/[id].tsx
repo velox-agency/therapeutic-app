@@ -102,31 +102,35 @@ export default function PatientDetailScreen() {
     if (!id) return;
 
     try {
+      setLoading(true);
+
       // Get child info
       const { data: childData, error: childError } = await supabase
         .from("children")
         .select(
-          `
-          id,
-          first_name,
-          last_name,
-          date_of_birth,
-          avatar_url,
-          diagnosis_status,
-          notes,
-          parent:parent_id(
-            id,
-            full_name,
-            avatar_url,
-            phone
-          )
-        `,
+          "id, first_name, last_name, date_of_birth, avatar_url, diagnosis_status, notes, parent_id",
         )
         .eq("id", id)
         .single();
 
       if (childError) throw childError;
-      setChild(childData as unknown as ChildDetail);
+
+      // Get parent info separately
+      const { data: parentData, error: parentError } = await supabase
+        .from("profiles")
+        .select("id, full_name, avatar_url, phone")
+        .eq("id", childData.parent_id)
+        .single();
+
+      if (parentError) throw parentError;
+
+      // Combine child and parent data
+      const combinedData = {
+        ...childData,
+        parent: parentData,
+      };
+
+      setChild(combinedData as unknown as ChildDetail);
 
       // Get goals
       const { data: goalsData } = await supabase

@@ -16,6 +16,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Avatar, Card } from "@/components/ui";
 import { BADGE_DEFINITIONS } from "@/constants/badges";
 import { Colors, ComponentStyle, Spacing, Typography } from "@/constants/theme";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useTheme } from "@/contexts/ThemeContext";
 import { useChild } from "@/hooks/useChildren";
 import { supabase } from "@/lib/supabase";
 
@@ -49,6 +51,8 @@ const STAR_MILESTONES: Milestone[] = [
 export default function GamificationScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { child, loading: childLoading } = useChild(id);
+  const { colors } = useTheme();
+  const { t } = useLanguage();
   const [unlockedBadges, setUnlockedBadges] = useState<UnlockedBadge[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -75,8 +79,14 @@ export default function GamificationScreen() {
 
   if (loading || childLoading || !child) {
     return (
-      <SafeAreaView style={[styles.container, styles.centered]}>
-        <ActivityIndicator size="large" color={Colors.primary[500]} />
+      <SafeAreaView
+        style={[
+          styles.container,
+          styles.centered,
+          { backgroundColor: colors.background },
+        ]}
+      >
+        <ActivityIndicator size="large" color={colors.primary} />
       </SafeAreaView>
     );
   }
@@ -97,19 +107,19 @@ export default function GamificationScreen() {
   // Stats for display
   const stats = [
     {
-      label: "Total Stars",
+      label: t("gamification.totalStars"),
       value: totalStars,
       icon: "star",
       color: Colors.star,
     },
     {
-      label: "Level",
+      label: t("gamification.level"),
       value: currentLevel,
       icon: "trophy",
-      color: Colors.primary[500],
+      color: colors.primary,
     },
     {
-      label: "Badges",
+      label: t("gamification.badges"),
       value: `${unlockedCount}/${totalBadges}`,
       icon: "ribbon",
       color: Colors.success[500],
@@ -117,7 +127,9 @@ export default function GamificationScreen() {
   ];
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
@@ -129,11 +141,13 @@ export default function GamificationScreen() {
         >
           <TouchableOpacity
             onPress={() => router.back()}
-            style={styles.backButton}
+            style={[styles.backButton, { backgroundColor: colors.surface }]}
           >
-            <Ionicons name="arrow-back" size={24} color={Colors.text.primary} />
+            <Ionicons name="arrow-back" size={24} color={colors.text} />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Achievements</Text>
+          <Text style={[styles.headerTitle, { color: colors.text }]}>
+            {t("gamification.achievements")}
+          </Text>
           <View style={{ width: 44 }} />
         </Animated.View>
 
@@ -147,31 +161,47 @@ export default function GamificationScreen() {
                 size="xl"
               />
               <View style={styles.profileInfo}>
-                <Text style={styles.childName}>{child.first_name}</Text>
-                <View style={styles.levelBadge}>
-                  <Ionicons
-                    name="trophy"
-                    size={16}
-                    color={Colors.primary[500]}
-                  />
-                  <Text style={styles.levelText}>Level {currentLevel}</Text>
+                <Text style={[styles.childName, { color: colors.text }]}>
+                  {child.first_name}
+                </Text>
+                <View
+                  style={[
+                    styles.levelBadge,
+                    { backgroundColor: colors.primary + "20" },
+                  ]}
+                >
+                  <Ionicons name="trophy" size={16} color={colors.primary} />
+                  <Text style={[styles.levelText, { color: colors.primary }]}>
+                    {t("gamification.level")} {currentLevel}
+                  </Text>
                 </View>
               </View>
             </View>
 
             {/* Level Progress */}
             <View style={styles.levelProgress}>
-              <View style={styles.progressBarBg}>
+              <View
+                style={[
+                  styles.progressBarBg,
+                  { backgroundColor: colors.surface },
+                ]}
+              >
                 <Animated.View
                   entering={FadeInUp.delay(500).duration(600)}
                   style={[
                     styles.progressBarFill,
-                    { width: `${levelProgress * 100}%` },
+                    {
+                      width: `${levelProgress * 100}%`,
+                      backgroundColor: colors.primary,
+                    },
                   ]}
                 />
               </View>
-              <Text style={styles.progressText}>
-                {starsInCurrentLevel}/100 to Level {currentLevel + 1}
+              <Text
+                style={[styles.progressText, { color: colors.textSecondary }]}
+              >
+                {starsInCurrentLevel}/100 {t("gamification.toLevel")}{" "}
+                {currentLevel + 1}
               </Text>
             </View>
           </Card>
@@ -186,7 +216,7 @@ export default function GamificationScreen() {
             <Animated.View
               key={stat.label}
               entering={FadeInDown.delay(300 + index * 100).duration(400)}
-              style={styles.statCard}
+              style={[styles.statCard, { backgroundColor: colors.surface }]}
             >
               <View
                 style={[
@@ -200,15 +230,21 @@ export default function GamificationScreen() {
                   color={stat.color}
                 />
               </View>
-              <Text style={styles.statValue}>{stat.value}</Text>
-              <Text style={styles.statLabel}>{stat.label}</Text>
+              <Text style={[styles.statValue, { color: colors.text }]}>
+                {stat.value}
+              </Text>
+              <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
+                {stat.label}
+              </Text>
             </Animated.View>
           ))}
         </Animated.View>
 
         {/* Star Milestones */}
         <Animated.View entering={FadeInDown.delay(400).duration(400)}>
-          <Text style={styles.sectionTitle}>Star Milestones</Text>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>
+            {t("gamification.starMilestones")}
+          </Text>
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -228,6 +264,7 @@ export default function GamificationScreen() {
                   entering={FadeInDown.delay(500 + index * 50).duration(400)}
                   style={[
                     styles.milestoneCard,
+                    { backgroundColor: colors.surface },
                     isUnlocked && styles.milestoneUnlocked,
                   ]}
                 >
@@ -236,7 +273,7 @@ export default function GamificationScreen() {
                       styles.milestoneIcon,
                       isUnlocked
                         ? { backgroundColor: Colors.star + "30" }
-                        : { backgroundColor: Colors.surfaceVariant },
+                        : { backgroundColor: colors.surface },
                     ]}
                   >
                     <Text style={{ fontSize: 24 }}>{milestone.emoji}</Text>
@@ -244,7 +281,8 @@ export default function GamificationScreen() {
                   <Text
                     style={[
                       styles.milestoneTitle,
-                      isUnlocked && styles.milestoneTitleUnlocked,
+                      { color: colors.textSecondary },
+                      isUnlocked && { color: colors.text },
                     ]}
                     numberOfLines={2}
                   >
@@ -254,7 +292,12 @@ export default function GamificationScreen() {
                     {milestone.starsRequired} ⭐
                   </Text>
                   {!isUnlocked && (
-                    <View style={styles.miniProgress}>
+                    <View
+                      style={[
+                        styles.miniProgress,
+                        { backgroundColor: colors.surface },
+                      ]}
+                    >
                       <View
                         style={[
                           styles.miniProgressFill,
@@ -280,9 +323,11 @@ export default function GamificationScreen() {
         {/* Badges Section */}
         <Animated.View entering={FadeInDown.delay(600).duration(400)}>
           <View style={styles.badgesHeader}>
-            <Text style={styles.sectionTitle}>Badges</Text>
-            <Text style={styles.badgeCount}>
-              {unlockedCount}/{totalBadges} Unlocked
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>
+              {t("gamification.badges")}
+            </Text>
+            <Text style={[styles.badgeCount, { color: colors.textSecondary }]}>
+              {unlockedCount}/{totalBadges} {t("gamification.unlocked")}
             </Text>
           </View>
 
@@ -299,6 +344,7 @@ export default function GamificationScreen() {
                   <View
                     style={[
                       styles.badgeCard,
+                      { backgroundColor: colors.surface },
                       !isUnlocked && styles.lockedBadge,
                     ]}
                   >
@@ -308,7 +354,7 @@ export default function GamificationScreen() {
                         {
                           backgroundColor: isUnlocked
                             ? badge.color + "30"
-                            : Colors.surfaceVariant,
+                            : colors.surface,
                         },
                       ]}
                     >
@@ -318,11 +364,16 @@ export default function GamificationScreen() {
                         {badge.emoji}
                       </Text>
                       {!isUnlocked && (
-                        <View style={styles.lockOverlay}>
+                        <View
+                          style={[
+                            styles.lockOverlay,
+                            { backgroundColor: colors.surface },
+                          ]}
+                        >
                           <Ionicons
                             name="lock-closed"
                             size={12}
-                            color={Colors.text.tertiary}
+                            color={colors.textSecondary}
                           />
                         </View>
                       )}
@@ -330,7 +381,8 @@ export default function GamificationScreen() {
                     <Text
                       style={[
                         styles.badgeName,
-                        !isUnlocked && styles.lockedText,
+                        { color: colors.text },
+                        !isUnlocked && { color: colors.textSecondary },
                       ]}
                       numberOfLines={1}
                     >
@@ -345,14 +397,23 @@ export default function GamificationScreen() {
 
         {/* Motivational Message */}
         <Animated.View entering={FadeInDown.delay(900).duration(400)}>
-          <Card variant="outlined" style={styles.motivationalCard}>
+          <Card
+            variant="outlined"
+            style={[
+              styles.motivationalCard,
+              {
+                backgroundColor: colors.primary + "10",
+                borderColor: colors.primary + "30",
+              },
+            ]}
+          >
             <Text style={styles.motivationalEmoji}>🌟</Text>
-            <Text style={styles.motivationalText}>
+            <Text style={[styles.motivationalText, { color: colors.primary }]}>
               {totalStars < 50
-                ? "Great start! Keep going to earn more stars!"
+                ? t("gamification.greatStart")
                 : totalStars < 200
-                  ? "Amazing progress! You're a superstar!"
-                  : "Incredible! You're a true champion!"}
+                  ? t("gamification.amazingProgress")
+                  : t("gamification.incredible")}
             </Text>
           </Card>
         </Animated.View>

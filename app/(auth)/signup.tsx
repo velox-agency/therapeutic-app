@@ -15,11 +15,15 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Button, Card, Input } from "@/components/ui";
 import { Colors, Spacing, Typography } from "@/constants/theme";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useTheme } from "@/contexts/ThemeContext";
 import { useAuth } from "@/hooks/useAuth";
 import { UserRole } from "@/types/database.types";
 
 export default function SignUpScreen() {
   const { signUp, loading } = useAuth();
+  const { colors } = useTheme();
+  const { t } = useLanguage();
   const params = useLocalSearchParams<{ role?: string }>();
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -71,17 +75,17 @@ export default function SignUpScreen() {
 
     if (error) {
       Alert.alert("Sign Up Failed", error.message || "Please try again");
-    } else {
-      Alert.alert(
-        "Account Created",
-        "Please check your email to verify your account.",
-        [{ text: "OK", onPress: () => router.replace("/(auth)/login") }],
-      );
+    } else if (role === "therapist") {
+      // Redirect therapists to onboarding to complete their profile
+      router.replace("/(auth)/therapist-onboarding" as any);
     }
+    // For parents, the auth state change will trigger navigation automatically
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.keyboardView}
@@ -93,18 +97,20 @@ export default function SignUpScreen() {
         >
           {/* Header */}
           <TouchableOpacity
-            style={styles.backButton}
+            style={[styles.backButton, { backgroundColor: colors.surface }]}
             onPress={() => router.back()}
           >
-            <Ionicons name="arrow-back" size={24} color={Colors.text.primary} />
+            <Ionicons name="arrow-back" size={24} color={colors.text} />
           </TouchableOpacity>
 
           <View style={styles.header}>
-            <Text style={styles.title}>Create Account</Text>
-            <Text style={styles.subtitle}>
+            <Text style={[styles.title, { color: colors.text }]}>
+              {t("auth.createAccount")}
+            </Text>
+            <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
               {role === "therapist"
-                ? "Join as a Speech Therapist"
-                : "Join as a Parent"}
+                ? t("auth.therapistRoleDesc")
+                : t("auth.parentRoleDesc")}
             </Text>
           </View>
 
@@ -113,7 +119,11 @@ export default function SignUpScreen() {
             <TouchableOpacity
               style={[
                 styles.roleOption,
-                role === "parent" && styles.roleOptionActive,
+                { backgroundColor: colors.surface, borderColor: colors.border },
+                role === "parent" && {
+                  borderColor: colors.primary,
+                  backgroundColor: colors.primaryLight,
+                },
               ]}
               onPress={() => router.setParams({ role: "parent" })}
             >
@@ -121,25 +131,31 @@ export default function SignUpScreen() {
                 name="people"
                 size={24}
                 color={
-                  role === "parent"
-                    ? Colors.primary[500]
-                    : Colors.text.secondary
+                  role === "parent" ? colors.primary : colors.textSecondary
                 }
               />
               <Text
                 style={[
                   styles.roleText,
-                  role === "parent" && styles.roleTextActive,
+                  { color: colors.textSecondary },
+                  role === "parent" && {
+                    color: colors.primary,
+                    fontWeight: "bold",
+                  },
                 ]}
               >
-                Parent
+                {t("auth.parentRole")}
               </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
               style={[
                 styles.roleOption,
-                role === "therapist" && styles.roleOptionActive,
+                { backgroundColor: colors.surface, borderColor: colors.border },
+                role === "therapist" && {
+                  borderColor: colors.primary,
+                  backgroundColor: colors.primaryLight,
+                },
               ]}
               onPress={() => router.setParams({ role: "therapist" })}
             >
@@ -147,27 +163,35 @@ export default function SignUpScreen() {
                 name="medical"
                 size={24}
                 color={
-                  role === "therapist"
-                    ? Colors.primary[500]
-                    : Colors.text.secondary
+                  role === "therapist" ? colors.primary : colors.textSecondary
                 }
               />
               <Text
                 style={[
                   styles.roleText,
-                  role === "therapist" && styles.roleTextActive,
+                  { color: colors.textSecondary },
+                  role === "therapist" && {
+                    color: colors.primary,
+                    fontWeight: "bold",
+                  },
                 ]}
               >
-                Therapist
+                {t("auth.therapistRole")}
               </Text>
             </TouchableOpacity>
           </View>
 
           {/* Form */}
-          <Card variant="elevated" style={styles.formCard}>
+          <Card
+            variant="elevated"
+            style={StyleSheet.flatten([
+              styles.formCard,
+              { backgroundColor: colors.surface },
+            ])}
+          >
             <Input
-              label="Full Name"
-              placeholder="Enter your full name"
+              label={t("auth.fullName")}
+              placeholder={t("auth.enterName") || "Enter your full name"}
               value={fullName}
               onChangeText={setFullName}
               autoCapitalize="words"
@@ -177,15 +201,15 @@ export default function SignUpScreen() {
                 <Ionicons
                   name="person-outline"
                   size={20}
-                  color={Colors.text.secondary}
+                  color={colors.textSecondary}
                 />
               }
             />
 
             <View style={styles.inputSpacing}>
               <Input
-                label="Email"
-                placeholder="Enter your email"
+                label={t("auth.email")}
+                placeholder={t("auth.enterEmail") || "Enter your email"}
                 value={email}
                 onChangeText={setEmail}
                 keyboardType="email-address"
@@ -197,7 +221,7 @@ export default function SignUpScreen() {
                   <Ionicons
                     name="mail-outline"
                     size={20}
-                    color={Colors.text.secondary}
+                    color={colors.textSecondary}
                   />
                 }
               />
@@ -205,8 +229,8 @@ export default function SignUpScreen() {
 
             <View style={styles.inputSpacing}>
               <Input
-                label="Phone (Optional)"
-                placeholder="Enter your phone number"
+                label={t("auth.phone")}
+                placeholder={t("auth.enterPhone") || "Enter your phone number"}
                 value={phone}
                 onChangeText={setPhone}
                 keyboardType="phone-pad"
@@ -214,7 +238,7 @@ export default function SignUpScreen() {
                   <Ionicons
                     name="call-outline"
                     size={20}
-                    color={Colors.text.secondary}
+                    color={colors.textSecondary}
                   />
                 }
               />
@@ -222,8 +246,8 @@ export default function SignUpScreen() {
 
             <View style={styles.inputSpacing}>
               <Input
-                label="Password"
-                placeholder="Create a password"
+                label={t("auth.password")}
+                placeholder={t("auth.createPassword") || "Create a password"}
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry={!showPassword}
@@ -233,14 +257,14 @@ export default function SignUpScreen() {
                   <Ionicons
                     name="lock-closed-outline"
                     size={20}
-                    color={Colors.text.secondary}
+                    color={colors.textSecondary}
                   />
                 }
                 rightIcon={
                   <Ionicons
                     name={showPassword ? "eye-off-outline" : "eye-outline"}
                     size={20}
-                    color={Colors.text.secondary}
+                    color={colors.textSecondary}
                   />
                 }
                 onRightIconPress={() => setShowPassword(!showPassword)}
@@ -249,8 +273,10 @@ export default function SignUpScreen() {
 
             <View style={styles.inputSpacing}>
               <Input
-                label="Confirm Password"
-                placeholder="Confirm your password"
+                label={t("auth.confirmPassword")}
+                placeholder={
+                  t("auth.confirmYourPassword") || "Confirm your password"
+                }
                 value={confirmPassword}
                 onChangeText={setConfirmPassword}
                 secureTextEntry={!showPassword}
@@ -260,14 +286,14 @@ export default function SignUpScreen() {
                   <Ionicons
                     name="lock-closed-outline"
                     size={20}
-                    color={Colors.text.secondary}
+                    color={colors.textSecondary}
                   />
                 }
               />
             </View>
 
             <Button
-              title="Create Account"
+              title={t("auth.createAccount")}
               onPress={handleSignUp}
               loading={loading}
               fullWidth
@@ -277,9 +303,13 @@ export default function SignUpScreen() {
 
           {/* Login Link */}
           <View style={styles.loginContainer}>
-            <Text style={styles.loginText}>Already have an account? </Text>
+            <Text style={[styles.loginText, { color: colors.textSecondary }]}>
+              {t("auth.hasAccount")}{" "}
+            </Text>
             <TouchableOpacity onPress={() => router.push("/(auth)/login")}>
-              <Text style={styles.loginLink}>Sign In</Text>
+              <Text style={[styles.loginLink, { color: colors.primary }]}>
+                {t("auth.login")}
+              </Text>
             </TouchableOpacity>
           </View>
         </ScrollView>

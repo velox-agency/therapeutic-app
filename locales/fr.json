@@ -4,6 +4,7 @@
     "error": "Erreur",
     "retry": "Réessayer",
     "save": "Enregistrer",
+    "saving": "Enregistrement...",
     "cancel": "Annuler",
     "delete": "Supprimer",
     "edit": "Modifier",
@@ -20,7 +21,16 @@
     "search": "Rechercher",
     "filter": "Filtrer",
     "seeAll": "Voir tout",
-    "noResults": "Aucun résultat"
+    "noResults": "Aucun résultat",
+    "all": "Tous",
+    "therapist": "Thérapeute",
+    "parent": "Parent",
+    "quickActions": "Actions rapides",
+    "tagline": "Soutenir le développement de votre enfant",
+    "tipOfDay": "Conseil du jour",
+    "success": "Succès",
+    "list": "Liste",
+    "calendar": "Calendrier"
   },
   "auth": {
     "login": "Connexion",
@@ -42,7 +52,15 @@
     "parentRole": "Je suis parent",
     "parentRoleDesc": "Suivez les progrès thérapeutiques de votre enfant",
     "therapistRole": "Je suis thérapeute",
-    "therapistRoleDesc": "Gérez les patients et les objectifs thérapeutiques"
+    "therapistRoleDesc": "Gérez les patients et les objectifs thérapeutiques",
+    "signInContinue": "Connectez-vous pour continuer votre parcours",
+    "enterEmail": "Entrez votre e-mail",
+    "enterPassword": "Entrez votre mot de passe",
+    "enterName": "Entrez votre nom complet",
+    "enterPhone": "Entrez votre numéro de téléphone",
+    "createPassword": "Créez un mot de passe",
+    "confirmYourPassword": "Confirmez votre mot de passe",
+    "signOut": "Déconnexion"
   },
   "navigation": {
     "home": "Accueil",
@@ -54,7 +72,8 @@
     "resources": "Ressources",
     "patients": "Patients",
     "goals": "Objectifs",
-    "settings": "Paramètres"
+    "settings": "Paramètres",
+    "therapists": "Thérapeutes"
   },
   "parent": {
     "welcome": "Bon retour,",
@@ -72,7 +91,8 @@
     "activeGoals": "Objectifs actifs",
     "upcomingSessions": "Prochaines séances",
     "noUpcomingSessions": "Aucune séance prévue",
-    "scheduleSessionPrompt": "Votre thérapeute planifiera les séances"
+    "scheduleSessionPrompt": "Votre thérapeute planifiera les séances",
+    "addFirstChild": "Ajoutez votre premier enfant"
   },
   "child": {
     "firstName": "Prénom",
@@ -89,6 +109,39 @@
     "age": "Âge",
     "yearsOld": "ans",
     "monthsOld": "mois"
+  },
+  "children": {
+    "born": "Né le",
+    "starsEarned": "étoiles gagnées",
+    "noChildrenYet": "Aucun enfant ajouté",
+    "addChildToStart": "Ajoutez votre enfant pour commencer à suivre ses progrès et dépistages",
+    "yearsOld": "ans",
+    "stars": "Étoiles",
+    "next": "Suivant",
+    "moreStarsToGo": "étoiles de plus !",
+    "actions": "Actions",
+    "startScreening": "Commencer le dépistage",
+    "viewProgress": "Voir les progrès",
+    "badges": "Badges",
+    "recentActivity": "Activité récente",
+    "noRecentActivity": "Aucune activité récente",
+    "completeGoalsToSee": "Complétez des objectifs et des dépistages pour voir l'activité ici",
+    "activeGoals": "Objectifs actifs",
+    "addGoal": "Ajouter un objectif",
+    "noActiveGoals": "Aucun objectif actif",
+    "connectWithTherapist": "Connectez-vous avec un thérapeute pour définir des objectifs",
+    "addChild": "Ajouter un enfant",
+    "firstName": "Prénom",
+    "enterFirstName": "Entrez le prénom de l'enfant",
+    "firstNameRequired": "Le prénom est requis",
+    "childMustBeUnder18": "L'enfant doit avoir moins de 18 ans",
+    "dateOfBirth": "Date de naissance",
+    "genderOptional": "Genre (Optionnel)",
+    "male": "Masculin",
+    "female": "Féminin",
+    "avatarGeneratedFromName": "L'avatar est généré à partir du nom",
+    "failedToAddChild": "Échec de l'ajout de l'enfant. Veuillez réessayer.",
+    "hasBeenAdded": "a été ajouté !"
   },
   "screening": {
     "title": "Dépistage M-CHAT-R",
@@ -153,7 +206,11 @@
       "low": "Faible",
       "medium": "Moyen",
       "high": "Élevé"
-    }
+    },
+    "goalsDue": "Objectifs à atteindre",
+    "goalsMet": "Objectifs atteints",
+    "createGoalsToTrack": "Créez des objectifs pour suivre les progrès des patients",
+    "goalsFromTherapist": "Les objectifs définis par les thérapeutes apparaîtront ici"
   },
   "sessions": {
     "upcomingSessions": "Prochaines séances",
@@ -171,7 +228,17 @@
     "completed": "Terminée",
     "cancelled": "Annulée",
     "minutes": "minutes",
-    "withTherapist": "avec"
+    "withTherapist": "avec",
+    "scheduleWithPatients": "Planifiez des séances avec vos patients",
+    "today": "Aujourd'hui",
+    "upcoming": "À venir",
+    "noSessionsToday": "Aucune séance aujourd'hui",
+    "scheduleIsClear": "Votre emploi du temps est libre",
+    "noUpcomingSessions": "Aucune séance à venir",
+    "loadingSessions": "Chargement des séances...",
+    "therapistWillSchedule": "Votre thérapeute planifiera les séances pour vous",
+    "show": "Afficher",
+    "moreSessions": "séances de plus"
   },
   "therapist": {
     "welcome": "Bon retour,",
@@ -197,7 +264,15 @@
     "bio": "Biographie",
     "licenseNumber": "Numéro de licence",
     "verified": "Vérifié",
-    "notVerified": "Non vérifié"
+    "notVerified": "Non vérifié",
+    "myPatients": "Mes patients",
+    "parentsEnrollChildren": "Les parents peuvent inscrire leurs enfants avec vous",
+    "screeningReviews": "Examens de dépistage",
+    "noPendingRequests": "Aucune demande en attente",
+    "noActivePatients": "Aucun patient actif",
+    "connectVerified": "Connectez-vous avec des spécialistes vérifiés",
+    "adjustFilters": "Essayez d'ajuster votre recherche ou vos filtres",
+    "therapistsWillAppear": "Les thérapeutes apparaîtront ici une fois inscrits"
   },
   "profile": {
     "myProfile": "Mon profil",
@@ -218,7 +293,42 @@
     "about": "À propos",
     "version": "Version",
     "changePassword": "Changer le mot de passe",
-    "deleteAccount": "Supprimer le compte"
+    "deleteAccount": "Supprimer le compte",
+    "pendingVerification": "Vérification en attente",
+    "professionalInfo": "Informations professionnelles",
+    "specialization": "Spécialisation",
+    "notSet": "Non défini",
+    "licenseNumber": "Numéro de licence",
+    "clinicAddress": "Adresse du cabinet",
+    "appSettings": "Paramètres de l'application",
+    "availability": "Disponibilité",
+    "support": "Support",
+    "helpCenter": "Centre d'aide",
+    "learn": "Apprendre",
+    "resources": "Ressources",
+    "verified": "Vérifié",
+    "bio": "Biographie",
+    "yearsExperience": "Années d'expérience",
+    "enterName": "Entrez votre nom",
+    "enterPhone": "Entrez votre numéro de téléphone",
+    "enterSpecialization": "ex: Orthophonie",
+    "enterLicenseNumber": "Entrez votre numéro de licence",
+    "enterYearsExperience": "ex: 5",
+    "enterClinicAddress": "Entrez l'adresse de votre cabinet",
+    "enterBio": "Parlez aux parents de vous et de votre expérience...",
+    "tapToChangePhoto": "Appuyez pour changer la photo",
+    "role": "Rôle",
+    "roleCannotBeChanged": "Le rôle ne peut pas être modifié. Contactez le support si nécessaire.",
+    "emailCannotBeChanged": "L'email ne peut pas être modifié",
+    "profileUpdated": "Profil mis à jour avec succès !",
+    "failedToSave": "Échec de l'enregistrement du profil. Veuillez réessayer.",
+    "photoPermissionRequired": "Veuillez autoriser l'accès à votre bibliothèque de photos pour télécharger une photo de profil.",
+    "saveChanges": "Enregistrer les modifications",
+    "dangerZone": "Zone de danger",
+    "deleteWarning": "La suppression de votre compte est permanente et ne peut pas être annulée.",
+    "deleteConfirmation": "Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible.",
+    "contactSupport": "Contacter le support",
+    "contactSupportMessage": "Veuillez contacter le support pour supprimer votre compte."
   },
   "resources": {
     "title": "Ressources",
@@ -254,7 +364,15 @@
     "greatJob": "Excellent travail !",
     "amazing": "Incroyable !",
     "newBadge": "Nouveau badge !",
-    "badgeUnlocked": "Félicitations ! Vous avez obtenu un nouveau badge !"
+    "badgeUnlocked": "Félicitations ! Vous avez obtenu un nouveau badge !",
+    "achievements": "Accomplissements",
+    "level": "Niveau",
+    "toLevel": "au Niveau",
+    "starMilestones": "Jalons d'étoiles",
+    "unlocked": "Débloqué",
+    "greatStart": "Bon début ! Continuez pour gagner plus d'étoiles !",
+    "amazingProgress": "Progrès incroyables ! Vous êtes une superstar !",
+    "incredible": "Incroyable ! Vous êtes un vrai champion !"
   },
   "errors": {
     "genericError": "Une erreur s'est produite",
@@ -275,5 +393,8 @@
     "minLength": "Doit contenir au moins {{min}} caractères",
     "maxLength": "Doit contenir au maximum {{max}} caractères",
     "passwordTooShort": "Le mot de passe doit contenir au moins 6 caractères"
+  },
+  "tips": {
+    "consistency": "La régularité est essentielle ! Essayez de pratiquer les exercices d'orthophonie à la même heure chaque jour pour aider votre enfant à établir une routine."
   }
 }

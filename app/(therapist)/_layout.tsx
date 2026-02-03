@@ -1,17 +1,22 @@
-import { Colors, Typography } from "@/constants/theme";
+import { Typography } from "@/constants/theme";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useTheme } from "@/contexts/ThemeContext";
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 
 export default function TherapistLayout() {
+  const { colors } = useTheme();
+  const { t } = useLanguage();
+
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: Colors.secondary[500],
-        tabBarInactiveTintColor: Colors.text.secondary,
+        tabBarActiveTintColor: colors.secondary,
+        tabBarInactiveTintColor: colors.textSecondary,
         tabBarStyle: {
-          backgroundColor: Colors.surface,
-          borderTopColor: Colors.border,
+          backgroundColor: colors.surface,
+          borderTopColor: colors.border,
           borderTopWidth: 1,
           paddingTop: 8,
           paddingBottom: 8,
@@ -26,7 +31,7 @@ export default function TherapistLayout() {
       <Tabs.Screen
         name="dashboard"
         options={{
-          title: "Home",
+          title: t("navigation.home"),
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="home" size={size} color={color} />
           ),
@@ -35,7 +40,7 @@ export default function TherapistLayout() {
       <Tabs.Screen
         name="patients"
         options={{
-          title: "Patients",
+          title: t("navigation.patients"),
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="people" size={size} color={color} />
           ),
@@ -44,7 +49,7 @@ export default function TherapistLayout() {
       <Tabs.Screen
         name="sessions"
         options={{
-          title: "Sessions",
+          title: t("navigation.sessions"),
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="calendar" size={size} color={color} />
           ),
@@ -53,7 +58,7 @@ export default function TherapistLayout() {
       <Tabs.Screen
         name="profile"
         options={{
-          title: "Profile",
+          title: t("navigation.profile"),
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="person" size={size} color={color} />
           ),

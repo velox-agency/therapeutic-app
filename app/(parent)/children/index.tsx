@@ -12,11 +12,15 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Avatar, Button, Card } from "@/components/ui";
 import { Colors, Spacing, Typography } from "@/constants/theme";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useTheme } from "@/contexts/ThemeContext";
 import { useChildren } from "@/hooks/useChildren";
 import { Child } from "@/types/database.types";
 
 export default function ChildrenListScreen() {
   const { children, loading, refetch } = useChildren();
+  const { colors } = useTheme();
+  const { t } = useLanguage();
 
   const renderChild = ({ item }: { item: Child }) => (
     <TouchableOpacity
@@ -30,21 +34,24 @@ export default function ChildrenListScreen() {
             size="lg"
           />
           <View style={styles.childDetails}>
-            <Text style={styles.childName}>{item.first_name}</Text>
-            <Text style={styles.childAge}>
-              Born: {new Date(item.birth_date).toLocaleDateString()}
+            <Text style={[styles.childName, { color: colors.text }]}>
+              {item.first_name}
+            </Text>
+            <Text style={[styles.childAge, { color: colors.textSecondary }]}>
+              {t("children.born")}:{" "}
+              {new Date(item.birth_date).toLocaleDateString()}
             </Text>
             <View style={styles.starsContainer}>
               <Text style={styles.starEmoji}>⭐</Text>
-              <Text style={styles.starCount}>
-                {item.total_stars} stars earned
+              <Text style={[styles.starCount, { color: Colors.star }]}>
+                {item.total_stars} {t("children.starsEarned")}
               </Text>
             </View>
           </View>
           <Ionicons
             name="chevron-forward"
             size={24}
-            color={Colors.text.tertiary}
+            color={colors.textSecondary}
           />
         </View>
       </Card>
@@ -52,14 +59,18 @@ export default function ChildrenListScreen() {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
       <View style={styles.header}>
-        <Text style={styles.title}>Your Children</Text>
+        <Text style={[styles.title, { color: colors.text }]}>
+          {t("navigation.children")}
+        </Text>
         <TouchableOpacity
-          style={styles.addButton}
+          style={[styles.addButton, { backgroundColor: colors.primary + "20" }]}
           onPress={() => router.push("/(parent)/children/add")}
         >
-          <Ionicons name="add" size={24} color={Colors.primary[500]} />
+          <Ionicons name="add" size={24} color={colors.primary} />
         </TouchableOpacity>
       </View>
 
@@ -68,14 +79,16 @@ export default function ChildrenListScreen() {
           <Ionicons
             name="people-outline"
             size={80}
-            color={Colors.text.tertiary}
+            color={colors.textSecondary}
           />
-          <Text style={styles.emptyTitle}>No children added yet</Text>
-          <Text style={styles.emptySubtitle}>
-            Add your child to start tracking their progress and screenings
+          <Text style={[styles.emptyTitle, { color: colors.text }]}>
+            {t("children.noChildrenYet")}
+          </Text>
+          <Text style={[styles.emptySubtitle, { color: colors.textSecondary }]}>
+            {t("children.addChildToStart")}
           </Text>
           <Button
-            title="Add Your First Child"
+            title={t("parent.addFirstChild")}
             onPress={() => router.push("/(parent)/children/add")}
             style={styles.emptyButton}
           />

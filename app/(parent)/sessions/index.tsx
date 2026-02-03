@@ -16,6 +16,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { SessionCard } from "@/components/sessions";
 import { Card } from "@/components/ui";
 import { Colors, Spacing, Typography } from "@/constants/theme";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useTheme } from "@/contexts/ThemeContext";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/lib/supabase";
 
@@ -40,6 +42,8 @@ interface SessionWithRelations {
 
 export default function SessionsScreen() {
   const { user } = useAuth();
+  const { colors } = useTheme();
+  const { t } = useLanguage();
   const [sessions, setSessions] = useState<SessionWithRelations[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -106,15 +110,25 @@ export default function SessionsScreen() {
 
   if (loading) {
     return (
-      <SafeAreaView style={[styles.container, styles.centerContent]}>
-        <ActivityIndicator size="large" color={Colors.primary[500]} />
-        <Text style={styles.loadingText}>Loading sessions...</Text>
+      <SafeAreaView
+        style={[
+          styles.container,
+          styles.centerContent,
+          { backgroundColor: colors.background },
+        ]}
+      >
+        <ActivityIndicator size="large" color={colors.primary} />
+        <Text style={[styles.loadingText, { color: colors.textSecondary }]}>
+          {t("sessions.loadingSessions")}
+        </Text>
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
@@ -122,7 +136,7 @@ export default function SessionsScreen() {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintColor={Colors.primary[500]}
+            tintColor={colors.primary}
           />
         }
       >
@@ -133,11 +147,13 @@ export default function SessionsScreen() {
         >
           <TouchableOpacity
             onPress={() => router.back()}
-            style={styles.backButton}
+            style={[styles.backButton, { backgroundColor: colors.surface }]}
           >
-            <Ionicons name="arrow-back" size={24} color={Colors.text.primary} />
+            <Ionicons name="arrow-back" size={24} color={colors.text} />
           </TouchableOpacity>
-          <Text style={styles.title}>Sessions 📅</Text>
+          <Text style={[styles.title, { color: colors.text }]}>
+            {t("navigation.sessions")} 📅
+          </Text>
           <View style={styles.headerPlaceholder} />
         </Animated.View>
 
@@ -146,17 +162,23 @@ export default function SessionsScreen() {
           entering={FadeInDown.delay(200).duration(500)}
           style={styles.section}
         >
-          <Text style={styles.sectionTitle}>Upcoming</Text>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>
+            {t("sessions.upcoming")}
+          </Text>
           {upcomingSessions.length === 0 ? (
             <Card variant="outlined" style={styles.emptyCard}>
               <Ionicons
                 name="calendar-outline"
                 size={48}
-                color={Colors.text.tertiary}
+                color={colors.textSecondary}
               />
-              <Text style={styles.emptyTitle}>No upcoming sessions</Text>
-              <Text style={styles.emptySubtitle}>
-                Your therapist will schedule sessions for you
+              <Text style={[styles.emptyTitle, { color: colors.text }]}>
+                {t("sessions.noUpcomingSessions")}
+              </Text>
+              <Text
+                style={[styles.emptySubtitle, { color: colors.textSecondary }]}
+              >
+                {t("sessions.therapistWillSchedule")}
               </Text>
             </Card>
           ) : (
@@ -181,7 +203,9 @@ export default function SessionsScreen() {
             entering={FadeInDown.delay(300).duration(500)}
             style={styles.section}
           >
-            <Text style={styles.sectionTitle}>Past Sessions</Text>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>
+              {t("sessions.pastSessions")}
+            </Text>
             {pastSessions.slice(0, 5).map((session, index) => (
               <SessionCard
                 key={session.id}
@@ -196,13 +220,14 @@ export default function SessionsScreen() {
             ))}
             {pastSessions.length > 5 && (
               <TouchableOpacity style={styles.showMoreButton}>
-                <Text style={styles.showMoreText}>
-                  Show {pastSessions.length - 5} more sessions
+                <Text style={[styles.showMoreText, { color: colors.primary }]}>
+                  {t("sessions.show")} {pastSessions.length - 5}{" "}
+                  {t("sessions.moreSessions")}
                 </Text>
                 <Ionicons
                   name="chevron-down"
                   size={16}
-                  color={Colors.primary[500]}
+                  color={colors.primary}
                 />
               </TouchableOpacity>
             )}

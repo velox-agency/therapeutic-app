@@ -5,6 +5,7 @@ import {
   Spacing,
   Typography,
 } from "@/constants/theme";
+import { Ionicons } from "@expo/vector-icons";
 import React, { useState } from "react";
 import {
   StyleSheet,
@@ -30,7 +31,7 @@ interface InputProps extends Omit<TextInputProps, "style"> {
   error?: string;
   hint?: string;
   size?: InputSize;
-  leftIcon?: React.ReactNode;
+  leftIcon?: React.ReactNode | string;
   rightIcon?: React.ReactNode;
   onRightIconPress?: () => void;
   disabled?: boolean;
@@ -39,6 +40,18 @@ interface InputProps extends Omit<TextInputProps, "style"> {
   style?: ViewStyle; // Allow style prop on container
   required?: boolean;
 }
+
+// Helper function to render icons
+const renderIcon = (
+  icon: React.ReactNode | string,
+  color: string,
+  size: number = 20,
+) => {
+  if (typeof icon === "string") {
+    return <Ionicons name={icon as any} size={size} color={color} />;
+  }
+  return icon;
+};
 
 const AnimatedView = Animated.createAnimatedComponent(View);
 
@@ -122,7 +135,11 @@ export function Input({
           disabled && styles.disabled,
         ]}
       >
-        {leftIcon && <View style={styles.leftIcon}>{leftIcon}</View>}
+        {leftIcon && (
+          <View style={styles.leftIcon}>
+            {renderIcon(leftIcon, Colors.text.secondary)}
+          </View>
+        )}
 
         <TextInput
           {...textInputProps}

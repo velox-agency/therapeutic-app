@@ -42,6 +42,7 @@ function RootLayoutNav() {
     const inAuthGroup = segments[0] === "(auth)";
     const inParentGroup = segments[0] === "(parent)";
     const inTherapistGroup = segments[0] === "(therapist)";
+    const isOnboarding = segments[1] === "therapist-onboarding";
 
     if (!user) {
       // Not logged in, redirect to auth
@@ -50,7 +51,7 @@ function RootLayoutNav() {
       }
     } else if (profile) {
       // User is logged in with a profile
-      if (inAuthGroup) {
+      if (inAuthGroup && !isOnboarding) {
         // Redirect based on role
         if (profile.role === "therapist") {
           router.replace("/(therapist)/dashboard");

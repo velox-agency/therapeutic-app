@@ -16,10 +16,14 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Avatar, Button, Card, Input } from "@/components/ui";
 import { Colors, Spacing, Typography } from "@/constants/theme";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useTheme } from "@/contexts/ThemeContext";
 import { useChildren } from "@/hooks/useChildren";
 
 export default function AddChildScreen() {
   const { addChild } = useChildren();
+  const { colors } = useTheme();
+  const { t, language } = useLanguage();
   const [firstName, setFirstName] = useState("");
   const [birthDate, setBirthDate] = useState(new Date());
   const [gender, setGender] = useState<string>("");
@@ -31,13 +35,13 @@ export default function AddChildScreen() {
     const newErrors: Record<string, string> = {};
 
     if (!firstName.trim()) {
-      newErrors.firstName = "First name is required";
+      newErrors.firstName = t("children.firstNameRequired");
     }
 
     const today = new Date();
     const age = today.getFullYear() - birthDate.getFullYear();
     if (age > 18) {
-      newErrors.birthDate = "Child must be under 18 years old";
+      newErrors.birthDate = t("children.childMustBeUnder18");
     }
 
     setErrors(newErrors);
@@ -57,24 +61,31 @@ export default function AddChildScreen() {
     setLoading(false);
 
     if (error) {
-      Alert.alert("Error", "Failed to add child. Please try again.");
+      Alert.alert(t("common.error"), t("children.failedToAddChild"));
     } else {
-      Alert.alert("Success", `${firstName} has been added!`, [
-        { text: "OK", onPress: () => router.back() },
-      ]);
+      Alert.alert(
+        t("common.success"),
+        `${firstName} ${t("children.hasBeenAdded")}`,
+        [{ text: t("common.ok"), onPress: () => router.back() }],
+      );
     }
   };
 
   const formatDate = (date: Date): string => {
-    return date.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
+    return date.toLocaleDateString(
+      language === "ar" ? "ar-SA" : language === "fr" ? "fr-FR" : "en-US",
+      {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      },
+    );
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.keyboardView}
@@ -83,9 +94,11 @@ export default function AddChildScreen() {
           {/* Header */}
           <View style={styles.header}>
             <TouchableOpacity onPress={() => router.back()}>
-              <Ionicons name="close" size={28} color={Colors.text.primary} />
+              <Ionicons name="close" size={28} color={colors.text} />
             </TouchableOpacity>
-            <Text style={styles.title}>Add Child</Text>
+            <Text style={[styles.title, { color: colors.text }]}>
+              {t("children.addChild")}
+            </Text>
             <View style={{ width: 28 }} />
           </View>
 
@@ -96,16 +109,16 @@ export default function AddChildScreen() {
               seed={firstName || "default"}
               size="xxl"
             />
-            <Text style={styles.avatarHint}>
-              Avatar is generated based on name
+            <Text style={[styles.avatarHint, { color: colors.textSecondary }]}>
+              {t("children.avatarGeneratedFromName")}
             </Text>
           </View>
 
           {/* Form */}
           <Card variant="elevated" style={styles.formCard}>
             <Input
-              label="First Name"
-              placeholder="Enter child's first name"
+              label={t("children.firstName")}
+              placeholder={t("children.enterFirstName")}
               value={firstName}
               onChangeText={setFirstName}
               autoCapitalize="words"
@@ -115,25 +128,34 @@ export default function AddChildScreen() {
                 <Ionicons
                   name="person-outline"
                   size={20}
-                  color={Colors.text.secondary}
+                  color={colors.textSecondary}
                 />
               }
             />
 
             <View style={styles.inputSpacing}>
-              <Text style={styles.label}>
-                Date of Birth <Text style={styles.required}>*</Text>
+              <Text style={[styles.label, { color: colors.text }]}>
+                {t("children.dateOfBirth")}{" "}
+                <Text style={styles.required}>*</Text>
               </Text>
               <TouchableOpacity
-                style={styles.dateButton}
+                style={[
+                  styles.dateButton,
+                  {
+                    backgroundColor: colors.surface,
+                    borderColor: colors.border,
+                  },
+                ]}
                 onPress={() => setShowDatePicker(true)}
               >
                 <Ionicons
                   name="calendar-outline"
                   size={20}
-                  color={Colors.text.secondary}
+                  color={colors.textSecondary}
                 />
-                <Text style={styles.dateText}>{formatDate(birthDate)}</Text>
+                <Text style={[styles.dateText, { color: colors.text }]}>
+                  {formatDate(birthDate)}
+                </Text>
               </TouchableOpacity>
               {errors.birthDate && (
                 <Text style={styles.errorText}>{errors.birthDate}</Text>
@@ -154,13 +176,19 @@ export default function AddChildScreen() {
             )}
 
             <View style={styles.inputSpacing}>
-              <Text style={styles.label}>Gender (Optional)</Text>
+              <Text style={[styles.label, { color: colors.text }]}>
+                {t("children.genderOptional")}
+              </Text>
               <View style={styles.genderOptions}>
                 {["Male", "Female"].map((option) => (
                   <TouchableOpacity
                     key={option}
                     style={[
                       styles.genderOption,
+                      {
+                        backgroundColor: colors.surface,
+                        borderColor: colors.border,
+                      },
                       gender === option && styles.genderOptionActive,
                     ]}
                     onPress={() => setGender(option)}
@@ -168,10 +196,13 @@ export default function AddChildScreen() {
                     <Text
                       style={[
                         styles.genderText,
+                        { color: colors.textSecondary },
                         gender === option && styles.genderTextActive,
                       ]}
                     >
-                      {option}
+                      {option === "Male"
+                        ? t("children.male")
+                        : t("children.female")}
                     </Text>
                   </TouchableOpacity>
                 ))}
@@ -179,7 +210,7 @@ export default function AddChildScreen() {
             </View>
 
             <Button
-              title="Add Child"
+              title={t("children.addChild")}
               onPress={handleSubmit}
               loading={loading}
               fullWidth

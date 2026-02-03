@@ -4,6 +4,7 @@
     "error": "خطأ",
     "retry": "حاول مرة أخرى",
     "save": "حفظ",
+    "saving": "جاري الحفظ...",
     "cancel": "إلغاء",
     "delete": "حذف",
     "edit": "تعديل",
@@ -20,7 +21,16 @@
     "search": "بحث",
     "filter": "تصفية",
     "seeAll": "عرض الكل",
-    "noResults": "لا توجد نتائج"
+    "noResults": "لا توجد نتائج",
+    "all": "الكل",
+    "therapist": "معالج",
+    "parent": "ولي أمر",
+    "quickActions": "إجراءات سريعة",
+    "tagline": "دعم رحلة تطور طفلك",
+    "tipOfDay": "نصيحة اليوم",
+    "success": "نجاح",
+    "list": "قائمة",
+    "calendar": "تقويم"
   },
   "auth": {
     "login": "تسجيل الدخول",
@@ -42,7 +52,15 @@
     "parentRole": "أنا ولي أمر",
     "parentRoleDesc": "تتبع تقدم طفلك في العلاج",
     "therapistRole": "أنا معالج",
-    "therapistRoleDesc": "إدارة المرضى وأهداف العلاج"
+    "therapistRoleDesc": "إدارة المرضى وأهداف العلاج",
+    "signInContinue": "سجل الدخول لمتابعة رحلتك",
+    "enterEmail": "أدخل بريدك الإلكتروني",
+    "enterPassword": "أدخل كلمة المرور",
+    "enterName": "أدخل اسمك الكامل",
+    "enterPhone": "أدخل رقم هاتفك",
+    "createPassword": "أنشئ كلمة مرور",
+    "confirmYourPassword": "أكد كلمة المرور",
+    "signOut": "تسجيل الخروج"
   },
   "navigation": {
     "home": "الرئيسية",
@@ -54,7 +72,8 @@
     "resources": "الموارد",
     "patients": "المرضى",
     "goals": "الأهداف",
-    "settings": "الإعدادات"
+    "settings": "الإعدادات",
+    "therapists": "المعالجون"
   },
   "parent": {
     "welcome": "مرحباً بعودتك،",
@@ -72,7 +91,8 @@
     "activeGoals": "الأهداف النشطة",
     "upcomingSessions": "الجلسات القادمة",
     "noUpcomingSessions": "لا توجد جلسات قادمة",
-    "scheduleSessionPrompt": "سيقوم المعالج بجدولة الجلسات لك"
+    "scheduleSessionPrompt": "سيقوم المعالج بجدولة الجلسات لك",
+    "addFirstChild": "أضف طفلك الأول"
   },
   "child": {
     "firstName": "الاسم الأول",
@@ -89,6 +109,39 @@
     "age": "العمر",
     "yearsOld": "سنوات",
     "monthsOld": "أشهر"
+  },
+  "children": {
+    "born": "تاريخ الميلاد",
+    "starsEarned": "نجوم مكتسبة",
+    "noChildrenYet": "لم تتم إضافة أطفال بعد",
+    "addChildToStart": "أضف طفلك لبدء تتبع تقدمه وفحوصاته",
+    "yearsOld": "سنوات",
+    "stars": "نجوم",
+    "next": "التالي",
+    "moreStarsToGo": "نجوم إضافية للوصول!",
+    "actions": "الإجراءات",
+    "startScreening": "بدء الفحص",
+    "viewProgress": "عرض التقدم",
+    "badges": "الشارات",
+    "recentActivity": "النشاط الأخير",
+    "noRecentActivity": "لا يوجد نشاط حديث",
+    "completeGoalsToSee": "أكمل الأهداف والفحوصات لرؤية النشاط هنا",
+    "activeGoals": "الأهداف النشطة",
+    "addGoal": "إضافة هدف",
+    "noActiveGoals": "لا توجد أهداف نشطة",
+    "connectWithTherapist": "تواصل مع معالج لتحديد أهداف العلاج",
+    "addChild": "إضافة طفل",
+    "firstName": "الاسم الأول",
+    "enterFirstName": "أدخل الاسم الأول للطفل",
+    "firstNameRequired": "الاسم الأول مطلوب",
+    "childMustBeUnder18": "يجب أن يكون عمر الطفل أقل من 18 سنة",
+    "dateOfBirth": "تاريخ الميلاد",
+    "genderOptional": "الجنس (اختياري)",
+    "male": "ذكر",
+    "female": "أنثى",
+    "avatarGeneratedFromName": "يتم إنشاء الصورة الرمزية بناءً على الاسم",
+    "failedToAddChild": "فشل إضافة الطفل. حاول مرة أخرى.",
+    "hasBeenAdded": "تمت إضافته!"
   },
   "screening": {
     "title": "فحص M-CHAT-R",
@@ -153,7 +206,11 @@
       "low": "منخفض",
       "medium": "متوسط",
       "high": "عالي"
-    }
+    },
+    "goalsDue": "الأهداف المستحقة",
+    "goalsMet": "الأهداف المحققة",
+    "createGoalsToTrack": "أنشئ أهدافاً لتتبع تقدم المرضى",
+    "goalsFromTherapist": "ستظهر الأهداف المحددة من المعالجين هنا"
   },
   "sessions": {
     "upcomingSessions": "الجلسات القادمة",
@@ -171,7 +228,17 @@
     "completed": "مكتملة",
     "cancelled": "ملغية",
     "minutes": "دقائق",
-    "withTherapist": "مع"
+    "withTherapist": "مع",
+    "scheduleWithPatients": "جدول جلسات مع مرضاك",
+    "today": "اليوم",
+    "upcoming": "القادمة",
+    "noSessionsToday": "لا توجد جلسات اليوم",
+    "scheduleIsClear": "جدولك فارغ",
+    "noUpcomingSessions": "لا توجد جلسات قادمة",
+    "loadingSessions": "جاري تحميل الجلسات...",
+    "therapistWillSchedule": "سيقوم المعالج بجدولة الجلسات لك",
+    "show": "عرض",
+    "moreSessions": "جلسات إضافية"
   },
   "therapist": {
     "welcome": "مرحباً بعودتك،",
@@ -197,7 +264,15 @@
     "bio": "نبذة",
     "licenseNumber": "رقم الترخيص",
     "verified": "موثق",
-    "notVerified": "غير موثق"
+    "notVerified": "غير موثق",
+    "myPatients": "مرضاي",
+    "parentsEnrollChildren": "يمكن للوالدين تسجيل أطفالهم معك",
+    "screeningReviews": "مراجعات الفحص",
+    "noPendingRequests": "لا توجد طلبات معلقة",
+    "noActivePatients": "لا يوجد مرضى نشطين",
+    "connectVerified": "تواصل مع المتخصصين الموثقين",
+    "adjustFilters": "حاول تعديل البحث أو الفلاتر",
+    "therapistsWillAppear": "سيظهر المعالجون هنا بعد تسجيلهم"
   },
   "profile": {
     "myProfile": "ملفي الشخصي",
@@ -218,7 +293,42 @@
     "about": "حول",
     "version": "الإصدار",
     "changePassword": "تغيير كلمة المرور",
-    "deleteAccount": "حذف الحساب"
+    "deleteAccount": "حذف الحساب",
+    "pendingVerification": "في انتظار التحقق",
+    "professionalInfo": "المعلومات المهنية",
+    "specialization": "التخصص",
+    "notSet": "غير محدد",
+    "licenseNumber": "رقم الترخيص",
+    "clinicAddress": "عنوان العيادة",
+    "appSettings": "إعدادات التطبيق",
+    "availability": "التوفر",
+    "support": "الدعم",
+    "helpCenter": "مركز المساعدة",
+    "learn": "تعلم",
+    "resources": "الموارد",
+    "verified": "تم التحقق",
+    "bio": "السيرة الذاتية",
+    "yearsExperience": "سنوات الخبرة",
+    "enterName": "أدخل اسمك",
+    "enterPhone": "أدخل رقم هاتفك",
+    "enterSpecialization": "مثال: أمراض النطق واللغة",
+    "enterLicenseNumber": "أدخل رقم الترخيص",
+    "enterYearsExperience": "مثال: 5",
+    "enterClinicAddress": "أدخل عنوان العيادة",
+    "enterBio": "أخبر الآباء عن نفسك وخبرتك...",
+    "tapToChangePhoto": "انقر لتغيير الصورة",
+    "role": "الدور",
+    "roleCannotBeChanged": "لا يمكن تغيير الدور. تواصل مع الدعم إذا لزم الأمر.",
+    "emailCannotBeChanged": "لا يمكن تغيير البريد الإلكتروني",
+    "profileUpdated": "تم تحديث الملف الشخصي بنجاح!",
+    "failedToSave": "فشل حفظ الملف الشخصي. حاول مرة أخرى.",
+    "photoPermissionRequired": "يرجى السماح بالوصول إلى مكتبة الصور لتحميل صورة الملف الشخصي.",
+    "saveChanges": "حفظ التغييرات",
+    "dangerZone": "منطقة الخطر",
+    "deleteWarning": "حذف حسابك نهائي ولا يمكن التراجع عنه.",
+    "deleteConfirmation": "هل أنت متأكد من حذف حسابك؟ هذا الإجراء لا يمكن التراجع عنه.",
+    "contactSupport": "تواصل مع الدعم",
+    "contactSupportMessage": "يرجى التواصل مع الدعم لحذف حسابك."
   },
   "resources": {
     "title": "الموارد",
@@ -254,7 +364,15 @@
     "greatJob": "عمل رائع!",
     "amazing": "مذهل!",
     "newBadge": "شارة جديدة!",
-    "badgeUnlocked": "تهانينا! لقد حصلت على شارة جديدة!"
+    "badgeUnlocked": "تهانينا! لقد حصلت على شارة جديدة!",
+    "achievements": "الإنجازات",
+    "level": "المستوى",
+    "toLevel": "للمستوى",
+    "starMilestones": "معالم النجوم",
+    "unlocked": "مفتوح",
+    "greatStart": "بداية رائعة! استمر لكسب المزيد من النجوم!",
+    "amazingProgress": "تقدم مذهل! أنت نجم!",
+    "incredible": "لا يصدق! أنت بطل حقيقي!"
   },
   "errors": {
     "genericError": "حدث خطأ ما",
@@ -275,5 +393,8 @@
     "minLength": "يجب أن يكون {{min}} أحرف على الأقل",
     "maxLength": "يجب أن يكون {{max}} أحرف كحد أقصى",
     "passwordTooShort": "كلمة المرور يجب أن تكون 6 أحرف على الأقل"
+  },
+  "tips": {
+    "consistency": "الانتظام هو المفتاح! حاول ممارسة تمارين النطق في نفس الوقت كل يوم لمساعدة طفلك على بناء روتين."
   }
 }

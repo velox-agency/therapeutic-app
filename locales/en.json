@@ -4,6 +4,7 @@
     "error": "Error",
     "retry": "Try Again",
     "save": "Save",
+    "saving": "Saving...",
     "cancel": "Cancel",
     "delete": "Delete",
     "edit": "Edit",
@@ -20,7 +21,16 @@
     "search": "Search",
     "filter": "Filter",
     "seeAll": "See All",
-    "noResults": "No results found"
+    "noResults": "No results found",
+    "all": "All",
+    "therapist": "Therapist",
+    "parent": "Parent",
+    "quickActions": "Quick Actions",
+    "tagline": "Supporting your child's development journey",
+    "tipOfDay": "Tip of the Day",
+    "success": "Success",
+    "list": "List",
+    "calendar": "Calendar"
   },
   "auth": {
     "login": "Log In",
@@ -42,7 +52,15 @@
     "parentRole": "I'm a Parent",
     "parentRoleDesc": "Track your child's therapy progress",
     "therapistRole": "I'm a Therapist",
-    "therapistRoleDesc": "Manage patients and therapy goals"
+    "therapistRoleDesc": "Manage patients and therapy goals",
+    "signInContinue": "Sign in to continue your journey",
+    "enterEmail": "Enter your email",
+    "enterPassword": "Enter your password",
+    "enterName": "Enter your full name",
+    "enterPhone": "Enter your phone number",
+    "createPassword": "Create a password",
+    "confirmYourPassword": "Confirm your password",
+    "signOut": "Sign Out"
   },
   "navigation": {
     "home": "Home",
@@ -54,7 +72,8 @@
     "resources": "Resources",
     "patients": "Patients",
     "goals": "Goals",
-    "settings": "Settings"
+    "settings": "Settings",
+    "therapists": "Therapists"
   },
   "parent": {
     "welcome": "Welcome back,",
@@ -72,7 +91,8 @@
     "activeGoals": "Active Goals",
     "upcomingSessions": "Upcoming Sessions",
     "noUpcomingSessions": "No upcoming sessions",
-    "scheduleSessionPrompt": "Your therapist will schedule sessions for you"
+    "scheduleSessionPrompt": "Your therapist will schedule sessions for you",
+    "addFirstChild": "Add Your First Child"
   },
   "child": {
     "firstName": "First Name",
@@ -89,6 +109,39 @@
     "age": "Age",
     "yearsOld": "years old",
     "monthsOld": "months old"
+  },
+  "children": {
+    "born": "Born",
+    "starsEarned": "stars earned",
+    "noChildrenYet": "No children added yet",
+    "addChildToStart": "Add your child to start tracking their progress and screenings",
+    "yearsOld": "years old",
+    "stars": "Stars",
+    "next": "Next",
+    "moreStarsToGo": "more stars to go!",
+    "actions": "Actions",
+    "startScreening": "Start Screening",
+    "viewProgress": "View Progress",
+    "badges": "Badges",
+    "recentActivity": "Recent Activity",
+    "noRecentActivity": "No recent activity",
+    "completeGoalsToSee": "Complete goals and screenings to see activity here",
+    "activeGoals": "Active Goals",
+    "addGoal": "Add Goal",
+    "noActiveGoals": "No active goals",
+    "connectWithTherapist": "Connect with a therapist to set therapy goals",
+    "addChild": "Add Child",
+    "firstName": "First Name",
+    "enterFirstName": "Enter child's first name",
+    "firstNameRequired": "First name is required",
+    "childMustBeUnder18": "Child must be under 18 years old",
+    "dateOfBirth": "Date of Birth",
+    "genderOptional": "Gender (Optional)",
+    "male": "Male",
+    "female": "Female",
+    "avatarGeneratedFromName": "Avatar is generated based on name",
+    "failedToAddChild": "Failed to add child. Please try again.",
+    "hasBeenAdded": "has been added!"
   },
   "screening": {
     "title": "M-CHAT-R Screening",
@@ -153,7 +206,11 @@
       "low": "Low",
       "medium": "Medium",
       "high": "High"
-    }
+    },
+    "goalsDue": "Goals Due",
+    "goalsMet": "Goals Met",
+    "createGoalsToTrack": "Create goals for patients to track their progress",
+    "goalsFromTherapist": "Goals set by therapists will appear here"
   },
   "sessions": {
     "upcomingSessions": "Upcoming Sessions",
@@ -171,7 +228,17 @@
     "completed": "Completed",
     "cancelled": "Cancelled",
     "minutes": "minutes",
-    "withTherapist": "with"
+    "withTherapist": "with",
+    "scheduleWithPatients": "Schedule sessions with your patients",
+    "today": "Today",
+    "upcoming": "Upcoming",
+    "noSessionsToday": "No sessions today",
+    "scheduleIsClear": "Your schedule is clear",
+    "noUpcomingSessions": "No upcoming sessions",
+    "loadingSessions": "Loading sessions...",
+    "therapistWillSchedule": "Your therapist will schedule sessions for you",
+    "show": "Show",
+    "moreSessions": "more sessions"
   },
   "therapist": {
     "welcome": "Welcome back,",
@@ -197,7 +264,15 @@
     "bio": "Bio",
     "licenseNumber": "License Number",
     "verified": "Verified",
-    "notVerified": "Not Verified"
+    "notVerified": "Not Verified",
+    "myPatients": "My Patients",
+    "parentsEnrollChildren": "Parents can enroll their children with you",
+    "screeningReviews": "Screening Reviews",
+    "noPendingRequests": "No pending requests",
+    "noActivePatients": "No active patients",
+    "connectVerified": "Connect with verified specialists",
+    "adjustFilters": "Try adjusting your search or filters",
+    "therapistsWillAppear": "Therapists will appear here once they register"
   },
   "profile": {
     "myProfile": "My Profile",
@@ -218,7 +293,42 @@
     "about": "About",
     "version": "Version",
     "changePassword": "Change Password",
-    "deleteAccount": "Delete Account"
+    "deleteAccount": "Delete Account",
+    "pendingVerification": "Pending Verification",
+    "professionalInfo": "Professional Info",
+    "specialization": "Specialization",
+    "notSet": "Not set",
+    "licenseNumber": "License Number",
+    "clinicAddress": "Clinic Address",
+    "appSettings": "App Settings",
+    "availability": "Availability",
+    "support": "Support",
+    "helpCenter": "Help Center",
+    "learn": "Learn",
+    "resources": "Resources",
+    "verified": "Verified",
+    "bio": "Bio",
+    "yearsExperience": "Years of Experience",
+    "enterName": "Enter your name",
+    "enterPhone": "Enter your phone number",
+    "enterSpecialization": "e.g., Speech-Language Pathology",
+    "enterLicenseNumber": "Enter your license number",
+    "enterYearsExperience": "e.g., 5",
+    "enterClinicAddress": "Enter your clinic address",
+    "enterBio": "Tell parents about yourself and your experience...",
+    "tapToChangePhoto": "Tap to change photo",
+    "role": "Role",
+    "roleCannotBeChanged": "Role cannot be changed. Contact support if needed.",
+    "emailCannotBeChanged": "Email cannot be changed",
+    "profileUpdated": "Profile updated successfully!",
+    "failedToSave": "Failed to save profile. Please try again.",
+    "photoPermissionRequired": "Please allow access to your photo library to upload a profile picture.",
+    "saveChanges": "Save Changes",
+    "dangerZone": "Danger Zone",
+    "deleteWarning": "Deleting your account is permanent and cannot be undone.",
+    "deleteConfirmation": "Are you sure you want to delete your account? This action cannot be undone.",
+    "contactSupport": "Contact Support",
+    "contactSupportMessage": "Please contact support to delete your account."
   },
   "resources": {
     "title": "Resources",
@@ -254,7 +364,15 @@
     "greatJob": "Great job!",
     "amazing": "Amazing!",
     "newBadge": "New Badge Unlocked!",
-    "badgeUnlocked": "Congratulations! You earned a new badge!"
+    "badgeUnlocked": "Congratulations! You earned a new badge!",
+    "achievements": "Achievements",
+    "level": "Level",
+    "toLevel": "to Level",
+    "starMilestones": "Star Milestones",
+    "unlocked": "Unlocked",
+    "greatStart": "Great start! Keep going to earn more stars!",
+    "amazingProgress": "Amazing progress! You're a superstar!",
+    "incredible": "Incredible! You're a true champion!"
   },
   "errors": {
     "genericError": "Something went wrong",
@@ -275,5 +393,8 @@
     "minLength": "Must be at least {{min}} characters",
     "maxLength": "Must be at most {{max}} characters",
     "passwordTooShort": "Password must be at least 6 characters"
+  },
+  "tips": {
+    "consistency": "Consistency is key! Try to practice speech exercises at the same time each day to help your child build a routine."
   }
 }

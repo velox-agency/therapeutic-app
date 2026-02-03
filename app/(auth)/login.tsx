@@ -1,4 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -11,14 +12,19 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Button, Card, Input } from "@/components/ui";
-import { Colors, Spacing, Typography } from "@/constants/theme";
+import { Spacing, Typography } from "@/constants/theme";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useTheme } from "@/contexts/ThemeContext";
 import { useAuth } from "@/hooks/useAuth";
 
 export default function LoginScreen() {
   const { signIn, loading } = useAuth();
+  const { colors } = useTheme();
+  const { t } = useLanguage();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -61,7 +67,28 @@ export default function LoginScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <LinearGradient
+        colors={[colors.primary, colors.primaryDark]}
+        style={styles.gradientHeader}
+      >
+        <SafeAreaView edges={["top"]}>
+          <Animated.View
+            entering={FadeInUp.delay(100).springify()}
+            style={styles.header}
+          >
+            <View style={styles.logoContainer}>
+              <Ionicons name="heart-circle" size={72} color="#FFFFFF" />
+            </View>
+            <Text style={styles.title}>Therapeutic</Text>
+            <Text style={styles.subtitle}>
+              {t("common.tagline") ||
+                "Empowering families on the journey to progress"}
+            </Text>
+          </Animated.View>
+        </SafeAreaView>
+      </LinearGradient>
+
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.keyboardView}
@@ -71,136 +98,235 @@ export default function LoginScreen() {
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
-          {/* Header */}
-          <View style={styles.header}>
-            <View style={styles.logoContainer}>
-              <Ionicons
-                name="heart-circle"
-                size={64}
-                color={Colors.primary[500]}
-              />
-            </View>
-            <Text style={styles.title}>Welcome Back</Text>
-            <Text style={styles.subtitle}>
-              Sign in to continue your therapeutic journey
-            </Text>
-          </View>
-
           {/* Form */}
-          <Card variant="elevated" style={styles.formCard}>
-            <Input
-              label="Email"
-              placeholder="Enter your email"
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoComplete="email"
-              error={errors.email}
-              leftIcon={
-                <Ionicons
-                  name="mail-outline"
-                  size={20}
-                  color={Colors.text.secondary}
+          <Animated.View entering={FadeInDown.delay(200).springify()}>
+            <Card
+              variant="elevated"
+              style={[styles.formCard, { backgroundColor: colors.surface }]}
+            >
+              <Text style={[styles.formTitle, { color: colors.text }]}>
+                {t("auth.welcomeBack")} 👋
+              </Text>
+              <Text
+                style={[styles.formSubtitle, { color: colors.textSecondary }]}
+              >
+                {t("auth.signInContinue") || "Sign in to continue your journey"}
+              </Text>
+
+              <View style={styles.inputSection}>
+                <Input
+                  label={t("auth.email")}
+                  placeholder={t("auth.enterEmail") || "Enter your email"}
+                  value={email}
+                  onChangeText={setEmail}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  autoComplete="email"
+                  error={errors.email}
+                  leftIcon={
+                    <Ionicons
+                      name="mail-outline"
+                      size={20}
+                      color={colors.primary}
+                    />
+                  }
                 />
-              }
-            />
 
-            <View style={styles.inputSpacing}>
-              <Input
-                label="Password"
-                placeholder="Enter your password"
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry={!showPassword}
-                autoComplete="password"
-                error={errors.password}
-                leftIcon={
-                  <Ionicons
-                    name="lock-closed-outline"
-                    size={20}
-                    color={Colors.text.secondary}
+                <View style={styles.inputSpacing}>
+                  <Input
+                    label={t("auth.password")}
+                    placeholder={
+                      t("auth.enterPassword") || "Enter your password"
+                    }
+                    value={password}
+                    onChangeText={setPassword}
+                    secureTextEntry={!showPassword}
+                    autoComplete="password"
+                    error={errors.password}
+                    leftIcon={
+                      <Ionicons
+                        name="lock-closed-outline"
+                        size={20}
+                        color={colors.primary}
+                      />
+                    }
+                    rightIcon={
+                      <Ionicons
+                        name={showPassword ? "eye-off-outline" : "eye-outline"}
+                        size={20}
+                        color={colors.textSecondary}
+                      />
+                    }
+                    onRightIconPress={() => setShowPassword(!showPassword)}
                   />
-                }
-                rightIcon={
-                  <Ionicons
-                    name={showPassword ? "eye-off-outline" : "eye-outline"}
-                    size={20}
-                    color={Colors.text.secondary}
-                  />
-                }
-                onRightIconPress={() => setShowPassword(!showPassword)}
-              />
-            </View>
+                </View>
 
-            <TouchableOpacity style={styles.forgotPassword}>
-              <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
-            </TouchableOpacity>
+                <TouchableOpacity style={styles.forgotPassword}>
+                  <Text
+                    style={[
+                      styles.forgotPasswordText,
+                      { color: colors.primary },
+                    ]}
+                  >
+                    {t("auth.forgotPassword")}
+                  </Text>
+                </TouchableOpacity>
 
-            <Button
-              title="Sign In"
-              onPress={handleLogin}
-              loading={loading}
-              fullWidth
-              style={styles.loginButton}
-            />
-          </Card>
+                <Button
+                  title={t("auth.login")}
+                  onPress={handleLogin}
+                  loading={loading}
+                  fullWidth
+                  style={styles.loginButton}
+                />
+              </View>
+            </Card>
+          </Animated.View>
 
           {/* Sign Up Link */}
-          <View style={styles.signupContainer}>
-            <Text style={styles.signupText}>Don't have an account? </Text>
+          <Animated.View
+            entering={FadeInDown.delay(300).springify()}
+            style={styles.signupContainer}
+          >
+            <Text style={[styles.signupText, { color: colors.textSecondary }]}>
+              {t("auth.noAccount")}{" "}
+            </Text>
             <TouchableOpacity onPress={() => router.push("/(auth)/signup")}>
-              <Text style={styles.signupLink}>Sign Up</Text>
+              <Text style={[styles.signupLink, { color: colors.primary }]}>
+                {t("auth.signup")}
+              </Text>
             </TouchableOpacity>
-          </View>
+          </Animated.View>
+
+          {/* Features */}
+          <Animated.View
+            entering={FadeInDown.delay(400).springify()}
+            style={styles.featuresContainer}
+          >
+            <View style={styles.feature}>
+              <View
+                style={[
+                  styles.featureIcon,
+                  { backgroundColor: colors.secondaryLight },
+                ]}
+              >
+                <Ionicons
+                  name="clipboard-outline"
+                  size={20}
+                  color={colors.secondary}
+                />
+              </View>
+              <Text
+                style={[styles.featureText, { color: colors.textSecondary }]}
+              >
+                M-CHAT-R Screening
+              </Text>
+            </View>
+            <View style={styles.feature}>
+              <View
+                style={[
+                  styles.featureIcon,
+                  { backgroundColor: colors.successLight },
+                ]}
+              >
+                <Ionicons
+                  name="trophy-outline"
+                  size={20}
+                  color={colors.success}
+                />
+              </View>
+              <Text
+                style={[styles.featureText, { color: colors.textSecondary }]}
+              >
+                Progress Tracking
+              </Text>
+            </View>
+            <View style={styles.feature}>
+              <View
+                style={[
+                  styles.featureIcon,
+                  { backgroundColor: colors.primaryLight },
+                ]}
+              >
+                <Ionicons
+                  name="people-outline"
+                  size={20}
+                  color={colors.primary}
+                />
+              </View>
+              <Text
+                style={[styles.featureText, { color: colors.textSecondary }]}
+              >
+                Expert Therapists
+              </Text>
+            </View>
+          </Animated.View>
         </ScrollView>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
   },
-  keyboardView: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.xl,
+  gradientHeader: {
+    paddingBottom: Spacing.xl,
+    borderBottomLeftRadius: 32,
+    borderBottomRightRadius: 32,
   },
   header: {
     alignItems: "center",
-    marginBottom: Spacing.xl,
+    paddingTop: Spacing.xl,
+    paddingHorizontal: Spacing.lg,
   },
   logoContainer: {
     width: 100,
     height: 100,
     borderRadius: 50,
-    backgroundColor: Colors.primary[50],
+    backgroundColor: "rgba(255, 255, 255, 0.2)",
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: Spacing.lg,
+    marginBottom: Spacing.md,
   },
   title: {
     fontFamily: Typography.fontFamily.primaryBold,
-    fontSize: Typography.fontSize.h1,
+    fontSize: Typography.fontSize.hero,
     fontWeight: Typography.fontWeight.bold,
-    color: Colors.text.primary,
+    color: "#FFFFFF",
     marginBottom: Spacing.xs,
   },
   subtitle: {
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.body,
-    color: Colors.text.secondary,
+    color: "rgba(255, 255, 255, 0.85)",
     textAlign: "center",
+  },
+  keyboardView: {
+    flex: 1,
+    marginTop: -Spacing.lg,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    paddingHorizontal: Spacing.lg,
+    paddingBottom: Spacing.xl,
   },
   formCard: {
     marginBottom: Spacing.lg,
   },
+  formTitle: {
+    fontFamily: Typography.fontFamily.primaryBold,
+    fontSize: Typography.fontSize.h2,
+    fontWeight: Typography.fontWeight.bold,
+    marginBottom: Spacing.xs,
+  },
+  formSubtitle: {
+    fontFamily: Typography.fontFamily.primary,
+    fontSize: Typography.fontSize.body,
+    marginBottom: Spacing.lg,
+  },
+  inputSection: {},
   inputSpacing: {
     marginTop: Spacing.md,
   },
@@ -212,7 +338,6 @@ const styles = StyleSheet.create({
   forgotPasswordText: {
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.small,
-    color: Colors.primary[500],
   },
   loginButton: {
     marginTop: Spacing.sm,
@@ -221,16 +346,37 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
+    marginBottom: Spacing.xl,
   },
   signupText: {
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.body,
-    color: Colors.text.secondary,
   },
   signupLink: {
     fontFamily: Typography.fontFamily.primaryBold,
     fontSize: Typography.fontSize.body,
     fontWeight: Typography.fontWeight.bold,
-    color: Colors.primary[500],
+  },
+  featuresContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    paddingTop: Spacing.md,
+  },
+  feature: {
+    alignItems: "center",
+    flex: 1,
+  },
+  featureIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: Spacing.xs,
+  },
+  featureText: {
+    fontFamily: Typography.fontFamily.primary,
+    fontSize: Typography.fontSize.tiny,
+    textAlign: "center",
   },
 });

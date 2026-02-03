@@ -18,13 +18,14 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Avatar, Button, Card } from "@/components/ui";
 import { Colors, ComponentStyle, Spacing, Typography } from "@/constants/theme";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useTheme } from "@/contexts/ThemeContext";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/lib/supabase";
 
 interface PatientEnrollment {
   id: string;
   status: "pending" | "active" | "declined";
-  created_at: string;
   child: {
     id: string;
     first_name: string;
@@ -44,6 +45,8 @@ type TabFilter = "all" | "active" | "pending";
 
 export default function PatientsListScreen() {
   const { user } = useAuth();
+  const { colors } = useTheme();
+  const { t } = useLanguage();
   const [patients, setPatients] = useState<PatientEnrollment[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -54,40 +57,55 @@ export default function PatientsListScreen() {
     if (!user) return;
 
     try {
-      const { data, error } = await supabase
+      setLoading(true);
+
+      // First get patient_therapist records
+      const { data: enrollments, error: enrollmentError } = await supabase
         .from("patient_therapist")
+        .select("*")
+        .eq("therapist_id", user.id);
+
+      if (enrollmentError) throw enrollmentError;
+
+      if (!enrollments || enrollments.length === 0) {
+        setPatients([]);
+        return;
+      }
+
+      // Get unique child and parent IDs
+      const childIds = [...new Set(enrollments.map((e) => e.child_id))];
+      const parentIds = [...new Set(enrollments.map((e) => e.parent_id))];
+
+      // Fetch children data
+      const { data: children, error: childrenError } = await supabase
+        .from("children")
         .select(
-          `
-          id,
-          status,
-          created_at,
-          child:child_id(
-            id,
-            first_name,
-            last_name,
-            date_of_birth,
-            avatar_url,
-            diagnosis_status
-          ),
-          parent:parent_id(
-            id,
-            full_name,
-            avatar_url
-          )
-        `,
+          "id, first_name, last_name, date_of_birth, avatar_url, diagnosis_status",
         )
-        .eq("therapist_id", user.id)
-        .order("created_at", { ascending: false });
+        .in("id", childIds);
 
-      if (error) throw error;
+      if (childrenError) throw childrenError;
 
-      const formatted = (data || []).map((item: any) => ({
-        id: item.id,
-        status: item.status,
-        created_at: item.created_at,
-        child: item.child,
-        parent: item.parent,
-      })) as PatientEnrollment[];
+      // Fetch parents data
+      const { data: parents, error: parentsError } = await supabase
+        .from("profiles")
+        .select("id, full_name, avatar_url")
+        .in("id", parentIds);
+
+      if (parentsError) throw parentsError;
+
+      // Combine the data
+      const formatted = enrollments.map((enrollment) => {
+        const child = children?.find((c) => c.id === enrollment.child_id);
+        const parent = parents?.find((p) => p.id === enrollment.parent_id);
+
+        return {
+          id: enrollment.id,
+          status: enrollment.status,
+          child,
+          parent,
+        };
+      }) as PatientEnrollment[];
 
       setPatients(formatted);
     } catch (error) {
@@ -337,21 +355,36 @@ export default function PatientsListScreen() {
 
   if (loading) {
     return (
-      <SafeAreaView style={[styles.container, styles.centered]}>
-        <ActivityIndicator size="large" color={Colors.secondary[500]} />
+      <SafeAreaView
+        style={[
+          styles.container,
+          styles.centered,
+          { backgroundColor: colors.background },
+        ]}
+      >
+        <ActivityIndicator size="large" color={colors.secondary} />
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.title}>My Patients</Text>
+        <Text style={[styles.title, { color: colors.text }]}>
+          {t("therapist.myPatients")}
+        </Text>
         {pendingCount > 0 && (
-          <View style={styles.pendingCounter}>
+          <View
+            style={[
+              styles.pendingCounter,
+              { backgroundColor: colors.secondary },
+            ]}
+          >
             <Text style={styles.pendingCounterText}>
-              {pendingCount} pending
+              {pendingCount} {t("therapist.pendingRequests").toLowerCase()}
             </Text>
           </View>
         )}
@@ -359,21 +392,21 @@ export default function PatientsListScreen() {
 
       {/* Search Bar */}
       <View style={styles.searchContainer}>
-        <View style={styles.searchBox}>
-          <Ionicons name="search" size={20} color={Colors.text.tertiary} />
+        <View style={[styles.searchBox, { backgroundColor: colors.surface }]}>
+          <Ionicons name="search" size={20} color={colors.textSecondary} />
           <TextInput
-            style={styles.searchInput}
-            placeholder="Search patients..."
+            style={[styles.searchInput, { color: colors.text }]}
+            placeholder={t("common.search") + "..."}
             value={searchQuery}
             onChangeText={setSearchQuery}
-            placeholderTextColor={Colors.text.tertiary}
+            placeholderTextColor={colors.textSecondary}
           />
           {searchQuery.length > 0 && (
             <TouchableOpacity onPress={() => setSearchQuery("")}>
               <Ionicons
                 name="close-circle"
                 size={20}
-                color={Colors.text.tertiary}
+                color={colors.textSecondary}
               />
             </TouchableOpacity>
           )}
@@ -386,19 +419,24 @@ export default function PatientsListScreen() {
           <TouchableOpacity
             key={tab}
             onPress={() => setActiveTab(tab)}
-            style={[styles.tab, activeTab === tab && styles.activeTab]}
+            style={[
+              styles.tab,
+              { backgroundColor: colors.surfaceVariant },
+              activeTab === tab && { backgroundColor: colors.secondary },
+            ]}
           >
             <Text
               style={[
                 styles.tabText,
+                { color: colors.textSecondary },
                 activeTab === tab && styles.activeTabText,
               ]}
             >
               {tab === "all"
-                ? `All (${patients.length})`
+                ? `${t("common.all") || "All"} (${patients.length})`
                 : tab === "active"
-                  ? `Active (${activeCount})`
-                  : `Pending (${pendingCount})`}
+                  ? `${t("goals.active")} (${activeCount})`
+                  : `${t("therapist.pendingRequests")} (${pendingCount})`}
             </Text>
           </TouchableOpacity>
         ))}
@@ -410,19 +448,17 @@ export default function PatientsListScreen() {
           <Ionicons
             name="people-outline"
             size={80}
-            color={Colors.text.tertiary}
+            color={colors.textSecondary}
           />
-          <Text style={styles.emptyTitle}>
+          <Text style={[styles.emptyTitle, { color: colors.text }]}>
             {activeTab === "pending"
-              ? "No pending requests"
+              ? t("therapist.noPendingRequests") || "No pending requests"
               : activeTab === "active"
-                ? "No active patients"
-                : "No patients yet"}
+                ? t("therapist.noActivePatients") || "No active patients"
+                : t("therapist.noPatients")}
           </Text>
-          <Text style={styles.emptySubtitle}>
-            {activeTab === "pending"
-              ? "You'll see enrollment requests here when parents request your services"
-              : "When parents request enrollment, accept them to start managing their therapy"}
+          <Text style={[styles.emptySubtitle, { color: colors.textSecondary }]}>
+            {t("therapist.parentsEnrollChildren")}
           </Text>
         </View>
       ) : (
@@ -436,7 +472,7 @@ export default function PatientsListScreen() {
             <RefreshControl
               refreshing={refreshing}
               onRefresh={onRefresh}
-              tintColor={Colors.secondary[500]}
+              tintColor={colors.secondary}
             />
           }
         />

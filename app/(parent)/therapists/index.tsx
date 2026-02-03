@@ -17,6 +17,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Avatar, Card } from "@/components/ui";
 import { Colors, ComponentStyle, Spacing, Typography } from "@/constants/theme";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useTheme } from "@/contexts/ThemeContext";
 import { supabase } from "@/lib/supabase";
 
 interface Therapist {
@@ -41,6 +43,8 @@ const SPECIALIZATIONS = [
 ];
 
 export default function FindTherapistScreen() {
+  const { colors } = useTheme();
+  const { t } = useLanguage();
   const [therapists, setTherapists] = useState<Therapist[]>([]);
   const [filteredTherapists, setFilteredTherapists] = useState<Therapist[]>([]);
   const [loading, setLoading] = useState(true);
@@ -58,33 +62,68 @@ export default function FindTherapistScreen() {
 
   const loadTherapists = async () => {
     try {
-      const { data, error } = await supabase
+      setLoading(true);
+
+      // First get all therapist profiles
+      const { data: profiles, error: profilesError } = await supabase
         .from("profiles")
-        .select(
-          `
-          id,
-          full_name,
-          avatar_url,
-          therapist_profile:therapist_profiles(
-            specialization,
-            bio,
-            years_experience,
-            clinic_address,
-            is_verified
-          )
-        `,
-        )
+        .select("id, full_name, avatar_url")
         .eq("role", "therapist")
         .order("full_name");
 
-      if (error) throw error;
+      console.log(
+        "Loaded profiles:",
+        profiles?.length,
+        "Error:",
+        profilesError,
+      );
 
-      // Transform data to flatten the therapist_profile array to a single object
-      const transformedData = (data || []).map((item: any) => ({
-        ...item,
-        therapist_profile: item.therapist_profile?.[0] || null,
-      }));
+      if (profilesError) throw profilesError;
 
+      if (!profiles || profiles.length === 0) {
+        setTherapists([]);
+        setLoading(false);
+        return;
+      }
+
+      // Get therapist profile details
+      const therapistIds = profiles.map((p) => p.id);
+      const { data: therapistProfiles, error: tpError } = await supabase
+        .from("therapist_profiles")
+        .select(
+          "id, specialization, bio, years_experience, clinic_address, is_verified",
+        )
+        .in("id", therapistIds);
+
+      console.log(
+        "Loaded therapist profiles:",
+        therapistProfiles?.length,
+        "Error:",
+        tpError,
+      );
+
+      if (tpError) throw tpError;
+
+      // Combine the data
+      const transformedData = profiles.map((profile) => {
+        const tp = therapistProfiles?.find((t) => t.id === profile.id);
+        return {
+          id: profile.id,
+          full_name: profile.full_name,
+          avatar_url: profile.avatar_url,
+          therapist_profile: tp
+            ? {
+                specialization: tp.specialization,
+                bio: tp.bio,
+                years_experience: tp.years_experience,
+                clinic_address: tp.clinic_address,
+                is_verified: tp.is_verified,
+              }
+            : null,
+        };
+      });
+
+      console.log("Transformed therapists:", transformedData.length);
       setTherapists(transformedData);
     } catch (error) {
       console.error("Error loading therapists:", error);
@@ -230,7 +269,9 @@ export default function FindTherapistScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
       {/* Header */}
       <Animated.View
         entering={FadeInDown.delay(100).duration(500)}
@@ -238,13 +279,18 @@ export default function FindTherapistScreen() {
       >
         <TouchableOpacity
           onPress={() => router.back()}
-          style={styles.backButton}
+          style={[styles.backButton, { backgroundColor: colors.surface }]}
         >
-          <Ionicons name="arrow-back" size={24} color={Colors.text.primary} />
+          <Ionicons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
         <View style={styles.headerContent}>
-          <Text style={styles.title}>Find a Therapist 🔍</Text>
-          <Text style={styles.subtitle}>Connect with verified specialists</Text>
+          <Text style={[styles.title, { color: colors.text }]}>
+            {t("parent.findTherapist")} 🔍
+          </Text>
+          <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+            {t("therapist.connectVerified") ||
+              "Connect with verified specialists"}
+          </Text>
         </View>
       </Animated.View>
 
@@ -253,16 +299,21 @@ export default function FindTherapistScreen() {
         entering={FadeInDown.delay(150).duration(500)}
         style={styles.searchContainer}
       >
-        <View style={styles.searchInputContainer}>
+        <View
+          style={[
+            styles.searchInputContainer,
+            { backgroundColor: colors.surface },
+          ]}
+        >
           <Ionicons
             name="search-outline"
             size={20}
-            color={Colors.text.tertiary}
+            color={colors.textSecondary}
           />
           <TextInput
-            style={styles.searchInput}
-            placeholder="Search by name, specialty, or location..."
-            placeholderTextColor={Colors.text.tertiary}
+            style={[styles.searchInput, { color: colors.text }]}
+            placeholder={t("common.search") + "..."}
+            placeholderTextColor={colors.textSecondary}
             value={searchQuery}
             onChangeText={setSearchQuery}
           />
@@ -271,7 +322,7 @@ export default function FindTherapistScreen() {
               <Ionicons
                 name="close-circle"
                 size={20}
-                color={Colors.text.tertiary}
+                color={colors.textSecondary}
               />
             </TouchableOpacity>
           )}
@@ -319,21 +370,30 @@ export default function FindTherapistScreen() {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintColor={Colors.primary[500]}
+            tintColor={colors.primary}
           />
         }
         ListEmptyComponent={
-          <Card variant="outlined" style={styles.emptyCard}>
+          <Card
+            variant="outlined"
+            style={[styles.emptyCard, { backgroundColor: colors.surface }]}
+          >
             <Ionicons
               name="people-outline"
               size={48}
-              color={Colors.text.tertiary}
+              color={colors.textSecondary}
             />
-            <Text style={styles.emptyTitle}>No therapists found</Text>
-            <Text style={styles.emptySubtitle}>
+            <Text style={[styles.emptyTitle, { color: colors.text }]}>
+              {t("common.noResults")}
+            </Text>
+            <Text
+              style={[styles.emptySubtitle, { color: colors.textSecondary }]}
+            >
               {searchQuery || selectedSpecialization !== "all"
-                ? "Try adjusting your search or filters"
-                : "Therapists will appear here once they register"}
+                ? t("therapist.adjustFilters") ||
+                  "Try adjusting your search or filters"
+                : t("therapist.therapistsWillAppear") ||
+                  "Therapists will appear here once they register"}
             </Text>
           </Card>
         }
