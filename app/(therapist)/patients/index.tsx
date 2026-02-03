@@ -29,10 +29,10 @@ interface PatientEnrollment {
   child: {
     id: string;
     first_name: string;
-    last_name: string | null;
-    date_of_birth: string;
-    avatar_url: string | null;
-    diagnosis_status: string | null;
+    birth_date: string;
+    gender: string | null;
+    avatar_seed: string | null;
+    total_stars: number;
   };
   parent: {
     id: string;
@@ -59,32 +59,46 @@ export default function PatientsListScreen() {
     try {
       setLoading(true);
 
+      console.log("[DEBUG] Loading patients for therapist:", user.id);
+
       // First get patient_therapist records
       const { data: enrollments, error: enrollmentError } = await supabase
         .from("patient_therapist")
         .select("*")
         .eq("therapist_id", user.id);
 
+      console.log("[DEBUG] Enrollments result:", {
+        enrollments,
+        enrollmentError,
+      });
+
       if (enrollmentError) throw enrollmentError;
 
       if (!enrollments || enrollments.length === 0) {
+        console.log("[DEBUG] No enrollments found");
         setPatients([]);
         return;
       }
 
-      // Get unique child and parent IDs
+      // Get unique child IDs
       const childIds = [...new Set(enrollments.map((e) => e.child_id))];
-      const parentIds = [...new Set(enrollments.map((e) => e.parent_id))];
+      console.log("[DEBUG] Child IDs to fetch:", childIds);
 
-      // Fetch children data
+      // Fetch children data with parent_id
       const { data: children, error: childrenError } = await supabase
         .from("children")
         .select(
-          "id, first_name, last_name, date_of_birth, avatar_url, diagnosis_status",
+          "id, parent_id, first_name, birth_date, gender, avatar_seed, total_stars",
         )
         .in("id", childIds);
 
+      console.log("[DEBUG] Children result:", { children, childrenError });
+
       if (childrenError) throw childrenError;
+
+      // Get parent IDs from children
+      const parentIds = [...new Set(children?.map((c) => c.parent_id) || [])];
+      console.log("[DEBUG] Parent IDs to fetch:", parentIds);
 
       // Fetch parents data
       const { data: parents, error: parentsError } = await supabase
@@ -92,20 +106,24 @@ export default function PatientsListScreen() {
         .select("id, full_name, avatar_url")
         .in("id", parentIds);
 
-      if (parentsError) throw parentsError;
+      console.log("[DEBUG] Parents result:", { parents, parentsError });
 
-      // Combine the data
-      const formatted = enrollments.map((enrollment) => {
-        const child = children?.find((c) => c.id === enrollment.child_id);
-        const parent = parents?.find((p) => p.id === enrollment.parent_id);
+      // Combine the data - filter out enrollments where child or parent wasn't found (RLS restriction)
+      const formatted = enrollments
+        .map((enrollment) => {
+          const child = children?.find((c) => c.id === enrollment.child_id);
+          const parent = parents?.find((p) => p.id === child?.parent_id);
 
-        return {
-          id: enrollment.id,
-          status: enrollment.status,
-          child,
-          parent,
-        };
-      }) as PatientEnrollment[];
+          return {
+            id: enrollment.id,
+            status: enrollment.status,
+            child,
+            parent,
+          };
+        })
+        .filter(
+          (item) => item.child !== undefined && item.parent !== undefined,
+        ) as PatientEnrollment[];
 
       setPatients(formatted);
     } catch (error) {
@@ -234,16 +252,10 @@ export default function PatientsListScreen() {
           }
         >
           <View style={styles.cardHeader}>
-            <Avatar
-              name={item.child.first_name}
-              source={item.child.avatar_url}
-              size="lg"
-            />
+            <Avatar name={item.child.first_name} size="lg" />
             <View style={styles.patientInfo}>
               <View style={styles.nameRow}>
-                <Text style={styles.patientName}>
-                  {item.child.first_name} {item.child.last_name || ""}
-                </Text>
+                <Text style={styles.patientName}>{item.child.first_name}</Text>
                 <View
                   style={[
                     styles.statusBadge,
@@ -258,7 +270,7 @@ export default function PatientsListScreen() {
                 </View>
               </View>
               <Text style={styles.ageText}>
-                {calculateAge(item.child.date_of_birth)} years old
+                {calculateAge(item.child.birth_date)} years old
               </Text>
               <View style={styles.parentRow}>
                 <Ionicons
@@ -270,19 +282,6 @@ export default function PatientsListScreen() {
               </View>
             </View>
           </View>
-
-          {item.child.diagnosis_status && (
-            <View style={styles.diagnosisRow}>
-              <Ionicons
-                name="medical-outline"
-                size={16}
-                color={Colors.primary[500]}
-              />
-              <Text style={styles.diagnosisText}>
-                {item.child.diagnosis_status}
-              </Text>
-            </View>
-          )}
 
           {item.status === "pending" && (
             <View style={styles.actionButtons}>

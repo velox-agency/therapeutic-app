@@ -26,11 +26,10 @@ import { supabase } from "@/lib/supabase";
 interface ChildDetail {
   id: string;
   first_name: string;
-  last_name: string | null;
-  date_of_birth: string;
-  avatar_url: string | null;
-  diagnosis_status: string | null;
-  notes: string | null;
+  birth_date: string;
+  gender: string | null;
+  avatar_seed: string | null;
+  total_stars: number;
   parent: {
     id: string;
     full_name: string;
@@ -108,7 +107,7 @@ export default function PatientDetailScreen() {
       const { data: childData, error: childError } = await supabase
         .from("children")
         .select(
-          "id, first_name, last_name, date_of_birth, avatar_url, diagnosis_status, notes, parent_id",
+          "id, first_name, birth_date, gender, avatar_seed, total_stars, parent_id",
         )
         .eq("id", id)
         .single();
@@ -312,28 +311,24 @@ export default function PatientDetailScreen() {
       {/* Child Profile Card */}
       <Card variant="elevated" style={styles.profileCard}>
         <View style={styles.profileHeader}>
-          <Avatar name={child.first_name} source={child.avatar_url} size="xl" />
+          <Avatar name={child.first_name} size="xl" />
           <View style={styles.profileInfo}>
-            <Text style={styles.childName}>
-              {child.first_name} {child.last_name || ""}
-            </Text>
+            <Text style={styles.childName}>{child.first_name}</Text>
             <Text style={styles.ageText}>
-              {calculateAge(child.date_of_birth)} years old
+              {calculateAge(child.birth_date)} years old
             </Text>
-            {child.diagnosis_status && (
+            {child.gender && (
               <View style={styles.diagnosisBadge}>
-                <Text style={styles.diagnosisText}>
-                  {child.diagnosis_status}
-                </Text>
+                <Text style={styles.diagnosisText}>{child.gender}</Text>
               </View>
             )}
           </View>
         </View>
 
-        {child.notes && (
+        {child.total_stars > 0 && (
           <View style={styles.notesSection}>
-            <Text style={styles.notesLabel}>Notes</Text>
-            <Text style={styles.notesText}>{child.notes}</Text>
+            <Text style={styles.notesLabel}>Stars Earned</Text>
+            <Text style={styles.notesText}>⭐ {child.total_stars}</Text>
           </View>
         )}
       </Card>
