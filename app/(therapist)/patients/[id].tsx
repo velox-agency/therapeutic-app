@@ -52,12 +52,13 @@ interface Goal {
 
 interface Session {
   id: string;
-  session_date: string;
-  session_time: string;
+  scheduled_at: string;
   duration_minutes: number;
   status: string;
   session_type: string;
-  notes: string | null;
+  location: string | null;
+  therapist_notes: string | null;
+  parent_visible_notes: string | null;
 }
 
 interface Screening {
@@ -140,14 +141,26 @@ export default function PatientDetailScreen() {
 
       setGoals(goalsData || []);
 
-      // Get sessions
-      const { data: sessionsData } = await supabase
-        .from("sessions")
-        .select("*")
+      // Get patient_therapist record for this child
+      const { data: ptData } = await supabase
+        .from("patient_therapist")
+        .select("id")
         .eq("child_id", id)
-        .order("session_date", { ascending: false });
+        .eq("therapist_id", user?.id)
+        .single();
 
-      setSessions(sessionsData || []);
+      // Get sessions for this enrollment
+      if (ptData) {
+        const { data: sessionsData } = await supabase
+          .from("sessions")
+          .select("*")
+          .eq("patient_therapist_id", ptData.id)
+          .order("scheduled_at", { ascending: false });
+
+        setSessions(sessionsData || []);
+      } else {
+        setSessions([]);
+      }
 
       // Get screenings
       const { data: screeningsData } = await supabase
@@ -562,13 +575,18 @@ export default function PatientDetailScreen() {
                 <View style={styles.sessionHeader}>
                   <View>
                     <Text style={styles.sessionDate}>
-                      {new Date(item.session_date).toLocaleDateString("en-US", {
+                      {new Date(item.scheduled_at).toLocaleDateString("en-US", {
                         weekday: "short",
                         month: "short",
                         day: "numeric",
                       })}
                     </Text>
-                    <Text style={styles.sessionTime}>{item.session_time}</Text>
+                    <Text style={styles.sessionTime}>
+                      {new Date(item.scheduled_at).toLocaleTimeString("en-US", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </Text>
                   </View>
                   <View
                     style={[
@@ -624,8 +642,10 @@ export default function PatientDetailScreen() {
                   </View>
                 </View>
 
-                {item.notes && (
-                  <Text style={styles.sessionNotes}>{item.notes}</Text>
+                {item.therapist_notes && (
+                  <Text style={styles.sessionNotes}>
+                    {item.therapist_notes}
+                  </Text>
                 )}
               </Card>
             </Animated.View>

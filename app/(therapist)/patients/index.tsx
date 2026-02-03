@@ -59,30 +59,21 @@ export default function PatientsListScreen() {
     try {
       setLoading(true);
 
-      console.log("[DEBUG] Loading patients for therapist:", user.id);
-
       // First get patient_therapist records
       const { data: enrollments, error: enrollmentError } = await supabase
         .from("patient_therapist")
         .select("*")
         .eq("therapist_id", user.id);
 
-      console.log("[DEBUG] Enrollments result:", {
-        enrollments,
-        enrollmentError,
-      });
-
       if (enrollmentError) throw enrollmentError;
 
       if (!enrollments || enrollments.length === 0) {
-        console.log("[DEBUG] No enrollments found");
         setPatients([]);
         return;
       }
 
       // Get unique child IDs
       const childIds = [...new Set(enrollments.map((e) => e.child_id))];
-      console.log("[DEBUG] Child IDs to fetch:", childIds);
 
       // Fetch children data with parent_id
       const { data: children, error: childrenError } = await supabase
@@ -92,13 +83,10 @@ export default function PatientsListScreen() {
         )
         .in("id", childIds);
 
-      console.log("[DEBUG] Children result:", { children, childrenError });
-
       if (childrenError) throw childrenError;
 
       // Get parent IDs from children
       const parentIds = [...new Set(children?.map((c) => c.parent_id) || [])];
-      console.log("[DEBUG] Parent IDs to fetch:", parentIds);
 
       // Fetch parents data
       const { data: parents, error: parentsError } = await supabase
@@ -106,7 +94,7 @@ export default function PatientsListScreen() {
         .select("id, full_name, avatar_url")
         .in("id", parentIds);
 
-      console.log("[DEBUG] Parents result:", { parents, parentsError });
+      if (parentsError) throw parentsError;
 
       // Combine the data - filter out enrollments where child or parent wasn't found (RLS restriction)
       const formatted = enrollments
