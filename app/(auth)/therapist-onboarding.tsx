@@ -56,7 +56,10 @@ export default function TherapistOnboardingScreen() {
       if (error) throw error;
 
       await refreshProfile();
-      router.replace("/(therapist)/dashboard");
+      // Force a small delay to allow the layout to detect the change
+      setTimeout(() => {
+        router.replace("/(therapist)/dashboard");
+      }, 100);
     } catch (error: any) {
       Alert.alert("Error", error.message || "Failed to save profile");
     } finally {

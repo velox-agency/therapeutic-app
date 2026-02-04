@@ -63,8 +63,10 @@ function RootLayoutNav() {
   useEffect(() => {
     if (profile?.role === "therapist") {
       checkTherapistOnboarding();
+    } else {
+      setTherapistOnboardingComplete(null);
     }
-  }, [profile?.role, checkTherapistOnboarding]);
+  }, [profile, checkTherapistOnboarding]);
 
   useEffect(() => {
     if (!initialized) return;
@@ -72,7 +74,8 @@ function RootLayoutNav() {
     const inAuthGroup = segments[0] === "(auth)";
     const inParentGroup = segments[0] === "(parent)";
     const inTherapistGroup = segments[0] === "(therapist)";
-    const isOnboarding = segments[1] === "therapist-onboarding";
+    const isOnboarding =
+      segments[0] === "(auth)" && segments[1] === "therapist-onboarding";
 
     if (!user) {
       // Not logged in, redirect to auth
@@ -80,7 +83,7 @@ function RootLayoutNav() {
         router.replace("/(auth)/login");
       }
     } else if (profile) {
-      // Check therapist onboarding status
+      // Check therapist onboarding status - only redirect if we've checked and it's definitely false
       if (
         profile.role === "therapist" &&
         therapistOnboardingComplete === false &&
@@ -88,6 +91,16 @@ function RootLayoutNav() {
       ) {
         // Therapist hasn't completed onboarding, redirect to onboarding
         router.replace("/(auth)/therapist-onboarding");
+        return;
+      }
+
+      // If therapist just completed onboarding and is still on the page, redirect to dashboard
+      if (
+        profile.role === "therapist" &&
+        therapistOnboardingComplete === true &&
+        isOnboarding
+      ) {
+        router.replace("/(therapist)/dashboard");
         return;
       }
 

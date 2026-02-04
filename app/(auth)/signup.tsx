@@ -362,15 +362,17 @@ const styles = StyleSheet.create({
   },
   roleOption: {
     flex: 1,
-    flexDirection: "row",
+    flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
-    gap: Spacing.sm,
+    gap: Spacing.xs,
     paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.sm,
     backgroundColor: Colors.surface,
     borderRadius: 12,
     borderWidth: 2,
     borderColor: Colors.border,
+    minHeight: 80,
   },
   roleOptionActive: {
     borderColor: Colors.primary[500],
@@ -378,8 +380,9 @@ const styles = StyleSheet.create({
   },
   roleText: {
     fontFamily: Typography.fontFamily.primary,
-    fontSize: Typography.fontSize.body,
+    fontSize: Typography.fontSize.small,
     color: Colors.text.secondary,
+    textAlign: "center",
   },
   roleTextActive: {
     fontFamily: Typography.fontFamily.primaryBold,
