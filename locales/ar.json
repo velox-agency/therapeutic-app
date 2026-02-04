@@ -273,7 +273,8 @@
     "connectVerified": "تواصل مع المتخصصين الموثقين",
     "adjustFilters": "حاول تعديل البحث أو الفلاتر",
     "therapistsWillAppear": "سيظهر المعالجون هنا بعد تسجيلهم",
-    "pendingReviews": "مراجعات معلقة"
+    "pendingReviews": "مراجعات معلقة",
+    "patients": "المرضى"
   },
   "profile": {
     "myProfile": "ملفي الشخصي",

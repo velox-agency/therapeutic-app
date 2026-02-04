@@ -11,13 +11,14 @@ import {
 import { useFonts } from "expo-font";
 import { Stack, useRouter, useSegments } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
 import "react-native-reanimated";
 
 import { Colors } from "@/constants/theme";
 import { LanguageProvider, ThemeProvider, useTheme } from "@/contexts";
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/lib/supabase";
 
 export const unstable_settings = {
   anchor: "(tabs)",
@@ -35,6 +36,35 @@ function RootLayoutNav() {
   const { user, profile, loading, initialized } = useAuth();
   const segments = useSegments();
   const router = useRouter();
+  const [therapistOnboardingComplete, setTherapistOnboardingComplete] =
+    useState<boolean | null>(null);
+
+  // Check if therapist has completed onboarding
+  const checkTherapistOnboarding = useCallback(async () => {
+    if (profile?.role !== "therapist") {
+      setTherapistOnboardingComplete(null);
+      return;
+    }
+
+    try {
+      const { data } = await supabase
+        .from("therapist_profiles")
+        .select("specialization")
+        .eq("id", profile.id)
+        .single();
+
+      // Therapist has completed onboarding if they have a specialization
+      setTherapistOnboardingComplete(!!data?.specialization);
+    } catch {
+      setTherapistOnboardingComplete(false);
+    }
+  }, [profile?.id, profile?.role]);
+
+  useEffect(() => {
+    if (profile?.role === "therapist") {
+      checkTherapistOnboarding();
+    }
+  }, [profile?.role, checkTherapistOnboarding]);
 
   useEffect(() => {
     if (!initialized) return;
@@ -50,6 +80,17 @@ function RootLayoutNav() {
         router.replace("/(auth)/login");
       }
     } else if (profile) {
+      // Check therapist onboarding status
+      if (
+        profile.role === "therapist" &&
+        therapistOnboardingComplete === false &&
+        !isOnboarding
+      ) {
+        // Therapist hasn't completed onboarding, redirect to onboarding
+        router.replace("/(auth)/therapist-onboarding");
+        return;
+      }
+
       // User is logged in with a profile
       if (inAuthGroup && !isOnboarding) {
         // Redirect based on role
@@ -78,7 +119,14 @@ function RootLayoutNav() {
       }, 1000);
       return () => clearTimeout(timer);
     }
-  }, [user, profile, loading, initialized, segments]);
+  }, [
+    user,
+    profile,
+    loading,
+    initialized,
+    segments,
+    therapistOnboardingComplete,
+  ]);
 
   return (
     <Stack>

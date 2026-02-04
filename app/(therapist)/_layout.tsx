@@ -64,6 +64,12 @@ export default function TherapistLayout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="goals"
+        options={{
+          href: null,
+        }}
+      />
     </Tabs>
   );
 }

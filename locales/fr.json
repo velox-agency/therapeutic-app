@@ -273,7 +273,8 @@
     "connectVerified": "Connectez-vous avec des spécialistes vérifiés",
     "adjustFilters": "Essayez d'ajuster votre recherche ou vos filtres",
     "therapistsWillAppear": "Les thérapeutes apparaîtront ici une fois inscrits",
-    "pendingReviews": "Avis en attente"
+    "pendingReviews": "Avis en attente",
+    "patients": "Patients"
   },
   "profile": {
     "myProfile": "Mon profil",

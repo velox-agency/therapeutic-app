@@ -5,7 +5,9 @@ import {
   ActivityIndicator,
   Alert,
   FlatList,
+  KeyboardAvoidingView,
   Modal,
+  Platform,
   RefreshControl,
   ScrollView,
   StyleSheet,
@@ -18,10 +20,36 @@ import {
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { Avatar, Button, Card } from "@/components/ui";
+import { Avatar, Button, Card, Input } from "@/components/ui";
 import { Colors, ComponentStyle, Spacing, Typography } from "@/constants/theme";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/lib/supabase";
+import {
+  FrequencyPeriod,
+  GoalCategory,
+  GoalPriority,
+} from "@/types/database.types";
+
+const CATEGORIES = [
+  { id: "communication", label: "Communication", icon: "chatbubbles" },
+  { id: "social", label: "Social Skills", icon: "people" },
+  { id: "motor", label: "Motor Skills", icon: "hand-left" },
+  { id: "cognitive", label: "Cognitive", icon: "bulb" },
+  { id: "self_care", label: "Self Care", icon: "heart" },
+  { id: "behavior", label: "Behavior", icon: "happy" },
+];
+
+const PRIORITIES = [
+  { id: "low", label: "Low", color: Colors.success[500] },
+  { id: "medium", label: "Medium", color: Colors.secondary[500] },
+  { id: "high", label: "High", color: Colors.error[500] },
+];
+
+const FREQUENCIES = [
+  { id: "daily", label: "Daily" },
+  { id: "weekly", label: "Weekly" },
+  { id: "monthly", label: "Monthly" },
+];
 
 interface ChildDetail {
   id: string;
@@ -93,10 +121,27 @@ export default function PatientDetailScreen() {
   const [goalForm, setGoalForm] = useState({
     title: "",
     description: "",
-    target_value: "100",
-    category: "communication",
+    category: "communication" as GoalCategory,
+    priority: "medium" as GoalPriority,
+    frequency: "daily" as FrequencyPeriod,
+    targetFrequency: "1",
+    targetValue: "",
+    unit: "",
   });
   const [savingGoal, setSavingGoal] = useState(false);
+
+  const resetGoalForm = () => {
+    setGoalForm({
+      title: "",
+      description: "",
+      category: "communication",
+      priority: "medium",
+      frequency: "daily",
+      targetFrequency: "1",
+      targetValue: "",
+      unit: "",
+    });
+  };
 
   const loadChildData = useCallback(async () => {
     if (!id) return;
@@ -199,24 +244,25 @@ export default function PatientDetailScreen() {
     try {
       const { error } = await supabase.from("goals").insert({
         child_id: id,
-        therapist_id: user?.id,
-        title: goalForm.title,
-        description: goalForm.description || null,
-        target_value: parseInt(goalForm.target_value, 10),
-        current_value: 0,
-        status: "active",
+        created_by: user?.id,
+        title: goalForm.title.trim(),
+        description: goalForm.description.trim() || null,
         category: goalForm.category,
+        priority: goalForm.priority,
+        target_frequency: parseInt(goalForm.targetFrequency) || 1,
+        frequency_period: goalForm.frequency,
+        target_value: goalForm.targetValue
+          ? parseInt(goalForm.targetValue)
+          : null,
+        unit: goalForm.unit.trim() || null,
+        status: "active",
+        is_active: true,
       });
 
       if (error) throw error;
 
       setShowGoalModal(false);
-      setGoalForm({
-        title: "",
-        description: "",
-        target_value: "100",
-        category: "communication",
-      });
+      resetGoalForm();
       await loadChildData();
       Alert.alert("Success", "Goal created successfully!");
     } catch (error) {
@@ -801,79 +847,215 @@ export default function PatientDetailScreen() {
         transparent
         onRequestClose={() => setShowGoalModal(false)}
       >
-        <View style={styles.modalOverlay}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={styles.modalOverlay}
+        >
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>Create Goal</Text>
-              <TouchableOpacity onPress={() => setShowGoalModal(false)}>
+              <TouchableOpacity
+                onPress={() => {
+                  setShowGoalModal(false);
+                  resetGoalForm();
+                }}
+              >
                 <Ionicons name="close" size={24} color={Colors.text.primary} />
               </TouchableOpacity>
             </View>
 
             <ScrollView showsVerticalScrollIndicator={false}>
-              <Text style={styles.inputLabel}>Goal Title *</Text>
-              <TextInput
-                style={styles.input}
+              {/* Goal Title */}
+              <Input
+                label="Goal Title *"
+                placeholder="e.g., Say 5 new words"
                 value={goalForm.title}
                 onChangeText={(text) =>
                   setGoalForm((prev) => ({ ...prev, title: text }))
                 }
-                placeholder="e.g., Improve eye contact"
-                placeholderTextColor={Colors.text.tertiary}
+                leftIcon="flag"
               />
 
-              <Text style={styles.inputLabel}>Description</Text>
-              <TextInput
-                style={[styles.input, styles.textArea]}
-                value={goalForm.description}
-                onChangeText={(text) =>
-                  setGoalForm((prev) => ({ ...prev, description: text }))
-                }
-                placeholder="Optional details about this goal"
-                placeholderTextColor={Colors.text.tertiary}
-                multiline
-                numberOfLines={3}
-              />
+              {/* Description */}
+              <View style={styles.modalInputSpacing}>
+                <Input
+                  label="Description (Optional)"
+                  placeholder="Describe the goal in detail..."
+                  value={goalForm.description}
+                  onChangeText={(text) =>
+                    setGoalForm((prev) => ({ ...prev, description: text }))
+                  }
+                  multiline
+                  numberOfLines={3}
+                />
+              </View>
 
-              <Text style={styles.inputLabel}>Target Value</Text>
-              <TextInput
-                style={styles.input}
-                value={goalForm.target_value}
-                onChangeText={(text) =>
-                  setGoalForm((prev) => ({ ...prev, target_value: text }))
-                }
-                keyboardType="numeric"
-                placeholder="100"
-                placeholderTextColor={Colors.text.tertiary}
-              />
-
-              <Text style={styles.inputLabel}>Category</Text>
-              <View style={styles.categoryButtons}>
-                {["communication", "motor", "social", "cognitive"].map(
-                  (cat) => (
+              {/* Category */}
+              <View style={styles.modalSection}>
+                <Text style={styles.modalSectionTitle}>Category</Text>
+                <View style={styles.categoryGrid}>
+                  {CATEGORIES.map((cat) => (
                     <TouchableOpacity
-                      key={cat}
-                      onPress={() =>
-                        setGoalForm((prev) => ({ ...prev, category: cat }))
-                      }
+                      key={cat.id}
                       style={[
-                        styles.categoryButton,
-                        goalForm.category === cat &&
-                          styles.categoryButtonActive,
+                        styles.categoryOption,
+                        goalForm.category === cat.id &&
+                          styles.categoryOptionSelected,
                       ]}
+                      onPress={() =>
+                        setGoalForm((prev) => ({
+                          ...prev,
+                          category: cat.id as GoalCategory,
+                        }))
+                      }
+                    >
+                      <Ionicons
+                        name={cat.icon as any}
+                        size={20}
+                        color={
+                          goalForm.category === cat.id
+                            ? Colors.primary[500]
+                            : Colors.text.secondary
+                        }
+                      />
+                      <Text
+                        style={[
+                          styles.categoryOptionText,
+                          goalForm.category === cat.id &&
+                            styles.categoryOptionTextSelected,
+                        ]}
+                      >
+                        {cat.label}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </View>
+
+              {/* Priority */}
+              <View style={styles.modalSection}>
+                <Text style={styles.modalSectionTitle}>Priority</Text>
+                <View style={styles.priorityRow}>
+                  {PRIORITIES.map((p) => (
+                    <TouchableOpacity
+                      key={p.id}
+                      style={[
+                        styles.priorityOption,
+                        { borderColor: p.color },
+                        goalForm.priority === p.id && {
+                          backgroundColor: p.color,
+                        },
+                      ]}
+                      onPress={() =>
+                        setGoalForm((prev) => ({
+                          ...prev,
+                          priority: p.id as GoalPriority,
+                        }))
+                      }
                     >
                       <Text
                         style={[
-                          styles.categoryButtonText,
-                          goalForm.category === cat &&
-                            styles.categoryButtonTextActive,
+                          styles.priorityText,
+                          {
+                            color:
+                              goalForm.priority === p.id
+                                ? Colors.surface
+                                : p.color,
+                          },
                         ]}
                       >
-                        {cat}
+                        {p.label}
                       </Text>
                     </TouchableOpacity>
-                  ),
-                )}
+                  ))}
+                </View>
+              </View>
+
+              {/* Frequency */}
+              <View style={styles.modalSection}>
+                <Text style={styles.modalSectionTitle}>Target Frequency</Text>
+                <View style={styles.frequencyRow}>
+                  <TextInput
+                    style={styles.frequencyInput}
+                    value={goalForm.targetFrequency}
+                    onChangeText={(text) =>
+                      setGoalForm((prev) => ({
+                        ...prev,
+                        targetFrequency: text,
+                      }))
+                    }
+                    keyboardType="number-pad"
+                    placeholder="1"
+                    placeholderTextColor={Colors.text.tertiary}
+                  />
+                  <Text style={styles.frequencyLabel}>times per</Text>
+                  <View style={styles.frequencyOptions}>
+                    {FREQUENCIES.map((f) => (
+                      <TouchableOpacity
+                        key={f.id}
+                        style={[
+                          styles.frequencyOption,
+                          goalForm.frequency === f.id &&
+                            styles.frequencyOptionSelected,
+                        ]}
+                        onPress={() =>
+                          setGoalForm((prev) => ({
+                            ...prev,
+                            frequency: f.id as FrequencyPeriod,
+                          }))
+                        }
+                      >
+                        <Text
+                          style={[
+                            styles.frequencyOptionText,
+                            goalForm.frequency === f.id &&
+                              styles.frequencyOptionTextSelected,
+                          ]}
+                        >
+                          {f.label}
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                </View>
+              </View>
+
+              {/* Target Value & Unit */}
+              <View style={styles.modalSection}>
+                <Text style={styles.modalSectionTitle}>
+                  Target Measurement (Optional)
+                </Text>
+                <Text style={styles.modalSectionSubtitle}>
+                  Set a specific target for progress tracking
+                </Text>
+                <View style={styles.targetRow}>
+                  <View style={styles.targetInputContainer}>
+                    <TextInput
+                      style={styles.targetInput}
+                      value={goalForm.targetValue}
+                      onChangeText={(text) =>
+                        setGoalForm((prev) => ({ ...prev, targetValue: text }))
+                      }
+                      keyboardType="number-pad"
+                      placeholder="5"
+                      placeholderTextColor={Colors.text.tertiary}
+                    />
+                  </View>
+                  <View style={styles.unitInputContainer}>
+                    <TextInput
+                      style={styles.targetInput}
+                      value={goalForm.unit}
+                      onChangeText={(text) =>
+                        setGoalForm((prev) => ({ ...prev, unit: text }))
+                      }
+                      placeholder="seconds"
+                      placeholderTextColor={Colors.text.tertiary}
+                    />
+                  </View>
+                </View>
+                <Text style={styles.exampleText}>
+                  💡 Example: "5 seconds" of eye contact, "10 words" spoken
+                </Text>
               </View>
 
               <Button
@@ -882,12 +1064,12 @@ export default function PatientDetailScreen() {
                 variant="secondary"
                 fullWidth
                 loading={savingGoal}
-                disabled={savingGoal}
-                style={{ marginTop: Spacing.lg }}
+                disabled={savingGoal || !goalForm.title.trim()}
+                style={{ marginTop: Spacing.lg, marginBottom: Spacing.xl }}
               />
             </ScrollView>
           </View>
-        </View>
+        </KeyboardAvoidingView>
       </Modal>
     </SafeAreaView>
   );
@@ -1392,5 +1574,150 @@ const styles = StyleSheet.create({
   categoryButtonTextActive: {
     color: "#fff",
     fontWeight: Typography.fontWeight.semibold,
+  },
+  modalInputSpacing: {
+    marginTop: Spacing.md,
+  },
+  modalSection: {
+    marginTop: Spacing.lg,
+  },
+  modalSectionTitle: {
+    fontFamily: Typography.fontFamily.primaryBold,
+    fontSize: Typography.fontSize.body,
+    fontWeight: Typography.fontWeight.semibold,
+    color: Colors.text.primary,
+    marginBottom: Spacing.sm,
+  },
+  modalSectionSubtitle: {
+    fontFamily: Typography.fontFamily.primary,
+    fontSize: Typography.fontSize.small,
+    color: Colors.text.tertiary,
+    marginBottom: Spacing.sm,
+  },
+  categoryGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: Spacing.sm,
+  },
+  categoryOption: {
+    width: "31%",
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.sm,
+    borderRadius: ComponentStyle.borderRadius.md,
+    backgroundColor: Colors.surfaceVariant,
+    alignItems: "center",
+    justifyContent: "center",
+    gap: Spacing.xs,
+    borderWidth: 2,
+    borderColor: "transparent",
+  },
+  categoryOptionSelected: {
+    borderColor: Colors.primary[500],
+    backgroundColor: Colors.primary[50],
+  },
+  categoryOptionText: {
+    fontFamily: Typography.fontFamily.primary,
+    fontSize: Typography.fontSize.tiny,
+    color: Colors.text.secondary,
+    textAlign: "center",
+  },
+  categoryOptionTextSelected: {
+    color: Colors.primary[500],
+    fontWeight: Typography.fontWeight.semibold,
+  },
+  priorityRow: {
+    flexDirection: "row",
+    gap: Spacing.sm,
+  },
+  priorityOption: {
+    flex: 1,
+    paddingVertical: Spacing.sm,
+    borderRadius: ComponentStyle.borderRadius.md,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 2,
+    backgroundColor: Colors.surface,
+  },
+  priorityText: {
+    fontFamily: Typography.fontFamily.primaryBold,
+    fontSize: Typography.fontSize.small,
+    fontWeight: Typography.fontWeight.semibold,
+  },
+  frequencyRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.sm,
+    flexWrap: "wrap",
+  },
+  frequencyInput: {
+    width: 60,
+    backgroundColor: Colors.surfaceVariant,
+    borderRadius: ComponentStyle.borderRadius.md,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    fontFamily: Typography.fontFamily.primary,
+    fontSize: Typography.fontSize.body,
+    color: Colors.text.primary,
+    textAlign: "center",
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  frequencyLabel: {
+    fontFamily: Typography.fontFamily.primary,
+    fontSize: Typography.fontSize.body,
+    color: Colors.text.secondary,
+  },
+  frequencyOptions: {
+    flexDirection: "row",
+    gap: Spacing.xs,
+  },
+  frequencyOption: {
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    borderRadius: ComponentStyle.borderRadius.md,
+    backgroundColor: Colors.surfaceVariant,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  frequencyOptionSelected: {
+    backgroundColor: Colors.secondary[500],
+    borderColor: Colors.secondary[500],
+  },
+  frequencyOptionText: {
+    fontFamily: Typography.fontFamily.primary,
+    fontSize: Typography.fontSize.small,
+    color: Colors.text.secondary,
+  },
+  frequencyOptionTextSelected: {
+    color: Colors.surface,
+    fontWeight: Typography.fontWeight.semibold,
+  },
+  targetRow: {
+    flexDirection: "row",
+    gap: Spacing.sm,
+  },
+  targetInputContainer: {
+    flex: 1,
+  },
+  unitInputContainer: {
+    flex: 2,
+  },
+  targetInput: {
+    backgroundColor: Colors.surfaceVariant,
+    borderRadius: ComponentStyle.borderRadius.md,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    fontFamily: Typography.fontFamily.primary,
+    fontSize: Typography.fontSize.body,
+    color: Colors.text.primary,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  exampleText: {
+    fontFamily: Typography.fontFamily.primary,
+    fontSize: Typography.fontSize.tiny,
+    color: Colors.text.tertiary,
+    marginTop: Spacing.sm,
+    fontStyle: "italic",
   },
 });
