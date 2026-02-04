@@ -9,6 +9,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  ViewStyle,
 } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -97,7 +98,12 @@ export default function ParentDashboard() {
         >
           <Card
             variant="elevated"
-            style={[styles.statsCard, { backgroundColor: colors.surface }]}
+            style={
+              StyleSheet.flatten([
+                styles.statsCard,
+                { backgroundColor: colors.surface },
+              ]) as ViewStyle
+            }
           >
             <View style={styles.statsRow}>
               <View style={styles.statItem}>
@@ -275,7 +281,12 @@ export default function ParentDashboard() {
           {children.length === 0 ? (
             <Card
               variant="outlined"
-              style={[styles.emptyCard, { borderColor: colors.border }]}
+              style={
+                StyleSheet.flatten([
+                  styles.emptyCard,
+                  { borderColor: colors.border },
+                ]) as ViewStyle
+              }
             >
               <Ionicons
                 name="people-outline"
@@ -306,10 +317,12 @@ export default function ParentDashboard() {
               >
                 <Card
                   variant="elevated"
-                  style={[
-                    styles.childCard,
-                    { backgroundColor: colors.surface },
-                  ]}
+                  style={
+                    StyleSheet.flatten([
+                      styles.childCard,
+                      { backgroundColor: colors.surface },
+                    ]) as ViewStyle
+                  }
                 >
                   <View style={styles.childInfo}>
                     <Avatar
@@ -358,7 +371,7 @@ export default function ParentDashboard() {
               </Text>
               {parentGoals.length > 0 && (
                 <TouchableOpacity
-                  onPress={() => router.push("/shared/goals" as any)}
+                  onPress={() => router.push("/shared/goals/list" as any)}
                 >
                   <Text style={[styles.seeAllText, { color: colors.primary }]}>
                     {t("common.seeAll")}
@@ -370,7 +383,12 @@ export default function ParentDashboard() {
             {parentGoals.length === 0 ? (
               <Card
                 variant="outlined"
-                style={[styles.emptyCard, { borderColor: colors.border }]}
+                style={
+                  StyleSheet.flatten([
+                    styles.emptyCard,
+                    { borderColor: colors.border },
+                  ]) as ViewStyle
+                }
               >
                 <Ionicons
                   name="flag-outline"
@@ -391,15 +409,27 @@ export default function ParentDashboard() {
                 </Text>
               </Card>
             ) : (
-              parentGoals.slice(0, 3).map((goal, index) => (
-                <GoalProgressCard
-                  key={goal.id}
-                  goal={goal}
-                  progress={0} // Progress is calculated from daily logs
-                  delay={index * 100}
-                  onPress={() => router.push(`/shared/goals/${goal.id}` as any)}
-                />
-              ))
+              parentGoals.slice(0, 3).map((goal, index) => {
+                const currentValue = goal.currentPeriodLogs || 0;
+                const targetValue = goal.target_frequency || 1;
+                const progress = Math.min(
+                  (currentValue / targetValue) * 100,
+                  100,
+                );
+
+                return (
+                  <GoalProgressCard
+                    key={goal.id}
+                    goal={goal}
+                    progress={progress}
+                    currentValue={currentValue}
+                    delay={index * 100}
+                    onPress={() =>
+                      router.push(`/shared/goals/${goal.id}` as any)
+                    }
+                  />
+                );
+              })
             )}
           </Animated.View>
         )}
@@ -411,7 +441,12 @@ export default function ParentDashboard() {
         >
           <Card
             variant="filled"
-            style={[styles.tipCard, { backgroundColor: colors.secondaryLight }]}
+            style={
+              StyleSheet.flatten([
+                styles.tipCard,
+                { backgroundColor: colors.secondaryLight },
+              ]) as ViewStyle
+            }
           >
             <View style={styles.tipHeader}>
               <Ionicons name="bulb" size={24} color={colors.secondary} />

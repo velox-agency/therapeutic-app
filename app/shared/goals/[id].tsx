@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
-import React from "react";
+import React, { useMemo } from "react";
 import {
   ScrollView,
   StyleSheet,
@@ -13,12 +13,55 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Button, Card, ProgressBar } from "@/components/ui";
 import { Colors, Spacing, Typography } from "@/constants/theme";
-import { useGoal } from "@/hooks/useGoals";
+import { useDailyLogs, useGoal } from "@/hooks/useGoals";
 import { GoalPriority } from "@/types/database.types";
 
 export default function GoalDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { goal, loading } = useGoal(id || "");
+  const { logs, loading: logsLoading } = useDailyLogs(id || "");
+
+  // Calculate progress for current period
+  const currentPeriodProgress = useMemo(() => {
+    if (!goal || !logs.length) return 0;
+
+    const now = new Date();
+    let periodStart: Date;
+
+    switch (goal.frequency_period) {
+      case "daily":
+        periodStart = new Date(
+          now.getFullYear(),
+          now.getMonth(),
+          now.getDate(),
+        );
+        break;
+      case "weekly":
+        const dayOfWeek = now.getDay();
+        periodStart = new Date(
+          now.getFullYear(),
+          now.getMonth(),
+          now.getDate() - dayOfWeek,
+        );
+        break;
+      case "monthly":
+        periodStart = new Date(now.getFullYear(), now.getMonth(), 1);
+        break;
+      default:
+        periodStart = new Date(
+          now.getFullYear(),
+          now.getMonth(),
+          now.getDate(),
+        );
+    }
+
+    return logs.filter((log) => new Date(log.log_date) >= periodStart).length;
+  }, [goal, logs]);
+
+  const progressPercentage = useMemo(() => {
+    if (!goal) return 0;
+    return Math.min((currentPeriodProgress / goal.target_frequency) * 100, 100);
+  }, [currentPeriodProgress, goal]);
 
   if (loading) {
     return (
@@ -146,10 +189,13 @@ export default function GoalDetailScreen() {
                 This {goal.frequency_period}
               </Text>
               <Text style={styles.progressValue}>
-                0 / {goal.target_frequency}
+                {currentPeriodProgress} / {goal.target_frequency}
               </Text>
             </View>
-            <ProgressBar progress={0} color={Colors.primary[500]} />
+            <ProgressBar
+              progress={progressPercentage / 100}
+              color={Colors.primary[500]}
+            />
           </Card>
         </Animated.View>
 
@@ -159,17 +205,62 @@ export default function GoalDetailScreen() {
           style={styles.section}
         >
           <Text style={styles.sectionTitle}>Recent Activity</Text>
-          <Card variant="outlined" style={styles.emptyCard}>
-            <Ionicons
-              name="document-text-outline"
-              size={48}
-              color={Colors.text.tertiary}
-            />
-            <Text style={styles.emptyText}>No activity logged yet</Text>
-            <Text style={styles.emptySubtext}>
-              Start tracking progress by logging daily activities
-            </Text>
-          </Card>
+          {logsLoading ? (
+            <Card variant="outlined" style={styles.emptyCard}>
+              <Text style={styles.emptyText}>Loading...</Text>
+            </Card>
+          ) : logs.length === 0 ? (
+            <Card variant="outlined" style={styles.emptyCard}>
+              <Ionicons
+                name="document-text-outline"
+                size={48}
+                color={Colors.text.tertiary}
+              />
+              <Text style={styles.emptyText}>No activity logged yet</Text>
+              <Text style={styles.emptySubtext}>
+                Start tracking progress by logging daily activities
+              </Text>
+            </Card>
+          ) : (
+            <View style={styles.logsContainer}>
+              {logs.slice(0, 10).map((log, index) => (
+                <Card key={log.id} variant="outlined" style={styles.logCard}>
+                  <View style={styles.logHeader}>
+                    <View style={styles.logDateContainer}>
+                      <Ionicons
+                        name="calendar-outline"
+                        size={16}
+                        color={Colors.primary[500]}
+                      />
+                      <Text style={styles.logDate}>
+                        {new Date(log.log_date).toLocaleDateString("en-US", {
+                          weekday: "short",
+                          month: "short",
+                          day: "numeric",
+                        })}
+                      </Text>
+                    </View>
+                    {log.stars_earned > 0 && (
+                      <View style={styles.starsContainer}>
+                        <Text style={styles.starsText}>
+                          ⭐ {log.stars_earned}
+                        </Text>
+                      </View>
+                    )}
+                  </View>
+                  {log.notes && (
+                    <Text style={styles.logNotes}>{log.notes}</Text>
+                  )}
+                  {log.achieved_value !== null &&
+                    log.achieved_value !== undefined && (
+                      <Text style={styles.logValue}>
+                        Achieved: {log.achieved_value}
+                      </Text>
+                    )}
+                </Card>
+              ))}
+            </View>
+          )}
         </Animated.View>
 
         {/* Log Progress Button */}
@@ -310,6 +401,52 @@ const styles = StyleSheet.create({
     fontSize: Typography.fontSize.small,
     color: Colors.text.secondary,
     textAlign: "center",
+    marginTop: Spacing.xs,
+  },
+  logsContainer: {
+    gap: Spacing.sm,
+  },
+  logCard: {
+    paddingVertical: Spacing.md,
+  },
+  logHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  logDateContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.xs,
+  },
+  logDate: {
+    fontFamily: Typography.fontFamily.primaryBold,
+    fontSize: Typography.fontSize.small,
+    fontWeight: Typography.fontWeight.semibold,
+    color: Colors.text.primary,
+  },
+  starsContainer: {
+    backgroundColor: Colors.secondary[50],
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: Spacing.xs,
+    borderRadius: 12,
+  },
+  starsText: {
+    fontFamily: Typography.fontFamily.primaryBold,
+    fontSize: Typography.fontSize.small,
+    fontWeight: Typography.fontWeight.bold,
+    color: Colors.secondary[600],
+  },
+  logNotes: {
+    fontFamily: Typography.fontFamily.primary,
+    fontSize: Typography.fontSize.small,
+    color: Colors.text.secondary,
+    marginTop: Spacing.sm,
+  },
+  logValue: {
+    fontFamily: Typography.fontFamily.primary,
+    fontSize: Typography.fontSize.tiny,
+    color: Colors.text.tertiary,
     marginTop: Spacing.xs,
   },
   buttonContainer: {

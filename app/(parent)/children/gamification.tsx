@@ -9,6 +9,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  ViewStyle,
 } from "react-native";
 import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -25,8 +26,12 @@ const { width } = Dimensions.get("window");
 
 interface UnlockedBadge {
   badge_id: string;
-  unlocked_at: string;
-  tier: "bronze" | "silver" | "gold" | "platinum";
+  earned_at: string;
+  badge: {
+    name: string;
+    requirement_type: string;
+    requirement_value: number;
+  } | null;
 }
 
 interface Milestone {
@@ -65,11 +70,26 @@ export default function GamificationScreen() {
 
     try {
       const { data } = await supabase
-        .from("badges")
-        .select("badge_id, unlocked_at, tier")
+        .from("child_badges")
+        .select(
+          `
+          badge_id,
+          earned_at,
+          badge:badges!inner(name, requirement_type, requirement_value)
+        `,
+        )
         .eq("child_id", id);
 
-      setUnlockedBadges(data || []);
+      // Transform the data to flatten the badge relation
+      const transformedData: UnlockedBadge[] = (data || []).map(
+        (item: any) => ({
+          badge_id: item.badge_id,
+          earned_at: item.earned_at,
+          badge: item.badge,
+        }),
+      );
+
+      setUnlockedBadges(transformedData);
     } catch (error) {
       console.error("Error loading badges:", error);
     } finally {
@@ -98,8 +118,10 @@ export default function GamificationScreen() {
   const starsInCurrentLevel = totalStars % 100;
   const levelProgress = starsInCurrentLevel / 100;
 
-  // Get unlocked badge names
-  const unlockedBadgeNames = unlockedBadges.map((b) => b.badge_id);
+  // Get unlocked badge names from the joined badge data
+  const unlockedBadgeNames = unlockedBadges
+    .map((b) => b.badge?.name)
+    .filter((name): name is string => !!name);
 
   const unlockedCount = unlockedBadges.length;
   const totalBadges = BADGE_DEFINITIONS.length;
@@ -399,13 +421,15 @@ export default function GamificationScreen() {
         <Animated.View entering={FadeInDown.delay(900).duration(400)}>
           <Card
             variant="outlined"
-            style={[
-              styles.motivationalCard,
-              {
-                backgroundColor: colors.primary + "10",
-                borderColor: colors.primary + "30",
-              },
-            ]}
+            style={
+              StyleSheet.flatten([
+                styles.motivationalCard,
+                {
+                  backgroundColor: colors.primary + "10",
+                  borderColor: colors.primary + "30",
+                },
+              ]) as ViewStyle
+            }
           >
             <Text style={styles.motivationalEmoji}>🌟</Text>
             <Text style={[styles.motivationalText, { color: colors.primary }]}>

@@ -1,7 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
-import React from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
+  ActivityIndicator,
   ScrollView,
   StyleSheet,
   Text,
@@ -16,12 +17,56 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useChild } from "@/hooks/useChildren";
 import { getNextMilestone } from "@/lib/gamification";
+import { supabase } from "@/lib/supabase";
+import { DailyLog, Goal } from "@/types/database.types";
 
 export default function ChildDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { child, loading } = useChild(id);
   const { colors } = useTheme();
   const { t } = useLanguage();
+  const [recentActivity, setRecentActivity] = useState<
+    (DailyLog & { goal?: { title: string } })[]
+  >([]);
+  const [activeGoals, setActiveGoals] = useState<Goal[]>([]);
+  const [dataLoading, setDataLoading] = useState(true);
+
+  const fetchChildData = useCallback(async () => {
+    if (!id) return;
+
+    setDataLoading(true);
+
+    // Fetch recent activity (daily logs)
+    const { data: activityData } = await supabase
+      .from("daily_logs")
+      .select(
+        `
+        *,
+        goal:goals(title)
+      `,
+      )
+      .eq("child_id", id)
+      .order("log_date", { ascending: false })
+      .limit(5);
+
+    setRecentActivity(activityData || []);
+
+    // Fetch active goals for this child
+    const { data: goalsData } = await supabase
+      .from("goals")
+      .select("*")
+      .eq("child_id", id)
+      .eq("is_active", true)
+      .order("created_at", { ascending: false })
+      .limit(5);
+
+    setActiveGoals(goalsData || []);
+    setDataLoading(false);
+  }, [id]);
+
+  useEffect(() => {
+    fetchChildData();
+  }, [fetchChildData]);
 
   if (loading || !child) {
     return (
@@ -48,15 +93,16 @@ export default function ChildDetailScreen() {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.back()}>
+          <TouchableOpacity
+            onPress={() => router.back()}
+            style={styles.headerButton}
+          >
             <Ionicons name="arrow-back" size={24} color={colors.text} />
           </TouchableOpacity>
           <Text style={[styles.title, { color: colors.text }]}>
             {t("navigation.profile")}
           </Text>
-          <TouchableOpacity>
-            <Ionicons name="settings-outline" size={24} color={colors.text} />
-          </TouchableOpacity>
+          <View style={styles.headerButton} />
         </View>
 
         {/* Child Profile */}
@@ -189,21 +235,75 @@ export default function ChildDetailScreen() {
           <Text style={[styles.sectionTitle, { color: colors.text }]}>
             {t("children.recentActivity")}
           </Text>
-          <Card variant="outlined" style={styles.emptyActivity}>
-            <Ionicons
-              name="time-outline"
-              size={48}
-              color={colors.textSecondary}
-            />
-            <Text style={[styles.emptyText, { color: colors.text }]}>
-              {t("children.noRecentActivity")}
-            </Text>
-            <Text
-              style={[styles.emptySubtext, { color: colors.textSecondary }]}
-            >
-              {t("children.completeGoalsToSee")}
-            </Text>
-          </Card>
+          {dataLoading ? (
+            <View style={styles.loadingSection}>
+              <ActivityIndicator size="small" color={colors.primary} />
+            </View>
+          ) : recentActivity.length > 0 ? (
+            <View style={styles.activityList}>
+              {recentActivity.map((activity) => (
+                <Card
+                  key={activity.id}
+                  variant="outlined"
+                  style={styles.activityCard}
+                >
+                  <View style={styles.activityRow}>
+                    <View
+                      style={[
+                        styles.activityIcon,
+                        { backgroundColor: Colors.star + "20" },
+                      ]}
+                    >
+                      <Text style={{ fontSize: 16 }}>⭐</Text>
+                    </View>
+                    <View style={styles.activityContent}>
+                      <Text
+                        style={[styles.activityTitle, { color: colors.text }]}
+                      >
+                        {activity.goal?.title || t("children.goalCompleted")}
+                      </Text>
+                      <Text
+                        style={[
+                          styles.activityDate,
+                          { color: colors.textSecondary },
+                        ]}
+                      >
+                        {new Date(activity.log_date).toLocaleDateString()} • +
+                        {activity.stars_earned || 1} ⭐
+                      </Text>
+                      {activity.notes && (
+                        <Text
+                          style={[
+                            styles.activityNotes,
+                            { color: colors.textSecondary },
+                          ]}
+                          numberOfLines={1}
+                        >
+                          {activity.notes}
+                        </Text>
+                      )}
+                    </View>
+                  </View>
+                </Card>
+              ))}
+            </View>
+          ) : (
+            <Card variant="outlined" style={styles.emptyActivity}>
+              <Ionicons
+                name="time-outline"
+                size={48}
+                color={colors.textSecondary}
+              />
+              <Text style={[styles.emptyText, { color: colors.text }]}>
+                {t("children.noRecentActivity")}
+              </Text>
+              <Text
+                style={[styles.emptySubtext, { color: colors.textSecondary }]}
+              >
+                {t("children.completeGoalsToSee")}
+              </Text>
+            </Card>
+          )}
         </View>
 
         {/* Active Goals */}
@@ -212,27 +312,76 @@ export default function ChildDetailScreen() {
             <Text style={[styles.sectionTitle, { color: colors.text }]}>
               {t("children.activeGoals")}
             </Text>
-            <TouchableOpacity>
-              <Text style={[styles.seeAllText, { color: colors.primary }]}>
-                {t("children.addGoal")}
-              </Text>
-            </TouchableOpacity>
           </View>
-          <Card variant="outlined" style={styles.emptyActivity}>
-            <Ionicons
-              name="flag-outline"
-              size={48}
-              color={colors.textSecondary}
-            />
-            <Text style={[styles.emptyText, { color: colors.text }]}>
-              {t("children.noActiveGoals")}
-            </Text>
-            <Text
-              style={[styles.emptySubtext, { color: colors.textSecondary }]}
-            >
-              {t("children.connectWithTherapist")}
-            </Text>
-          </Card>
+          {dataLoading ? (
+            <View style={styles.loadingSection}>
+              <ActivityIndicator size="small" color={colors.primary} />
+            </View>
+          ) : activeGoals.length > 0 ? (
+            <View style={styles.goalsList}>
+              {activeGoals.map((goal) => (
+                <TouchableOpacity
+                  key={goal.id}
+                  onPress={() => router.push(`/shared/goals/${goal.id}`)}
+                >
+                  <Card variant="outlined" style={styles.goalCard}>
+                    <View style={styles.goalRow}>
+                      <View
+                        style={[
+                          styles.goalIcon,
+                          { backgroundColor: Colors.primary[50] },
+                        ]}
+                      >
+                        <Ionicons
+                          name="flag"
+                          size={20}
+                          color={Colors.primary[500]}
+                        />
+                      </View>
+                      <View style={styles.goalContent}>
+                        <Text
+                          style={[styles.goalTitle, { color: colors.text }]}
+                          numberOfLines={1}
+                        >
+                          {goal.title}
+                        </Text>
+                        <Text
+                          style={[
+                            styles.goalMeta,
+                            { color: colors.textSecondary },
+                          ]}
+                        >
+                          {goal.target_frequency}x {goal.frequency_period} •{" "}
+                          {goal.category}
+                        </Text>
+                      </View>
+                      <Ionicons
+                        name="chevron-forward"
+                        size={20}
+                        color={colors.textSecondary}
+                      />
+                    </View>
+                  </Card>
+                </TouchableOpacity>
+              ))}
+            </View>
+          ) : (
+            <Card variant="outlined" style={styles.emptyActivity}>
+              <Ionicons
+                name="flag-outline"
+                size={48}
+                color={colors.textSecondary}
+              />
+              <Text style={[styles.emptyText, { color: colors.text }]}>
+                {t("children.noActiveGoals")}
+              </Text>
+              <Text
+                style={[styles.emptySubtext, { color: colors.textSecondary }]}
+              >
+                {t("children.connectWithTherapist")}
+              </Text>
+            </Card>
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -259,11 +408,19 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: Spacing.md,
   },
+  headerButton: {
+    width: 40,
+    height: 40,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   title: {
+    flex: 1,
     fontFamily: Typography.fontFamily.primaryBold,
     fontSize: Typography.fontSize.h3,
     fontWeight: Typography.fontWeight.bold,
     color: Colors.text.primary,
+    textAlign: "center",
   },
   profileCard: {
     alignItems: "center",
@@ -376,5 +533,81 @@ const styles = StyleSheet.create({
     color: Colors.text.secondary,
     textAlign: "center",
     marginTop: Spacing.xs,
+  },
+  loadingSection: {
+    padding: Spacing.xl,
+    alignItems: "center",
+  },
+  activityList: {
+    gap: Spacing.sm,
+  },
+  activityCard: {
+    padding: Spacing.md,
+  },
+  activityRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.md,
+  },
+  activityIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  activityContent: {
+    flex: 1,
+  },
+  activityTitle: {
+    fontFamily: Typography.fontFamily.primaryBold,
+    fontSize: Typography.fontSize.body,
+    fontWeight: Typography.fontWeight.semibold,
+    color: Colors.text.primary,
+  },
+  activityDate: {
+    fontFamily: Typography.fontFamily.primary,
+    fontSize: Typography.fontSize.small,
+    color: Colors.text.secondary,
+    marginTop: 2,
+  },
+  activityNotes: {
+    fontFamily: Typography.fontFamily.primary,
+    fontSize: Typography.fontSize.tiny,
+    color: Colors.text.tertiary,
+    marginTop: 2,
+  },
+  goalsList: {
+    gap: Spacing.sm,
+  },
+  goalCard: {
+    padding: Spacing.md,
+  },
+  goalRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.md,
+  },
+  goalIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  goalContent: {
+    flex: 1,
+  },
+  goalTitle: {
+    fontFamily: Typography.fontFamily.primaryBold,
+    fontSize: Typography.fontSize.body,
+    fontWeight: Typography.fontWeight.semibold,
+    color: Colors.text.primary,
+  },
+  goalMeta: {
+    fontFamily: Typography.fontFamily.primary,
+    fontSize: Typography.fontSize.small,
+    color: Colors.text.secondary,
+    marginTop: 2,
   },
 });

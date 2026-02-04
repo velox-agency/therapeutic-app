@@ -292,14 +292,14 @@ export function useDailyLogs(goalId?: string): UseDailyLogsResult {
  * Used on parent dashboard for Goal Tracker Preview
  */
 interface UseParentGoalsResult {
-  goals: (Goal & { child?: { first_name: string; id: string } })[];
+  goals: (Goal & { child?: { first_name: string; id: string }; currentPeriodLogs?: number })[];
   loading: boolean;
   error: any;
   refetch: () => Promise<void>;
 }
 
 export function useParentGoals(childIds: string[]): UseParentGoalsResult {
-  const [goals, setGoals] = useState<(Goal & { child?: { first_name: string; id: string } })[]>([]);
+  const [goals, setGoals] = useState<(Goal & { child?: { first_name: string; id: string }; currentPeriodLogs?: number })[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<any>(null);
 
@@ -327,6 +327,55 @@ export function useParentGoals(childIds: string[]): UseParentGoalsResult {
 
     if (fetchError) {
       setError(fetchError);
+      setLoading(false);
+      return;
+    }
+
+    // Fetch daily logs for calculating progress
+    if (data && data.length > 0) {
+      const goalIds = data.map(g => g.id);
+
+      // Get logs from current period (last 30 days for simplicity)
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+      const { data: logsData } = await supabase
+        .from('daily_logs')
+        .select('goal_id, log_date')
+        .in('goal_id', goalIds)
+        .gte('log_date', thirtyDaysAgo.toISOString().split('T')[0]);
+
+      // Count logs per goal for current period
+      const goalsWithProgress = data.map(goal => {
+        const now = new Date();
+        let periodStart: Date;
+
+        switch (goal.frequency_period) {
+          case 'daily':
+            periodStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            break;
+          case 'weekly':
+            const dayOfWeek = now.getDay();
+            periodStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - dayOfWeek);
+            break;
+          case 'monthly':
+            periodStart = new Date(now.getFullYear(), now.getMonth(), 1);
+            break;
+          default:
+            periodStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        }
+
+        const periodLogs = logsData?.filter(log =>
+          log.goal_id === goal.id && new Date(log.log_date) >= periodStart
+        ).length || 0;
+
+        return {
+          ...goal,
+          currentPeriodLogs: periodLogs,
+        };
+      });
+
+      setGoals(goalsWithProgress);
     } else {
       setGoals(data || []);
     }
