@@ -2,12 +2,12 @@ import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
 import {
-    ActivityIndicator,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -166,14 +166,10 @@ export default function ChildDetailScreen() {
               <View
                 style={[
                   styles.actionIcon,
-                  { backgroundColor: Colors.secondary[50] },
+                  { backgroundColor: colors.secondaryLight },
                 ]}
               >
-                <Ionicons
-                  name="clipboard"
-                  size={24}
-                  color={Colors.secondary[500]}
-                />
+                <Ionicons name="clipboard" size={24} color={colors.secondary} />
               </View>
               <Text
                 style={[styles.actionText, { color: colors.textSecondary }]}
@@ -191,14 +187,10 @@ export default function ChildDetailScreen() {
               <View
                 style={[
                   styles.actionIcon,
-                  { backgroundColor: Colors.success[50] },
+                  { backgroundColor: colors.successLight },
                 ]}
               >
-                <Ionicons
-                  name="trending-up"
-                  size={24}
-                  color={Colors.success[500]}
-                />
+                <Ionicons name="trending-up" size={24} color={colors.success} />
               </View>
               <Text
                 style={[styles.actionText, { color: colors.textSecondary }]}
@@ -216,10 +208,10 @@ export default function ChildDetailScreen() {
               <View
                 style={[
                   styles.actionIcon,
-                  { backgroundColor: Colors.primary[50] },
+                  { backgroundColor: colors.primaryLight },
                 ]}
               >
-                <Ionicons name="trophy" size={24} color={Colors.primary[500]} />
+                <Ionicons name="trophy" size={24} color={colors.primary} />
               </View>
               <Text
                 style={[styles.actionText, { color: colors.textSecondary }]}
