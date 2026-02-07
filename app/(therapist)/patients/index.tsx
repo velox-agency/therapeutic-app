@@ -2,17 +2,16 @@ import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
 import {
-    ActivityIndicator,
-    Alert,
-    FlatList,
-    RefreshControl,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
-    ViewStyle,
+  ActivityIndicator,
+  Alert,
+  FlatList,
+  RefreshControl,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+  ViewStyle,
 } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -433,12 +432,7 @@ export default function PatientsListScreen() {
       </View>
 
       {/* Tab Filters */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={styles.tabsContainer}
-        contentContainerStyle={styles.tabsContent}
-      >
+      <View style={styles.tabsContainer}>
         {(["all", "active", "pending"] as TabFilter[]).map((tab) => (
           <TouchableOpacity
             key={tab}
@@ -464,7 +458,7 @@ export default function PatientsListScreen() {
             </Text>
           </TouchableOpacity>
         ))}
-      </ScrollView>
+      </View>
 
       {/* Patient List */}
       {filteredPatients.length === 0 ? (
@@ -541,7 +535,7 @@ const styles = StyleSheet.create({
   },
   searchContainer: {
     paddingHorizontal: Spacing.lg,
-    marginBottom: Spacing.md,
+    marginBottom: Spacing.sm,
   },
   searchBox: {
     flexDirection: "row",
@@ -562,15 +556,14 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.xs,
   },
   tabsContainer: {
-    marginBottom: Spacing.md,
-  },
-  tabsContent: {
+    flexDirection: "row",
     paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.sm,
     gap: Spacing.sm,
   },
   tab: {
     paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
+    paddingVertical: 6,
     borderRadius: 20,
     backgroundColor: Colors.surfaceVariant,
   },
@@ -581,6 +574,7 @@ const styles = StyleSheet.create({
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.small,
     color: Colors.text.secondary,
+    lineHeight: Typography.lineHeight.small,
   },
   activeTabText: {
     color: "#fff",
