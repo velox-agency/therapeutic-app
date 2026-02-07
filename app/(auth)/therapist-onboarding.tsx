@@ -14,7 +14,8 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Button, Card, Input } from "@/components/ui";
-import { Colors, ComponentStyle, Spacing, Typography } from "@/constants/theme";
+import { ComponentStyle, Spacing, Typography } from "@/constants/theme";
+import { useTheme } from "@/contexts/ThemeContext";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/lib/supabase";
 
@@ -29,6 +30,7 @@ const SPECIALIZATIONS = [
 
 export default function TherapistOnboardingScreen() {
   const { user, refreshProfile } = useAuth();
+  const { colors } = useTheme();
   const [step, setStep] = useState(1);
   const [saving, setSaving] = useState(false);
 
@@ -72,7 +74,9 @@ export default function TherapistOnboardingScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.keyboardView}
@@ -84,20 +88,30 @@ export default function TherapistOnboardingScreen() {
         >
           {/* Progress Indicator */}
           <View style={styles.progressContainer}>
-            <View style={styles.progressBar}>
+            <View
+              style={[styles.progressBar, { backgroundColor: colors.border }]}
+            >
               <View
-                style={[styles.progressFill, { width: `${(step / 2) * 100}%` }]}
+                style={[
+                  styles.progressFill,
+                  {
+                    width: `${(step / 2) * 100}%`,
+                    backgroundColor: colors.primary,
+                  },
+                ]}
               />
             </View>
-            <Text style={styles.progressText}>Step {step} of 2</Text>
+            <Text style={[styles.progressText, { color: colors.textTertiary }]}>
+              Step {step} of 2
+            </Text>
           </View>
 
           {/* Header */}
           <View style={styles.header}>
-            <Text style={styles.title}>
+            <Text style={[styles.title, { color: colors.text }]}>
               {step === 1 ? "Your Specialization" : "Professional Details"}
             </Text>
-            <Text style={styles.subtitle}>
+            <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
               {step === 1
                 ? "Help parents find you by selecting your area of expertise"
                 : "Share more about your qualifications and practice"}
@@ -112,7 +126,14 @@ export default function TherapistOnboardingScreen() {
                   key={spec.id}
                   style={[
                     styles.specializationCard,
-                    specialization === spec.id && styles.selectedCard,
+                    {
+                      backgroundColor: colors.surface,
+                      borderColor: colors.border,
+                    },
+                    specialization === spec.id && {
+                      borderColor: colors.primary,
+                      backgroundColor: colors.primaryLight,
+                    },
                   ]}
                   onPress={() => setSpecialization(spec.id)}
                 >
@@ -120,7 +141,12 @@ export default function TherapistOnboardingScreen() {
                   <Text
                     style={[
                       styles.specializationLabel,
-                      specialization === spec.id && styles.selectedLabel,
+                      { color: colors.text },
+                      specialization === spec.id && {
+                        fontFamily: Typography.fontFamily.primaryBold,
+                        fontWeight: Typography.fontWeight.bold,
+                        color: colors.primaryDark,
+                      },
                     ]}
                   >
                     {spec.label}
@@ -130,7 +156,7 @@ export default function TherapistOnboardingScreen() {
                       <Ionicons
                         name="checkmark-circle"
                         size={24}
-                        color={Colors.primary[500]}
+                        color={colors.primary}
                       />
                     </View>
                   )}
@@ -151,7 +177,7 @@ export default function TherapistOnboardingScreen() {
                   <Ionicons
                     name="create-outline"
                     size={20}
-                    color={Colors.text.secondary}
+                    color={colors.textSecondary}
                   />
                 }
               />
@@ -167,7 +193,7 @@ export default function TherapistOnboardingScreen() {
                     <Ionicons
                       name="time-outline"
                       size={20}
-                      color={Colors.text.secondary}
+                      color={colors.textSecondary}
                     />
                   }
                 />
@@ -183,7 +209,7 @@ export default function TherapistOnboardingScreen() {
                     <Ionicons
                       name="document-text-outline"
                       size={20}
-                      color={Colors.text.secondary}
+                      color={colors.textSecondary}
                     />
                   }
                 />
@@ -199,7 +225,7 @@ export default function TherapistOnboardingScreen() {
                     <Ionicons
                       name="location-outline"
                       size={20}
-                      color={Colors.text.secondary}
+                      color={colors.textSecondary}
                     />
                   }
                 />
@@ -221,7 +247,11 @@ export default function TherapistOnboardingScreen() {
                   style={styles.skipButton}
                   onPress={handleSkip}
                 >
-                  <Text style={styles.skipText}>Skip for now</Text>
+                  <Text
+                    style={[styles.skipText, { color: colors.textTertiary }]}
+                  >
+                    Skip for now
+                  </Text>
                 </TouchableOpacity>
               </>
             ) : (
@@ -244,7 +274,11 @@ export default function TherapistOnboardingScreen() {
                   style={styles.skipButton}
                   onPress={handleSkip}
                 >
-                  <Text style={styles.skipText}>Skip for now</Text>
+                  <Text
+                    style={[styles.skipText, { color: colors.textTertiary }]}
+                  >
+                    Skip for now
+                  </Text>
                 </TouchableOpacity>
               </>
             )}
@@ -258,7 +292,6 @@ export default function TherapistOnboardingScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
   },
   keyboardView: {
     flex: 1,
@@ -273,19 +306,16 @@ const styles = StyleSheet.create({
   },
   progressBar: {
     height: 8,
-    backgroundColor: Colors.border,
     borderRadius: 4,
     overflow: "hidden",
   },
   progressFill: {
     height: "100%",
-    backgroundColor: Colors.primary[500],
     borderRadius: 4,
   },
   progressText: {
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.small,
-    color: Colors.text.tertiary,
     marginTop: Spacing.xs,
     textAlign: "center",
   },
@@ -296,13 +326,11 @@ const styles = StyleSheet.create({
     fontFamily: Typography.fontFamily.primaryBold,
     fontSize: Typography.fontSize.h1,
     fontWeight: Typography.fontWeight.bold,
-    color: Colors.text.primary,
     marginBottom: Spacing.xs,
   },
   subtitle: {
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.body,
-    color: Colors.text.secondary,
     lineHeight: 24,
   },
   specializationGrid: {
@@ -312,15 +340,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     padding: Spacing.md,
-    backgroundColor: Colors.surface,
     borderRadius: ComponentStyle.borderRadius.lg,
     borderWidth: 2,
-    borderColor: Colors.border,
     ...ComponentStyle.shadow.small,
-  },
-  selectedCard: {
-    borderColor: Colors.primary[500],
-    backgroundColor: Colors.primary[50],
   },
   specializationIcon: {
     fontSize: 28,
@@ -330,12 +352,6 @@ const styles = StyleSheet.create({
     flex: 1,
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.body,
-    color: Colors.text.primary,
-  },
-  selectedLabel: {
-    fontFamily: Typography.fontFamily.primaryBold,
-    fontWeight: Typography.fontWeight.bold,
-    color: Colors.primary[700],
   },
   checkmark: {
     marginLeft: Spacing.sm,
@@ -368,6 +384,5 @@ const styles = StyleSheet.create({
   skipText: {
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.body,
-    color: Colors.text.tertiary,
   },
 });
