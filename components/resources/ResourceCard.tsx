@@ -3,7 +3,8 @@ import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Animated, { FadeInUp } from "react-native-reanimated";
 
-import { Colors, ComponentStyle, Spacing, Typography } from "@/constants/theme";
+import { ComponentStyle, Spacing, Typography } from "@/constants/theme";
+import { useTheme } from "@/contexts/ThemeContext";
 
 type ResourceType = "article" | "video" | "exercise";
 
@@ -22,39 +23,40 @@ interface ResourceCardProps {
   delay?: number;
 }
 
-const TYPE_CONFIG: Record<
-  ResourceType,
-  { icon: string; color: string; bgColor: string }
-> = {
-  article: {
-    icon: "📝",
-    color: Colors.primary[500],
-    bgColor: Colors.primary[50],
-  },
-  video: {
-    icon: "🎥",
-    color: Colors.secondary[500],
-    bgColor: Colors.secondary[50],
-  },
-  exercise: {
-    icon: "🎯",
-    color: Colors.success[500],
-    bgColor: Colors.success[50],
-  },
-};
-
 export function ResourceCard({
   resource,
   onPress,
   delay = 0,
 }: ResourceCardProps) {
-  const config = TYPE_CONFIG[resource.type] || TYPE_CONFIG.article;
+  const { colors } = useTheme();
+  const TYPE_CONFIG_DYNAMIC: Record<
+    ResourceType,
+    { icon: string; color: string; bgColor: string }
+  > = {
+    article: {
+      icon: "📝",
+      color: colors.primary,
+      bgColor: colors.primaryLight,
+    },
+    video: {
+      icon: "🎥",
+      color: colors.secondary,
+      bgColor: colors.secondaryLight,
+    },
+    exercise: {
+      icon: "🎯",
+      color: colors.success,
+      bgColor: colors.successLight,
+    },
+  };
+  const config =
+    TYPE_CONFIG_DYNAMIC[resource.type] || TYPE_CONFIG_DYNAMIC.article;
 
   return (
     <Animated.View entering={FadeInUp.delay(delay).springify()}>
       <TouchableOpacity
         onPress={onPress}
-        style={styles.container}
+        style={[styles.container, { backgroundColor: colors.surface }]}
         activeOpacity={0.7}
       >
         {/* Type Badge */}
@@ -67,22 +69,33 @@ export function ResourceCard({
           <Text style={[styles.category, { color: config.color }]}>
             {resource.category}
           </Text>
-          <Text style={styles.title} numberOfLines={2}>
+          <Text
+            style={[styles.title, { color: colors.text }]}
+            numberOfLines={2}
+          >
             {resource.title}
           </Text>
           {resource.content && (
-            <Text style={styles.preview} numberOfLines={2}>
+            <Text
+              style={[styles.preview, { color: colors.textSecondary }]}
+              numberOfLines={2}
+            >
               {resource.content}
             </Text>
           )}
         </View>
 
         {/* Arrow */}
-        <View style={styles.arrowContainer}>
+        <View
+          style={[
+            styles.arrowContainer,
+            { backgroundColor: colors.surfaceVariant },
+          ]}
+        >
           <Ionicons
             name="chevron-forward"
             size={20}
-            color={Colors.text.tertiary}
+            color={colors.textTertiary}
           />
         </View>
       </TouchableOpacity>
@@ -94,7 +107,6 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: Colors.surface,
     padding: Spacing.lg,
     borderRadius: 20,
     marginBottom: Spacing.md,
@@ -116,24 +128,22 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   category: {
-    fontFamily: Typography.fontFamily.primarySemiBold,
+    fontFamily: Typography.fontFamily.primaryBold,
     fontSize: Typography.fontSize.tiny,
     fontWeight: Typography.fontWeight.semibold,
     textTransform: "uppercase",
     letterSpacing: 0.8,
   },
   title: {
-    fontFamily: Typography.fontFamily.primarySemiBold,
+    fontFamily: Typography.fontFamily.primaryBold,
     fontSize: Typography.fontSize.body,
     fontWeight: Typography.fontWeight.semibold,
-    color: Colors.text.primary,
     lineHeight: 22,
     letterSpacing: -0.2,
   },
   preview: {
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.small,
-    color: Colors.text.secondary,
     lineHeight: 20,
     marginTop: 2,
     letterSpacing: 0.1,
@@ -142,7 +152,6 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 12,
-    backgroundColor: Colors.surfaceVariant,
     alignItems: "center",
     justifyContent: "center",
   },

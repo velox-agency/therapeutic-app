@@ -3,20 +3,21 @@ import * as Haptics from "expo-haptics";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import {
-    ActivityIndicator,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import Animated, { FadeInDown, ZoomIn } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { StarBurst } from "@/components/gamification";
 import { Button, Card, Input } from "@/components/ui";
-import { Colors, Spacing, Typography } from "@/constants/theme";
+import { Spacing, Typography } from "@/constants/theme";
+import { useTheme } from "@/contexts/ThemeContext";
 import { useGoal, useGoals } from "@/hooks/useGoals";
 import { awardStars } from "@/lib/gamification";
 import { supabase } from "@/lib/supabase";
@@ -30,6 +31,7 @@ const MOODS = [
 ];
 
 export default function DailyLogScreen() {
+  const { colors } = useTheme();
   const { childId, goalId } = useLocalSearchParams<{
     childId: string;
     goalId: string;
@@ -116,9 +118,17 @@ export default function DailyLogScreen() {
   // Show loading state
   if (goalLoading) {
     return (
-      <SafeAreaView style={[styles.container, styles.centerContent]}>
-        <ActivityIndicator size="large" color={Colors.primary[500]} />
-        <Text style={styles.loadingText}>Loading goal...</Text>
+      <SafeAreaView
+        style={[
+          styles.container,
+          styles.centerContent,
+          { backgroundColor: colors.background },
+        ]}
+      >
+        <ActivityIndicator size="large" color={colors.primary} />
+        <Text style={[styles.loadingText, { color: colors.textSecondary }]}>
+          Loading goal...
+        </Text>
       </SafeAreaView>
     );
   }
@@ -126,14 +136,24 @@ export default function DailyLogScreen() {
   // Show success celebration
   if (showSuccess) {
     return (
-      <SafeAreaView style={[styles.container, styles.successContainer]}>
+      <SafeAreaView
+        style={[
+          styles.container,
+          styles.successContainer,
+          { backgroundColor: colors.background },
+        ]}
+      >
         <Animated.View
           entering={ZoomIn.springify()}
           style={styles.successContent}
         >
           <Text style={styles.successIcon}>🎉</Text>
-          <Text style={styles.successTitle}>Great Job!</Text>
-          <Text style={styles.successText}>Progress logged successfully</Text>
+          <Text style={[styles.successTitle, { color: colors.text }]}>
+            Great Job!
+          </Text>
+          <Text style={[styles.successText, { color: colors.textSecondary }]}>
+            Progress logged successfully
+          </Text>
           {starsAwarded > 0 && (
             <View style={styles.starBurstContainer}>
               <StarBurst totalStars={starsAwarded} />
@@ -145,17 +165,21 @@ export default function DailyLogScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity
             onPress={() => router.back()}
-            style={styles.backButton}
+            style={[styles.backButton, { backgroundColor: colors.surface }]}
           >
-            <Ionicons name="arrow-back" size={24} color={Colors.text.primary} />
+            <Ionicons name="arrow-back" size={24} color={colors.text} />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Log Progress</Text>
+          <Text style={[styles.headerTitle, { color: colors.text }]}>
+            Log Progress
+          </Text>
           <View style={styles.headerPlaceholder} />
         </View>
 
@@ -164,14 +188,21 @@ export default function DailyLogScreen() {
           entering={FadeInDown.delay(100).duration(500)}
           style={styles.section}
         >
-          <Text style={styles.sectionTitle}>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>
             Did you complete the goal today?
           </Text>
           <View style={styles.completionOptions}>
             <TouchableOpacity
               style={[
                 styles.completionOption,
-                completed && styles.completionOptionYes,
+                { backgroundColor: colors.surface, borderColor: colors.border },
+                completed && [
+                  styles.completionOptionYes,
+                  {
+                    borderColor: colors.success,
+                    backgroundColor: colors.successLight,
+                  },
+                ],
               ]}
               onPress={() => {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -181,12 +212,13 @@ export default function DailyLogScreen() {
               <Ionicons
                 name="checkmark-circle"
                 size={48}
-                color={completed ? Colors.success[500] : Colors.text.tertiary}
+                color={completed ? colors.success : colors.textTertiary}
               />
               <Text
                 style={[
                   styles.completionText,
-                  completed && styles.completionTextActive,
+                  { color: colors.textSecondary },
+                  completed && { color: colors.success },
                 ]}
               >
                 Yes!
@@ -196,7 +228,14 @@ export default function DailyLogScreen() {
             <TouchableOpacity
               style={[
                 styles.completionOption,
-                !completed && styles.completionOptionNo,
+                { backgroundColor: colors.surface, borderColor: colors.border },
+                !completed && [
+                  styles.completionOptionNo,
+                  {
+                    borderColor: colors.error,
+                    backgroundColor: colors.errorLight,
+                  },
+                ],
               ]}
               onPress={() => {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -206,12 +245,13 @@ export default function DailyLogScreen() {
               <Ionicons
                 name="close-circle"
                 size={48}
-                color={!completed ? Colors.error[500] : Colors.text.tertiary}
+                color={!completed ? colors.error : colors.textTertiary}
               />
               <Text
                 style={[
                   styles.completionText,
-                  !completed && styles.completionTextNo,
+                  { color: colors.textSecondary },
+                  !completed && { color: colors.error },
                 ]}
               >
                 Not today
@@ -226,10 +266,18 @@ export default function DailyLogScreen() {
             entering={FadeInDown.delay(150).duration(500)}
             style={styles.section}
           >
-            <Card variant="filled" style={styles.goalInfoCard}>
-              <Text style={styles.goalTitle}>{goal.title}</Text>
+            <Card
+              variant="filled"
+              style={StyleSheet.flatten([
+                styles.goalInfoCard,
+                { backgroundColor: colors.primaryLight },
+              ])}
+            >
+              <Text style={[styles.goalTitle, { color: colors.primaryDark }]}>
+                {goal.title}
+              </Text>
               {goal.target_value && goal.unit && (
-                <Text style={styles.goalTarget}>
+                <Text style={[styles.goalTarget, { color: colors.primary }]}>
                   🎯 Target: {goal.target_value} {goal.unit}
                 </Text>
               )}
@@ -243,23 +291,40 @@ export default function DailyLogScreen() {
             entering={FadeInDown.delay(180).duration(500)}
             style={styles.section}
           >
-            <Text style={styles.sectionTitle}>How much did they achieve?</Text>
-            <View style={styles.valueInputContainer}>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>
+              How much did they achieve?
+            </Text>
+            <View
+              style={[
+                styles.valueInputContainer,
+                {
+                  backgroundColor: colors.surface,
+                  borderColor: colors.primary,
+                },
+              ]}
+            >
               <TextInput
                 value={achievedValue}
                 onChangeText={setAchievedValue}
-                style={styles.valueInput}
+                style={[styles.valueInput, { color: colors.text }]}
                 placeholder="0"
-                placeholderTextColor={Colors.text.tertiary}
+                placeholderTextColor={colors.textTertiary}
                 keyboardType="number-pad"
               />
-              <Text style={styles.unitLabel}>{goal.unit}</Text>
+              <Text style={[styles.unitLabel, { color: colors.textSecondary }]}>
+                {goal.unit}
+              </Text>
             </View>
 
             {/* Progress Preview */}
             {achievedValue && (
               <View style={styles.progressPreview}>
-                <View style={styles.progressBar}>
+                <View
+                  style={[
+                    styles.progressBar,
+                    { backgroundColor: colors.primaryLight },
+                  ]}
+                >
                   <View
                     style={[
                       styles.progressFill,
@@ -267,13 +332,15 @@ export default function DailyLogScreen() {
                         width: `${Math.min((parseInt(achievedValue) / (goal.target_value || 1)) * 100, 100)}%`,
                         backgroundColor:
                           parseInt(achievedValue) >= (goal.target_value || 0)
-                            ? Colors.success[500]
-                            : Colors.primary[500],
+                            ? colors.success
+                            : colors.primary,
                       },
                     ]}
                   />
                 </View>
-                <Text style={styles.progressText}>
+                <Text
+                  style={[styles.progressText, { color: colors.textSecondary }]}
+                >
                   {achievedValue} / {goal.target_value} {goal.unit}
                 </Text>
               </View>
@@ -286,14 +353,19 @@ export default function DailyLogScreen() {
           entering={FadeInDown.delay(200).duration(500)}
           style={styles.section}
         >
-          <Text style={styles.sectionTitle}>How did it go?</Text>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>
+            How did it go?
+          </Text>
           <View style={styles.moodOptions}>
             {MOODS.map((m) => (
               <TouchableOpacity
                 key={m.id}
                 style={[
                   styles.moodOption,
-                  mood === m.id && styles.moodOptionSelected,
+                  mood === m.id && [
+                    styles.moodOptionSelected,
+                    { backgroundColor: colors.primaryLight },
+                  ],
                 ]}
                 onPress={() => {
                   Haptics.selectionAsync();
@@ -304,7 +376,12 @@ export default function DailyLogScreen() {
                 <Text
                   style={[
                     styles.moodLabel,
-                    mood === m.id && styles.moodLabelSelected,
+                    { color: colors.textSecondary },
+                    mood === m.id && {
+                      color: colors.primary,
+                      fontFamily: Typography.fontFamily.primaryBold,
+                      fontWeight: Typography.fontWeight.bold,
+                    },
                   ]}
                 >
                   {m.label}
@@ -319,7 +396,9 @@ export default function DailyLogScreen() {
           entering={FadeInDown.delay(300).duration(500)}
           style={styles.section}
         >
-          <Text style={styles.sectionTitle}>Notes (Optional)</Text>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>
+            Notes (Optional)
+          </Text>
           <Input
             placeholder="Any observations or notes about today..."
             value={notes}
@@ -331,9 +410,15 @@ export default function DailyLogScreen() {
 
         {/* Encouragement */}
         <Animated.View entering={FadeInDown.delay(400).duration(500)}>
-          <Card variant="filled" style={styles.encouragementCard}>
-            <Ionicons name="star" size={24} color={Colors.star} />
-            <Text style={styles.encouragementText}>
+          <Card
+            variant="filled"
+            style={StyleSheet.flatten([
+              styles.encouragementCard,
+              { backgroundColor: colors.secondaryLight },
+            ])}
+          >
+            <Ionicons name="star" size={24} color={colors.star} />
+            <Text style={[styles.encouragementText, { color: colors.text }]}>
               {completed
                 ? "Great job! Every step counts towards progress! 🌟"
                 : "It's okay! Tomorrow is a new opportunity. Keep going! 💪"}
@@ -362,7 +447,6 @@ export default function DailyLogScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
   },
   scrollContent: {
     paddingHorizontal: Spacing.lg,
@@ -378,7 +462,6 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: Colors.surface,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -386,7 +469,6 @@ const styles = StyleSheet.create({
     fontFamily: Typography.fontFamily.primaryBold,
     fontSize: Typography.fontSize.h3,
     fontWeight: Typography.fontWeight.bold,
-    color: Colors.text.primary,
   },
   headerPlaceholder: {
     width: 44,
@@ -398,7 +480,6 @@ const styles = StyleSheet.create({
     fontFamily: Typography.fontFamily.primaryBold,
     fontSize: Typography.fontSize.body,
     fontWeight: Typography.fontWeight.bold,
-    color: Colors.text.primary,
     marginBottom: Spacing.md,
     textAlign: "center",
   },
@@ -410,33 +491,18 @@ const styles = StyleSheet.create({
   completionOption: {
     width: 120,
     height: 120,
-    backgroundColor: Colors.surface,
     borderRadius: 24,
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 3,
-    borderColor: Colors.border,
   },
-  completionOptionYes: {
-    borderColor: Colors.success[500],
-    backgroundColor: Colors.success[50],
-  },
-  completionOptionNo: {
-    borderColor: Colors.error[500],
-    backgroundColor: Colors.error[50],
-  },
+  completionOptionYes: {},
+  completionOptionNo: {},
   completionText: {
     fontFamily: Typography.fontFamily.primaryBold,
     fontSize: Typography.fontSize.body,
     fontWeight: Typography.fontWeight.bold,
-    color: Colors.text.secondary,
     marginTop: Spacing.sm,
-  },
-  completionTextActive: {
-    color: Colors.success[500],
-  },
-  completionTextNo: {
-    color: Colors.error[500],
   },
   moodOptions: {
     flexDirection: "row",
@@ -448,9 +514,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     minWidth: 60,
   },
-  moodOptionSelected: {
-    backgroundColor: Colors.primary[50],
-  },
+  moodOptionSelected: {},
   moodEmoji: {
     fontSize: 32,
     marginBottom: Spacing.xs,
@@ -458,23 +522,15 @@ const styles = StyleSheet.create({
   moodLabel: {
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.tiny,
-    color: Colors.text.secondary,
-  },
-  moodLabelSelected: {
-    fontFamily: Typography.fontFamily.primaryBold,
-    fontWeight: Typography.fontWeight.bold,
-    color: Colors.primary[500],
   },
   encouragementCard: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: Colors.secondary[50],
   },
   encouragementText: {
     flex: 1,
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.body,
-    color: Colors.secondary[700],
     marginLeft: Spacing.md,
   },
   buttonContainer: {
@@ -487,13 +543,11 @@ const styles = StyleSheet.create({
   loadingText: {
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.body,
-    color: Colors.text.secondary,
     marginTop: Spacing.md,
   },
   successContainer: {
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: Colors.background,
   },
   successContent: {
     alignItems: "center",
@@ -507,20 +561,17 @@ const styles = StyleSheet.create({
     fontFamily: Typography.fontFamily.primaryBold,
     fontSize: Typography.fontSize.h1,
     fontWeight: Typography.fontWeight.bold,
-    color: Colors.text.primary,
     marginBottom: Spacing.xs,
   },
   successText: {
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.body,
-    color: Colors.text.secondary,
     marginBottom: Spacing.lg,
   },
   starBurstContainer: {
     marginTop: Spacing.md,
   },
   goalInfoCard: {
-    backgroundColor: Colors.primary[50],
     padding: Spacing.lg,
     alignItems: "center",
   },
@@ -528,22 +579,18 @@ const styles = StyleSheet.create({
     fontFamily: Typography.fontFamily.primaryBold,
     fontSize: Typography.fontSize.body,
     fontWeight: Typography.fontWeight.bold,
-    color: Colors.primary[700],
     textAlign: "center",
     marginBottom: Spacing.xs,
   },
   goalTarget: {
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.small,
-    color: Colors.primary[600],
   },
   valueInputContainer: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: Colors.surface,
     borderRadius: 16,
     borderWidth: 2,
-    borderColor: Colors.primary[500],
     paddingHorizontal: Spacing.md,
   },
   valueInput: {
@@ -552,13 +599,11 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontFamily: Typography.fontFamily.primaryBold,
     fontWeight: Typography.fontWeight.bold,
-    color: Colors.text.primary,
     textAlign: "center",
   },
   unitLabel: {
     fontFamily: Typography.fontFamily.primaryBold,
     fontSize: Typography.fontSize.h4,
-    color: Colors.text.secondary,
   },
   progressPreview: {
     marginTop: Spacing.md,
@@ -566,7 +611,6 @@ const styles = StyleSheet.create({
   },
   progressBar: {
     height: 12,
-    backgroundColor: Colors.primary[50],
     borderRadius: 6,
     overflow: "hidden",
   },
@@ -577,7 +621,6 @@ const styles = StyleSheet.create({
   progressText: {
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.small,
-    color: Colors.text.secondary,
     textAlign: "center",
   },
 });

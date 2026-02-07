@@ -2,19 +2,20 @@ import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
-    ActivityIndicator,
-    ScrollView,
-    Share,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  ScrollView,
+  Share,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import Markdown from "react-native-markdown-display";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { Colors, Spacing, Typography } from "@/constants/theme";
+import { Spacing, Typography } from "@/constants/theme";
+import { useTheme } from "@/contexts/ThemeContext";
 import { supabase } from "@/lib/supabase";
 
 interface Resource {
@@ -28,16 +29,17 @@ interface Resource {
   created_at: string;
 }
 
-const TYPE_CONFIG = {
-  article: { icon: "📝", label: "Article", color: Colors.primary[500] },
-  video: { icon: "🎥", label: "Video", color: Colors.secondary[500] },
-  exercise: { icon: "🎯", label: "Exercise", color: Colors.success[500] },
-};
-
 export default function ResourceDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const { colors } = useTheme();
   const [resource, setResource] = useState<Resource | null>(null);
   const [loading, setLoading] = useState(true);
+
+  const TYPE_CONFIG = {
+    article: { icon: "📝", label: "Article", color: colors.primary },
+    video: { icon: "🎥", label: "Video", color: colors.secondary },
+    exercise: { icon: "🎯", label: "Exercise", color: colors.success },
+  };
 
   useEffect(() => {
     loadResource();
@@ -71,25 +73,182 @@ export default function ResourceDetailScreen() {
     }
   };
 
+  // Markdown styles using dynamic theme colors
+  const markdownStyles = StyleSheet.create({
+    body: {
+      fontFamily: Typography.fontFamily.primary,
+      fontSize: Typography.fontSize.body,
+      color: colors.text,
+      lineHeight: 26,
+    },
+    heading1: {
+      fontFamily: Typography.fontFamily.primaryBold,
+      fontSize: Typography.fontSize.h1,
+      fontWeight: Typography.fontWeight.bold,
+      color: colors.text,
+      marginTop: Spacing.lg,
+      marginBottom: Spacing.md,
+    },
+    heading2: {
+      fontFamily: Typography.fontFamily.primaryBold,
+      fontSize: Typography.fontSize.h2,
+      fontWeight: Typography.fontWeight.bold,
+      color: colors.text,
+      marginTop: Spacing.lg,
+      marginBottom: Spacing.sm,
+    },
+    heading3: {
+      fontFamily: Typography.fontFamily.primaryBold,
+      fontSize: Typography.fontSize.h3,
+      fontWeight: Typography.fontWeight.bold,
+      color: colors.text,
+      marginTop: Spacing.md,
+      marginBottom: Spacing.sm,
+    },
+    heading4: {
+      fontFamily: Typography.fontFamily.primaryBold,
+      fontSize: Typography.fontSize.h4,
+      fontWeight: Typography.fontWeight.bold,
+      color: colors.text,
+      marginTop: Spacing.md,
+      marginBottom: Spacing.xs,
+    },
+    paragraph: {
+      fontFamily: Typography.fontFamily.primary,
+      fontSize: Typography.fontSize.body,
+      color: colors.text,
+      lineHeight: 26,
+      marginBottom: Spacing.md,
+    },
+    strong: {
+      fontFamily: Typography.fontFamily.primaryBold,
+      fontWeight: Typography.fontWeight.bold,
+    },
+    em: {
+      fontStyle: "italic",
+    },
+    link: {
+      color: colors.primary,
+      textDecorationLine: "underline",
+    },
+    blockquote: {
+      backgroundColor: colors.primaryLight,
+      borderLeftWidth: 4,
+      borderLeftColor: colors.primary,
+      paddingLeft: Spacing.md,
+      paddingVertical: Spacing.sm,
+      marginVertical: Spacing.md,
+    },
+    code_inline: {
+      fontFamily: "monospace",
+      backgroundColor: colors.surfaceVariant,
+      paddingHorizontal: Spacing.xs,
+      paddingVertical: 2,
+      borderRadius: 4,
+      color: colors.secondary,
+    },
+    code_block: {
+      fontFamily: "monospace",
+      backgroundColor: colors.surfaceVariant,
+      padding: Spacing.md,
+      borderRadius: 8,
+      marginVertical: Spacing.md,
+      color: colors.text,
+    },
+    fence: {
+      fontFamily: "monospace",
+      backgroundColor: colors.surfaceVariant,
+      padding: Spacing.md,
+      borderRadius: 8,
+      marginVertical: Spacing.md,
+      color: colors.text,
+    },
+    list_item: {
+      flexDirection: "row",
+      marginVertical: Spacing.xs,
+    },
+    bullet_list: {
+      marginVertical: Spacing.sm,
+    },
+    ordered_list: {
+      marginVertical: Spacing.sm,
+    },
+    bullet_list_icon: {
+      color: colors.primary,
+      marginRight: Spacing.sm,
+    },
+    ordered_list_icon: {
+      color: colors.primary,
+      marginRight: Spacing.sm,
+      fontWeight: Typography.fontWeight.bold,
+    },
+    hr: {
+      backgroundColor: colors.divider,
+      height: 1,
+      marginVertical: Spacing.lg,
+    },
+    table: {
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 8,
+      marginVertical: Spacing.md,
+    },
+    thead: {
+      backgroundColor: colors.surfaceVariant,
+    },
+    th: {
+      fontFamily: Typography.fontFamily.primaryBold,
+      fontWeight: Typography.fontWeight.bold,
+      padding: Spacing.sm,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    td: {
+      padding: Spacing.sm,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    image: {
+      borderRadius: 8,
+      marginVertical: Spacing.md,
+    },
+  });
+
   if (loading) {
     return (
-      <SafeAreaView style={[styles.container, styles.centerContent]}>
-        <ActivityIndicator size="large" color={Colors.primary[500]} />
+      <SafeAreaView
+        style={[
+          styles.container,
+          styles.centerContent,
+          { backgroundColor: colors.background },
+        ]}
+      >
+        <ActivityIndicator size="large" color={colors.primary} />
       </SafeAreaView>
     );
   }
 
   if (!resource) {
     return (
-      <SafeAreaView style={[styles.container, styles.centerContent]}>
+      <SafeAreaView
+        style={[
+          styles.container,
+          styles.centerContent,
+          { backgroundColor: colors.background },
+        ]}
+      >
         <Ionicons
           name="alert-circle-outline"
           size={48}
-          color={Colors.text.tertiary}
+          color={colors.textTertiary}
         />
-        <Text style={styles.errorText}>Resource not found</Text>
+        <Text style={[styles.errorText, { color: colors.textSecondary }]}>
+          Resource not found
+        </Text>
         <TouchableOpacity onPress={() => router.back()} style={styles.backLink}>
-          <Text style={styles.backLinkText}>Go back</Text>
+          <Text style={[styles.backLinkText, { color: colors.primary }]}>
+            Go back
+          </Text>
         </TouchableOpacity>
       </SafeAreaView>
     );
@@ -98,7 +257,9 @@ export default function ResourceDetailScreen() {
   const config = TYPE_CONFIG[resource.type] || TYPE_CONFIG.article;
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
@@ -110,16 +271,15 @@ export default function ResourceDetailScreen() {
         >
           <TouchableOpacity
             onPress={() => router.back()}
-            style={styles.backButton}
+            style={[styles.headerButton, { backgroundColor: colors.surface }]}
           >
-            <Ionicons name="arrow-back" size={24} color={Colors.text.primary} />
+            <Ionicons name="arrow-back" size={24} color={colors.text} />
           </TouchableOpacity>
-          <TouchableOpacity onPress={handleShare} style={styles.shareButton}>
-            <Ionicons
-              name="share-outline"
-              size={24}
-              color={Colors.text.primary}
-            />
+          <TouchableOpacity
+            onPress={handleShare}
+            style={[styles.headerButton, { backgroundColor: colors.surface }]}
+          >
+            <Ionicons name="share-outline" size={24} color={colors.text} />
           </TouchableOpacity>
         </Animated.View>
 
@@ -140,14 +300,18 @@ export default function ResourceDetailScreen() {
 
         {/* Title */}
         <Animated.View entering={FadeInDown.delay(200).duration(500)}>
-          <Text style={styles.category}>{resource.category}</Text>
-          <Text style={styles.title}>{resource.title}</Text>
+          <Text style={[styles.category, { color: colors.primary }]}>
+            {resource.category}
+          </Text>
+          <Text style={[styles.title, { color: colors.text }]}>
+            {resource.title}
+          </Text>
         </Animated.View>
 
         {/* Content */}
         <Animated.View
           entering={FadeInDown.delay(300).duration(500)}
-          style={styles.contentCard}
+          style={[styles.contentCard, { backgroundColor: colors.surface }]}
         >
           {resource.content ? (
             <Markdown style={markdownStyles}>{resource.content}</Markdown>
@@ -156,9 +320,11 @@ export default function ResourceDetailScreen() {
               <Ionicons
                 name="document-text-outline"
                 size={48}
-                color={Colors.text.tertiary}
+                color={colors.textTertiary}
               />
-              <Text style={styles.noContentText}>
+              <Text
+                style={[styles.noContentText, { color: colors.textTertiary }]}
+              >
                 No content available for this resource
               </Text>
             </View>
@@ -169,13 +335,18 @@ export default function ResourceDetailScreen() {
         {resource.type === "exercise" && (
           <Animated.View
             entering={FadeInDown.delay(400).duration(500)}
-            style={styles.tipsCard}
+            style={[
+              styles.tipsCard,
+              { backgroundColor: colors.secondaryLight },
+            ]}
           >
             <View style={styles.tipsHeader}>
-              <Ionicons name="bulb" size={20} color={Colors.secondary[500]} />
-              <Text style={styles.tipsTitle}>Pro Tip</Text>
+              <Ionicons name="bulb" size={20} color={colors.secondary} />
+              <Text style={[styles.tipsTitle, { color: colors.text }]}>
+                Pro Tip
+              </Text>
             </View>
-            <Text style={styles.tipsText}>
+            <Text style={[styles.tipsText, { color: colors.textSecondary }]}>
               Practice this exercise at the same time each day to build a
               consistent routine. Start with short sessions and gradually
               increase duration.
@@ -190,7 +361,6 @@ export default function ResourceDetailScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
   },
   centerContent: {
     justifyContent: "center",
@@ -199,7 +369,6 @@ const styles = StyleSheet.create({
   errorText: {
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.body,
-    color: Colors.text.secondary,
     marginTop: Spacing.md,
   },
   backLink: {
@@ -208,7 +377,6 @@ const styles = StyleSheet.create({
   backLinkText: {
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.body,
-    color: Colors.primary[500],
   },
   scrollContent: {
     paddingHorizontal: Spacing.lg,
@@ -219,19 +387,10 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingVertical: Spacing.md,
   },
-  backButton: {
+  headerButton: {
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: Colors.surface,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  shareButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: Colors.surface,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -260,7 +419,6 @@ const styles = StyleSheet.create({
     fontFamily: Typography.fontFamily.primaryBold,
     fontSize: Typography.fontSize.small,
     fontWeight: Typography.fontWeight.bold,
-    color: Colors.primary[600],
     textTransform: "uppercase",
     marginBottom: Spacing.xs,
     letterSpacing: 0.5,
@@ -269,12 +427,10 @@ const styles = StyleSheet.create({
     fontFamily: Typography.fontFamily.primaryBold,
     fontSize: Typography.fontSize.h1,
     fontWeight: Typography.fontWeight.bold,
-    color: Colors.text.primary,
     lineHeight: 36,
     marginBottom: Spacing.lg,
   },
   contentCard: {
-    backgroundColor: Colors.surface,
     padding: Spacing.lg,
     borderRadius: 16,
     shadowColor: "#000",
@@ -283,12 +439,6 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 2,
   },
-  bodyText: {
-    fontFamily: Typography.fontFamily.primary,
-    fontSize: Typography.fontSize.body,
-    color: Colors.text.primary,
-    lineHeight: 26,
-  },
   noContent: {
     alignItems: "center",
     paddingVertical: Spacing.xl,
@@ -296,11 +446,9 @@ const styles = StyleSheet.create({
   noContentText: {
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.body,
-    color: Colors.text.tertiary,
     marginTop: Spacing.md,
   },
   tipsCard: {
-    backgroundColor: Colors.secondary[50],
     padding: Spacing.lg,
     borderRadius: 16,
     marginTop: Spacing.lg,
@@ -315,153 +463,10 @@ const styles = StyleSheet.create({
     fontFamily: Typography.fontFamily.primaryBold,
     fontSize: Typography.fontSize.body,
     fontWeight: Typography.fontWeight.bold,
-    color: Colors.secondary[700],
   },
   tipsText: {
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.body,
-    color: Colors.secondary[700],
     lineHeight: 22,
-  },
-});
-
-// Markdown styles for beautiful content rendering
-const markdownStyles = StyleSheet.create({
-  body: {
-    fontFamily: Typography.fontFamily.primary,
-    fontSize: Typography.fontSize.body,
-    color: Colors.text.primary,
-    lineHeight: 26,
-  },
-  heading1: {
-    fontFamily: Typography.fontFamily.primaryBold,
-    fontSize: Typography.fontSize.h1,
-    fontWeight: Typography.fontWeight.bold,
-    color: Colors.text.primary,
-    marginTop: Spacing.lg,
-    marginBottom: Spacing.md,
-  },
-  heading2: {
-    fontFamily: Typography.fontFamily.primaryBold,
-    fontSize: Typography.fontSize.h2,
-    fontWeight: Typography.fontWeight.bold,
-    color: Colors.text.primary,
-    marginTop: Spacing.lg,
-    marginBottom: Spacing.sm,
-  },
-  heading3: {
-    fontFamily: Typography.fontFamily.primaryBold,
-    fontSize: Typography.fontSize.h3,
-    fontWeight: Typography.fontWeight.bold,
-    color: Colors.text.primary,
-    marginTop: Spacing.md,
-    marginBottom: Spacing.sm,
-  },
-  heading4: {
-    fontFamily: Typography.fontFamily.primaryBold,
-    fontSize: Typography.fontSize.h4,
-    fontWeight: Typography.fontWeight.bold,
-    color: Colors.text.primary,
-    marginTop: Spacing.md,
-    marginBottom: Spacing.xs,
-  },
-  paragraph: {
-    fontFamily: Typography.fontFamily.primary,
-    fontSize: Typography.fontSize.body,
-    color: Colors.text.primary,
-    lineHeight: 26,
-    marginBottom: Spacing.md,
-  },
-  strong: {
-    fontFamily: Typography.fontFamily.primaryBold,
-    fontWeight: Typography.fontWeight.bold,
-  },
-  em: {
-    fontStyle: "italic",
-  },
-  link: {
-    color: Colors.primary[500],
-    textDecorationLine: "underline",
-  },
-  blockquote: {
-    backgroundColor: Colors.primary[50],
-    borderLeftWidth: 4,
-    borderLeftColor: Colors.primary[500],
-    paddingLeft: Spacing.md,
-    paddingVertical: Spacing.sm,
-    marginVertical: Spacing.md,
-  },
-  code_inline: {
-    fontFamily: "monospace",
-    backgroundColor: Colors.surfaceVariant,
-    paddingHorizontal: Spacing.xs,
-    paddingVertical: 2,
-    borderRadius: 4,
-    color: Colors.secondary[600],
-  },
-  code_block: {
-    fontFamily: "monospace",
-    backgroundColor: Colors.surfaceVariant,
-    padding: Spacing.md,
-    borderRadius: 8,
-    marginVertical: Spacing.md,
-    color: Colors.text.primary,
-  },
-  fence: {
-    fontFamily: "monospace",
-    backgroundColor: Colors.surfaceVariant,
-    padding: Spacing.md,
-    borderRadius: 8,
-    marginVertical: Spacing.md,
-    color: Colors.text.primary,
-  },
-  list_item: {
-    flexDirection: "row",
-    marginVertical: Spacing.xs,
-  },
-  bullet_list: {
-    marginVertical: Spacing.sm,
-  },
-  ordered_list: {
-    marginVertical: Spacing.sm,
-  },
-  bullet_list_icon: {
-    color: Colors.primary[500],
-    marginRight: Spacing.sm,
-  },
-  ordered_list_icon: {
-    color: Colors.primary[500],
-    marginRight: Spacing.sm,
-    fontWeight: Typography.fontWeight.bold,
-  },
-  hr: {
-    backgroundColor: Colors.divider,
-    height: 1,
-    marginVertical: Spacing.lg,
-  },
-  table: {
-    borderWidth: 1,
-    borderColor: Colors.border,
-    borderRadius: 8,
-    marginVertical: Spacing.md,
-  },
-  thead: {
-    backgroundColor: Colors.surfaceVariant,
-  },
-  th: {
-    fontFamily: Typography.fontFamily.primaryBold,
-    fontWeight: Typography.fontWeight.bold,
-    padding: Spacing.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
-  },
-  td: {
-    padding: Spacing.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
-  },
-  image: {
-    borderRadius: 8,
-    marginVertical: Spacing.md,
   },
 });

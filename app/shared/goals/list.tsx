@@ -2,20 +2,21 @@ import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React, { useMemo, useState } from "react";
 import {
-    ActivityIndicator,
-    FlatList,
-    RefreshControl,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
-    ViewStyle,
+  ActivityIndicator,
+  FlatList,
+  RefreshControl,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  ViewStyle,
 } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Card, ProgressBar } from "@/components/ui";
-import { Colors, Spacing, Typography } from "@/constants/theme";
+import { Spacing, Typography } from "@/constants/theme";
+import { useTheme } from "@/contexts/ThemeContext";
 import { useAuth } from "@/hooks/useAuth";
 import { useChildren } from "@/hooks/useChildren";
 import { useParentGoals } from "@/hooks/useGoals";
@@ -24,6 +25,7 @@ import { Goal, GoalPriority } from "@/types/database.types";
 type FilterType = "all" | "active" | "completed";
 
 export default function GoalsListScreen() {
+  const { colors } = useTheme();
   const { profile } = useAuth();
   const { children } = useChildren();
   const [activeFilter, setActiveFilter] = useState<FilterType>("all");
@@ -59,9 +61,9 @@ export default function GoalsListScreen() {
   };
 
   const priorityColors: Record<GoalPriority, string> = {
-    low: Colors.success[500],
-    medium: Colors.secondary[500],
-    high: Colors.error[500],
+    low: colors.success,
+    medium: colors.secondary,
+    high: colors.error,
   };
 
   const renderGoalCard = ({
@@ -93,21 +95,26 @@ export default function GoalsListScreen() {
               <View
                 style={[
                   styles.categoryIcon,
-                  { backgroundColor: Colors.primary[50] },
+                  { backgroundColor: colors.primaryLight },
                 ]}
               >
                 <Ionicons
                   name={(categoryIcons[item.category] || "flag") as any}
                   size={24}
-                  color={Colors.primary[500]}
+                  color={colors.primary}
                 />
               </View>
               <View style={styles.goalInfo}>
-                <Text style={styles.goalTitle} numberOfLines={1}>
+                <Text
+                  style={[styles.goalTitle, { color: colors.text }]}
+                  numberOfLines={1}
+                >
                   {item.title}
                 </Text>
                 {item.child && (
-                  <Text style={styles.childName}>
+                  <Text
+                    style={[styles.childName, { color: colors.textSecondary }]}
+                  >
                     For {item.child.first_name}
                   </Text>
                 )}
@@ -116,13 +123,13 @@ export default function GoalsListScreen() {
                 <Ionicons
                   name="checkmark-circle"
                   size={24}
-                  color={Colors.success[500]}
+                  color={colors.success}
                 />
               ) : (
                 <Ionicons
                   name="chevron-forward"
                   size={20}
-                  color={Colors.text.tertiary}
+                  color={colors.textTertiary}
                 />
               )}
             </View>
@@ -130,7 +137,12 @@ export default function GoalsListScreen() {
             {!isCompleted && (
               <View style={styles.progressSection}>
                 <View style={styles.progressHeader}>
-                  <Text style={styles.progressLabel}>
+                  <Text
+                    style={[
+                      styles.progressLabel,
+                      { color: colors.textTertiary },
+                    ]}
+                  >
                     {item.target_frequency}x / {item.frequency_period}
                   </Text>
                   <View
@@ -151,13 +163,19 @@ export default function GoalsListScreen() {
                 </View>
                 <ProgressBar
                   progress={0} // Will be calculated from daily logs
-                  color={Colors.primary[500]}
+                  color={colors.primary}
                 />
               </View>
             )}
 
             {item.description && (
-              <Text style={styles.goalDescription} numberOfLines={2}>
+              <Text
+                style={[
+                  styles.goalDescription,
+                  { color: colors.textSecondary },
+                ]}
+                numberOfLines={2}
+              >
                 {item.description}
               </Text>
             )}
@@ -174,16 +192,18 @@ export default function GoalsListScreen() {
   ];
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity
           onPress={() => router.back()}
-          style={styles.backButton}
+          style={[styles.backButton, { backgroundColor: colors.surface }]}
         >
-          <Ionicons name="arrow-back" size={24} color={Colors.text.primary} />
+          <Ionicons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Goals</Text>
+        <Text style={[styles.headerTitle, { color: colors.text }]}>Goals</Text>
         <View style={{ width: 44 }} />
       </View>
 
@@ -195,12 +215,17 @@ export default function GoalsListScreen() {
             onPress={() => setActiveFilter(filter.key)}
             style={[
               styles.filterButton,
-              activeFilter === filter.key && styles.filterButtonActive,
+              { backgroundColor: colors.surface },
+              activeFilter === filter.key && [
+                styles.filterButtonActive,
+                { backgroundColor: colors.primary },
+              ],
             ]}
           >
             <Text
               style={[
                 styles.filterText,
+                { color: colors.textSecondary },
                 activeFilter === filter.key && styles.filterTextActive,
               ]}
             >
@@ -213,23 +238,19 @@ export default function GoalsListScreen() {
       {/* Goals List */}
       {loading ? (
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={Colors.primary[500]} />
+          <ActivityIndicator size="large" color={colors.primary} />
         </View>
       ) : filteredGoals.length === 0 ? (
         <View style={styles.emptyContainer}>
-          <Ionicons
-            name="flag-outline"
-            size={64}
-            color={Colors.text.tertiary}
-          />
-          <Text style={styles.emptyTitle}>
+          <Ionicons name="flag-outline" size={64} color={colors.textTertiary} />
+          <Text style={[styles.emptyTitle, { color: colors.text }]}>
             {activeFilter === "all"
               ? "No Goals Yet"
               : activeFilter === "active"
                 ? "No Active Goals"
                 : "No Completed Goals"}
           </Text>
-          <Text style={styles.emptySubtitle}>
+          <Text style={[styles.emptySubtitle, { color: colors.textSecondary }]}>
             {activeFilter === "all"
               ? "Goals set by your child's therapist will appear here"
               : activeFilter === "active"
@@ -248,7 +269,7 @@ export default function GoalsListScreen() {
             <RefreshControl
               refreshing={refreshing}
               onRefresh={onRefresh}
-              tintColor={Colors.primary[500]}
+              tintColor={colors.primary}
             />
           }
         />
@@ -260,7 +281,6 @@ export default function GoalsListScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
   },
   header: {
     flexDirection: "row",
@@ -273,7 +293,6 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: Colors.surface,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -281,7 +300,6 @@ const styles = StyleSheet.create({
     fontFamily: Typography.fontFamily.primaryBold,
     fontSize: Typography.fontSize.h3,
     fontWeight: Typography.fontWeight.bold,
-    color: Colors.text.primary,
   },
   filtersContainer: {
     flexDirection: "row",
@@ -293,15 +311,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.xs,
     borderRadius: 20,
-    backgroundColor: Colors.surface,
   },
-  filterButtonActive: {
-    backgroundColor: Colors.primary[500],
-  },
+  filterButtonActive: {},
   filterText: {
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.small,
-    color: Colors.text.secondary,
   },
   filterTextActive: {
     fontFamily: Typography.fontFamily.primaryBold,
@@ -337,12 +351,10 @@ const styles = StyleSheet.create({
     fontFamily: Typography.fontFamily.primaryBold,
     fontSize: Typography.fontSize.body,
     fontWeight: Typography.fontWeight.bold,
-    color: Colors.text.primary,
   },
   childName: {
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.small,
-    color: Colors.text.secondary,
     marginTop: Spacing.xs,
   },
   progressSection: {
@@ -357,7 +369,6 @@ const styles = StyleSheet.create({
   progressLabel: {
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.tiny,
-    color: Colors.text.tertiary,
   },
   priorityBadge: {
     paddingHorizontal: Spacing.sm,
@@ -373,7 +384,6 @@ const styles = StyleSheet.create({
   goalDescription: {
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.small,
-    color: Colors.text.secondary,
     marginTop: Spacing.sm,
   },
   loadingContainer: {
@@ -391,13 +401,11 @@ const styles = StyleSheet.create({
     fontFamily: Typography.fontFamily.primaryBold,
     fontSize: Typography.fontSize.h4,
     fontWeight: Typography.fontWeight.bold,
-    color: Colors.text.primary,
     marginTop: Spacing.lg,
   },
   emptySubtitle: {
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.body,
-    color: Colors.text.secondary,
     textAlign: "center",
     marginTop: Spacing.sm,
   },

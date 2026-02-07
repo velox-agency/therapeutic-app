@@ -3,13 +3,13 @@ import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import React, { useMemo } from "react";
 import {
-    RefreshControl,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
-    ViewStyle,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  ViewStyle,
 } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -133,7 +133,12 @@ export default function ParentDashboard() {
               />
 
               <View style={styles.statItem}>
-                <View style={[styles.statIcon, { backgroundColor: "#FFF9E6" }]}>
+                <View
+                  style={[
+                    styles.statIcon,
+                    { backgroundColor: colors.warningLight },
+                  ]}
+                >
                   <Text style={styles.starEmoji}>⭐</Text>
                 </View>
                 <Text style={[styles.statValue, { color: colors.text }]}>

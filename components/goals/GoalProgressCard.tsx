@@ -3,7 +3,8 @@ import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Animated, { FadeInRight } from "react-native-reanimated";
 
-import { Colors, Spacing, Typography } from "@/constants/theme";
+import { Spacing, Typography } from "@/constants/theme";
+import { useTheme } from "@/contexts/ThemeContext";
 import type { Goal as DatabaseGoal } from "@/types/database.types";
 
 // Minimal goal interface for flexibility
@@ -31,6 +32,7 @@ export function GoalProgressCard({
   delay = 0,
   onPress,
 }: GoalProgressCardProps) {
+  const { colors } = useTheme();
   const targetValue = goal.target_value || goal.target_frequency || 1;
   const currentValue = externalCurrentValue ?? 0;
   const progress = externalProgress ?? (currentValue / targetValue) * 100;
@@ -46,45 +48,52 @@ export function GoalProgressCard({
   };
 
   const content = (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.surface }]}>
       <View style={styles.header}>
-        <View style={styles.categoryBadge}>
+        <View
+          style={[
+            styles.categoryBadge,
+            { backgroundColor: colors.primaryLight },
+          ]}
+        >
           <Ionicons
             name={categoryIcons[goal.category || ""] || "flag"}
             size={14}
-            color={Colors.primary[600]}
+            color={colors.primary}
           />
-          <Text style={styles.categoryText}>
+          <Text style={[styles.categoryText, { color: colors.primary }]}>
             {goal.category?.replace("_", " ") || "General"}
           </Text>
         </View>
         {isComplete && (
           <View style={styles.completeBadge}>
-            <Ionicons name="checkmark" size={12} color={Colors.success[600]} />
-            <Text style={styles.completeText}>Complete</Text>
+            <Ionicons name="checkmark" size={12} color={colors.success} />
+            <Text style={[styles.completeText, { color: colors.success }]}>
+              Complete
+            </Text>
           </View>
         )}
       </View>
 
-      <Text style={styles.title} numberOfLines={2}>
+      <Text style={[styles.title, { color: colors.text }]} numberOfLines={2}>
         {goal.title}
       </Text>
 
       <View style={styles.progressContainer}>
-        <View style={styles.progressBar}>
+        <View
+          style={[styles.progressBar, { backgroundColor: colors.primaryLight }]}
+        >
           <Animated.View
             style={[
               styles.progressFill,
               {
                 width: `${Math.min(progress, 100)}%`,
-                backgroundColor: isComplete
-                  ? Colors.success[500]
-                  : Colors.primary[500],
+                backgroundColor: isComplete ? colors.success : colors.primary,
               },
             ]}
           />
         </View>
-        <Text style={styles.progressText}>
+        <Text style={[styles.progressText, { color: colors.textSecondary }]}>
           {currentValue} / {targetValue} {goal.unit || "times"}
         </Text>
       </View>
@@ -106,7 +115,6 @@ export function GoalProgressCard({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: Colors.surface,
     padding: Spacing.md,
     borderRadius: 16,
     marginBottom: Spacing.sm,
@@ -125,7 +133,6 @@ const styles = StyleSheet.create({
   categoryBadge: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: Colors.primary[50],
     paddingHorizontal: Spacing.sm,
     paddingVertical: 4,
     borderRadius: 8,
@@ -134,7 +141,6 @@ const styles = StyleSheet.create({
   categoryText: {
     fontFamily: Typography.fontFamily.secondary,
     fontSize: Typography.fontSize.tiny,
-    color: Colors.primary[600],
     fontWeight: Typography.fontWeight.semibold,
     textTransform: "capitalize",
   },
@@ -146,13 +152,11 @@ const styles = StyleSheet.create({
   completeText: {
     fontFamily: Typography.fontFamily.primaryBold,
     fontSize: Typography.fontSize.tiny,
-    color: Colors.success[600],
     fontWeight: Typography.fontWeight.bold,
   },
   title: {
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.body,
-    color: Colors.text.primary,
     marginBottom: Spacing.sm,
   },
   progressContainer: {
@@ -160,7 +164,6 @@ const styles = StyleSheet.create({
   },
   progressBar: {
     height: 8,
-    backgroundColor: Colors.primary[50],
     borderRadius: 100,
     overflow: "hidden",
   },
@@ -171,6 +174,5 @@ const styles = StyleSheet.create({
   progressText: {
     fontFamily: Typography.fontFamily.secondary,
     fontSize: Typography.fontSize.small,
-    color: Colors.text.secondary,
   },
 });

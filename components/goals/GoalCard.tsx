@@ -10,7 +10,8 @@ import Animated, {
 } from "react-native-reanimated";
 
 import { Card, ProgressBar } from "@/components/ui";
-import { Colors, Spacing, Typography } from "@/constants/theme";
+import { Spacing, Typography } from "@/constants/theme";
+import { useTheme } from "@/contexts/ThemeContext";
 import type { DailyLog, Goal } from "@/types/database.types";
 
 interface GoalCardProps {
@@ -26,6 +27,7 @@ export function GoalCard({
   onPress,
   onCheckIn,
 }: GoalCardProps) {
+  const { colors } = useTheme();
   const scale = useSharedValue(1);
 
   const handlePressIn = () => {
@@ -41,9 +43,9 @@ export function GoalCard({
   }));
 
   const priorityColors = {
-    low: Colors.success[500],
-    medium: Colors.secondary[500],
-    high: Colors.error[500],
+    low: colors.success,
+    medium: colors.secondary,
+    high: colors.error,
   };
 
   const categoryIcons: Record<string, string> = {
@@ -68,17 +70,20 @@ export function GoalCard({
             <View
               style={[
                 styles.categoryIcon,
-                { backgroundColor: Colors.primary[50] },
+                { backgroundColor: colors.primaryLight },
               ]}
             >
               <Ionicons
                 name={(categoryIcons[goal.category] || "flag") as any}
                 size={24}
-                color={Colors.primary[500]}
+                color={colors.primary}
               />
             </View>
             <View style={styles.headerContent}>
-              <Text style={styles.title} numberOfLines={2}>
+              <Text
+                style={[styles.title, { color: colors.text }]}
+                numberOfLines={2}
+              >
                 {goal.title}
               </Text>
               <View style={styles.meta}>
@@ -97,7 +102,9 @@ export function GoalCard({
                     {goal.priority}
                   </Text>
                 </View>
-                <Text style={styles.frequency}>
+                <Text
+                  style={[styles.frequency, { color: colors.textSecondary }]}
+                >
                   {goal.target_frequency}x / {goal.frequency_period}
                 </Text>
               </View>
@@ -105,24 +112,34 @@ export function GoalCard({
           </View>
 
           {goal.description && (
-            <Text style={styles.description} numberOfLines={2}>
+            <Text
+              style={[styles.description, { color: colors.textSecondary }]}
+              numberOfLines={2}
+            >
               {goal.description}
             </Text>
           )}
 
           <View style={styles.progressSection}>
             <View style={styles.progressHeader}>
-              <Text style={styles.progressLabel}>Progress</Text>
-              <Text style={styles.progressValue}>
+              <Text
+                style={[styles.progressLabel, { color: colors.textSecondary }]}
+              >
+                Progress
+              </Text>
+              <Text style={[styles.progressValue, { color: colors.primary }]}>
                 {Math.round(progress * 100)}%
               </Text>
             </View>
-            <ProgressBar progress={progress} color={Colors.primary[500]} />
+            <ProgressBar progress={progress} color={colors.primary} />
           </View>
 
           {onCheckIn && (
             <TouchableOpacity
-              style={styles.checkInButton}
+              style={[
+                styles.checkInButton,
+                { backgroundColor: colors.successLight },
+              ]}
               onPress={() => {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
                 onCheckIn();
@@ -131,9 +148,11 @@ export function GoalCard({
               <Ionicons
                 name="checkmark-circle"
                 size={20}
-                color={Colors.success[500]}
+                color={colors.success}
               />
-              <Text style={styles.checkInText}>Log Progress</Text>
+              <Text style={[styles.checkInText, { color: colors.success }]}>
+                Log Progress
+              </Text>
             </TouchableOpacity>
           )}
         </Card>
@@ -153,6 +172,7 @@ export function DailyCheckInCard({
   todayLog,
   onCheckIn,
 }: DailyCheckInCardProps) {
+  const { colors } = useTheme();
   const [expanded, setExpanded] = React.useState(false);
 
   const handleComplete = () => {
@@ -169,45 +189,57 @@ export function DailyCheckInCard({
     <Card variant="outlined" style={styles.checkInCard}>
       <View style={styles.checkInHeader}>
         <View style={styles.checkInInfo}>
-          <Text style={styles.checkInTitle}>{goal.title}</Text>
-          <Text style={styles.checkInTarget}>
+          <Text style={[styles.checkInTitle, { color: colors.text }]}>
+            {goal.title}
+          </Text>
+          <Text style={[styles.checkInTarget, { color: colors.textSecondary }]}>
             Target: {goal.target_frequency}x / {goal.frequency_period}
           </Text>
         </View>
         {todayLog ? (
-          <View style={styles.completedBadge}>
-            <Ionicons name="checkmark" size={16} color={Colors.surface} />
+          <View
+            style={[styles.completedBadge, { backgroundColor: colors.success }]}
+          >
+            <Ionicons name="checkmark" size={16} color={colors.surface} />
           </View>
         ) : (
-          <View style={styles.pendingBadge}>
-            <Ionicons name="time" size={16} color={Colors.secondary[500]} />
+          <View
+            style={[
+              styles.pendingBadge,
+              { backgroundColor: colors.warningLight },
+            ]}
+          >
+            <Ionicons name="time" size={16} color={colors.secondary} />
           </View>
         )}
       </View>
 
       {!todayLog && (
         <View style={styles.checkInActions}>
-          <TouchableOpacity style={styles.skipButton} onPress={handleSkip}>
-            <Text style={styles.skipText}>Skip</Text>
+          <TouchableOpacity
+            style={[styles.skipButton, { borderColor: colors.border }]}
+            onPress={handleSkip}
+          >
+            <Text style={[styles.skipText, { color: colors.textSecondary }]}>
+              Skip
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={styles.completeButton}
+            style={[styles.completeButton, { backgroundColor: colors.success }]}
             onPress={handleComplete}
           >
-            <Ionicons name="checkmark" size={20} color={Colors.surface} />
-            <Text style={styles.completeText}>Done!</Text>
+            <Ionicons name="checkmark" size={20} color={colors.surface} />
+            <Text style={[styles.completeText, { color: colors.surface }]}>
+              Done!
+            </Text>
           </TouchableOpacity>
         </View>
       )}
 
       {todayLog && (
         <View style={styles.loggedInfo}>
-          <Ionicons
-            name="checkmark-circle"
-            size={16}
-            color={Colors.success[500]}
-          />
-          <Text style={styles.loggedText}>
+          <Ionicons name="checkmark-circle" size={16} color={colors.success} />
+          <Text style={[styles.loggedText, { color: colors.success }]}>
             Logged at {new Date(todayLog.logged_at).toLocaleTimeString()}
           </Text>
         </View>
@@ -229,11 +261,15 @@ export function GoalList({
   onCheckIn,
   emptyMessage,
 }: GoalListProps) {
+  const { colors } = useTheme();
+
   if (goals.length === 0) {
     return (
       <View style={styles.emptyContainer}>
-        <Ionicons name="flag-outline" size={48} color={Colors.text.tertiary} />
-        <Text style={styles.emptyText}>{emptyMessage || "No goals yet"}</Text>
+        <Ionicons name="flag-outline" size={48} color={colors.textTertiary} />
+        <Text style={[styles.emptyText, { color: colors.textTertiary }]}>
+          {emptyMessage || "No goals yet"}
+        </Text>
       </View>
     );
   }
@@ -277,7 +313,6 @@ const styles = StyleSheet.create({
     fontFamily: Typography.fontFamily.primaryBold,
     fontSize: Typography.fontSize.body,
     fontWeight: Typography.fontWeight.semibold,
-    color: Colors.text.primary,
     marginBottom: Spacing.xs,
     letterSpacing: -0.2,
   },
@@ -300,12 +335,10 @@ const styles = StyleSheet.create({
   frequency: {
     fontFamily: Typography.fontFamily.secondary,
     fontSize: Typography.fontSize.tiny,
-    color: Colors.text.secondary,
   },
   description: {
     fontFamily: Typography.fontFamily.secondary,
     fontSize: Typography.fontSize.small,
-    color: Colors.text.secondary,
     marginBottom: Spacing.lg,
     lineHeight: 22,
   },
@@ -320,19 +353,16 @@ const styles = StyleSheet.create({
   progressLabel: {
     fontFamily: Typography.fontFamily.secondary,
     fontSize: Typography.fontSize.small,
-    color: Colors.text.secondary,
   },
   progressValue: {
     fontFamily: Typography.fontFamily.primaryBold,
     fontSize: Typography.fontSize.small,
     fontWeight: Typography.fontWeight.semibold,
-    color: Colors.primary[500],
   },
   checkInButton: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: Colors.success[50],
     paddingVertical: Spacing.md,
     borderRadius: 16,
   },
@@ -340,7 +370,6 @@ const styles = StyleSheet.create({
     fontFamily: Typography.fontFamily.primaryBold,
     fontSize: Typography.fontSize.small,
     fontWeight: Typography.fontWeight.semibold,
-    color: Colors.success[600],
     marginLeft: Spacing.sm,
   },
   checkInCard: {
@@ -359,19 +388,16 @@ const styles = StyleSheet.create({
     fontFamily: Typography.fontFamily.primaryBold,
     fontSize: Typography.fontSize.body,
     fontWeight: Typography.fontWeight.semibold,
-    color: Colors.text.primary,
     letterSpacing: -0.2,
   },
   checkInTarget: {
     fontFamily: Typography.fontFamily.secondary,
     fontSize: Typography.fontSize.small,
-    color: Colors.text.secondary,
   },
   completedBadge: {
     width: 32,
     height: 32,
     borderRadius: 12,
-    backgroundColor: Colors.success[500],
     alignItems: "center",
     justifyContent: "center",
   },
@@ -379,7 +405,6 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 12,
-    backgroundColor: Colors.warning[100],
     alignItems: "center",
     justifyContent: "center",
   },
@@ -393,14 +418,12 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.md,
     borderRadius: 16,
     borderWidth: 1.5,
-    borderColor: Colors.border,
     alignItems: "center",
   },
   skipText: {
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.small,
     fontWeight: "500",
-    color: Colors.text.secondary,
   },
   completeButton: {
     flex: 2,
@@ -409,13 +432,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingVertical: Spacing.md,
     borderRadius: 16,
-    backgroundColor: Colors.success[500],
   },
   completeText: {
     fontFamily: Typography.fontFamily.primaryBold,
     fontSize: Typography.fontSize.small,
     fontWeight: Typography.fontWeight.semibold,
-    color: Colors.surface,
     marginLeft: Spacing.sm,
   },
   loggedInfo: {
@@ -426,7 +447,6 @@ const styles = StyleSheet.create({
   loggedText: {
     fontFamily: Typography.fontFamily.secondary,
     fontSize: Typography.fontSize.tiny,
-    color: Colors.success[600],
     marginLeft: Spacing.sm,
   },
   listContainer: {
@@ -439,7 +459,6 @@ const styles = StyleSheet.create({
   emptyText: {
     fontFamily: Typography.fontFamily.secondary,
     fontSize: Typography.fontSize.body,
-    color: Colors.text.tertiary,
     marginTop: Spacing.lg,
   },
 });

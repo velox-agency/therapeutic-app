@@ -2,21 +2,23 @@ import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useMemo } from "react";
 import {
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Button, Card, ProgressBar } from "@/components/ui";
-import { Colors, Spacing, Typography } from "@/constants/theme";
+import { Spacing, Typography } from "@/constants/theme";
+import { useTheme } from "@/contexts/ThemeContext";
 import { useDailyLogs, useGoal } from "@/hooks/useGoals";
 import { GoalPriority } from "@/types/database.types";
 
 export default function GoalDetailScreen() {
+  const { colors } = useTheme();
   const { id } = useLocalSearchParams<{ id: string }>();
   const { goal, loading } = useGoal(id || "");
   const { logs, loading: logsLoading } = useDailyLogs(id || "");
@@ -65,9 +67,13 @@ export default function GoalDetailScreen() {
 
   if (loading) {
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: colors.background }]}
+      >
         <View style={styles.loadingContainer}>
-          <Text style={styles.loadingText}>Loading...</Text>
+          <Text style={[styles.loadingText, { color: colors.textSecondary }]}>
+            Loading...
+          </Text>
         </View>
       </SafeAreaView>
     );
@@ -75,10 +81,14 @@ export default function GoalDetailScreen() {
 
   if (!goal) {
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: colors.background }]}
+      >
         <View style={styles.errorContainer}>
-          <Ionicons name="alert-circle" size={48} color={Colors.error[500]} />
-          <Text style={styles.errorText}>Goal not found</Text>
+          <Ionicons name="alert-circle" size={48} color={colors.error} />
+          <Text style={[styles.errorText, { color: colors.text }]}>
+            Goal not found
+          </Text>
           <Button
             title="Go Back"
             onPress={() => router.back()}
@@ -99,30 +109,33 @@ export default function GoalDetailScreen() {
   };
 
   const priorityColors: Record<GoalPriority, string> = {
-    low: Colors.success[500],
-    medium: Colors.secondary[500],
-    high: Colors.error[500],
+    low: colors.success,
+    medium: colors.secondary,
+    high: colors.error,
   };
 
   const goalPriority = (goal.priority as GoalPriority) || "medium";
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity
             onPress={() => router.back()}
-            style={styles.backButton}
+            style={[styles.backButton, { backgroundColor: colors.surface }]}
           >
-            <Ionicons name="arrow-back" size={24} color={Colors.text.primary} />
+            <Ionicons name="arrow-back" size={24} color={colors.text} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.editButton}>
-            <Ionicons
-              name="create-outline"
-              size={24}
-              color={Colors.primary[500]}
-            />
+          <TouchableOpacity
+            style={[
+              styles.editButton,
+              { backgroundColor: colors.primaryLight },
+            ]}
+          >
+            <Ionicons name="create-outline" size={24} color={colors.primary} />
           </TouchableOpacity>
         </View>
 
@@ -132,20 +145,29 @@ export default function GoalDetailScreen() {
             <View
               style={[
                 styles.categoryIcon,
-                { backgroundColor: Colors.primary[50] },
+                { backgroundColor: colors.primaryLight },
               ]}
             >
               <Ionicons
                 name={(categoryIcons[goal.category] || "flag") as any}
                 size={32}
-                color={Colors.primary[500]}
+                color={colors.primary}
               />
             </View>
 
-            <Text style={styles.goalTitle}>{goal.title}</Text>
+            <Text style={[styles.goalTitle, { color: colors.text }]}>
+              {goal.title}
+            </Text>
 
             {goal.description && (
-              <Text style={styles.goalDescription}>{goal.description}</Text>
+              <Text
+                style={[
+                  styles.goalDescription,
+                  { color: colors.textSecondary },
+                ]}
+              >
+                {goal.description}
+              </Text>
             )}
 
             <View style={styles.metaRow}>
@@ -165,11 +187,9 @@ export default function GoalDetailScreen() {
                 </Text>
               </View>
               <View
-                style={[styles.badge, { backgroundColor: Colors.primary[50] }]}
+                style={[styles.badge, { backgroundColor: colors.primaryLight }]}
               >
-                <Text
-                  style={[styles.badgeText, { color: Colors.primary[500] }]}
-                >
+                <Text style={[styles.badgeText, { color: colors.primary }]}>
                   {goal.target_frequency}x / {goal.frequency_period}
                 </Text>
               </View>
@@ -182,19 +202,23 @@ export default function GoalDetailScreen() {
           entering={FadeInDown.delay(200).duration(500)}
           style={styles.section}
         >
-          <Text style={styles.sectionTitle}>Progress</Text>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>
+            Progress
+          </Text>
           <Card variant="outlined">
             <View style={styles.progressHeader}>
-              <Text style={styles.progressLabel}>
+              <Text
+                style={[styles.progressLabel, { color: colors.textSecondary }]}
+              >
                 This {goal.frequency_period}
               </Text>
-              <Text style={styles.progressValue}>
+              <Text style={[styles.progressValue, { color: colors.primary }]}>
                 {currentPeriodProgress} / {goal.target_frequency}
               </Text>
             </View>
             <ProgressBar
               progress={progressPercentage / 100}
-              color={Colors.primary[500]}
+              color={colors.primary}
             />
           </Card>
         </Animated.View>
@@ -204,20 +228,28 @@ export default function GoalDetailScreen() {
           entering={FadeInDown.delay(300).duration(500)}
           style={styles.section}
         >
-          <Text style={styles.sectionTitle}>Recent Activity</Text>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>
+            Recent Activity
+          </Text>
           {logsLoading ? (
             <Card variant="outlined" style={styles.emptyCard}>
-              <Text style={styles.emptyText}>Loading...</Text>
+              <Text style={[styles.emptyText, { color: colors.text }]}>
+                Loading...
+              </Text>
             </Card>
           ) : logs.length === 0 ? (
             <Card variant="outlined" style={styles.emptyCard}>
               <Ionicons
                 name="document-text-outline"
                 size={48}
-                color={Colors.text.tertiary}
+                color={colors.textTertiary}
               />
-              <Text style={styles.emptyText}>No activity logged yet</Text>
-              <Text style={styles.emptySubtext}>
+              <Text style={[styles.emptyText, { color: colors.text }]}>
+                No activity logged yet
+              </Text>
+              <Text
+                style={[styles.emptySubtext, { color: colors.textSecondary }]}
+              >
                 Start tracking progress by logging daily activities
               </Text>
             </Card>
@@ -230,9 +262,9 @@ export default function GoalDetailScreen() {
                       <Ionicons
                         name="calendar-outline"
                         size={16}
-                        color={Colors.primary[500]}
+                        color={colors.primary}
                       />
-                      <Text style={styles.logDate}>
+                      <Text style={[styles.logDate, { color: colors.text }]}>
                         {new Date(log.log_date).toLocaleDateString("en-US", {
                           weekday: "short",
                           month: "short",
@@ -241,19 +273,38 @@ export default function GoalDetailScreen() {
                       </Text>
                     </View>
                     {log.stars_earned > 0 && (
-                      <View style={styles.starsContainer}>
-                        <Text style={styles.starsText}>
+                      <View
+                        style={[
+                          styles.starsContainer,
+                          { backgroundColor: colors.secondaryLight },
+                        ]}
+                      >
+                        <Text
+                          style={[
+                            styles.starsText,
+                            { color: colors.secondary },
+                          ]}
+                        >
                           ⭐ {log.stars_earned}
                         </Text>
                       </View>
                     )}
                   </View>
                   {log.notes && (
-                    <Text style={styles.logNotes}>{log.notes}</Text>
+                    <Text
+                      style={[styles.logNotes, { color: colors.textSecondary }]}
+                    >
+                      {log.notes}
+                    </Text>
                   )}
                   {log.achieved_value !== null &&
                     log.achieved_value !== undefined && (
-                      <Text style={styles.logValue}>
+                      <Text
+                        style={[
+                          styles.logValue,
+                          { color: colors.textTertiary },
+                        ]}
+                      >
                         Achieved: {log.achieved_value}
                       </Text>
                     )}
@@ -289,7 +340,6 @@ export default function GoalDetailScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
   },
   scrollContent: {
     paddingHorizontal: Spacing.lg,
@@ -305,7 +355,6 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: Colors.surface,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -313,7 +362,6 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: Colors.primary[50],
     alignItems: "center",
     justifyContent: "center",
   },
@@ -333,14 +381,12 @@ const styles = StyleSheet.create({
     fontFamily: Typography.fontFamily.primaryBold,
     fontSize: Typography.fontSize.h3,
     fontWeight: Typography.fontWeight.bold,
-    color: Colors.text.primary,
     textAlign: "center",
     marginBottom: Spacing.sm,
   },
   goalDescription: {
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.body,
-    color: Colors.text.secondary,
     textAlign: "center",
     marginBottom: Spacing.md,
   },
@@ -366,7 +412,6 @@ const styles = StyleSheet.create({
     fontFamily: Typography.fontFamily.primaryBold,
     fontSize: Typography.fontSize.body,
     fontWeight: Typography.fontWeight.bold,
-    color: Colors.text.primary,
     marginBottom: Spacing.md,
   },
   progressHeader: {
@@ -377,13 +422,11 @@ const styles = StyleSheet.create({
   progressLabel: {
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.small,
-    color: Colors.text.secondary,
   },
   progressValue: {
     fontFamily: Typography.fontFamily.primaryBold,
     fontSize: Typography.fontSize.small,
     fontWeight: Typography.fontWeight.bold,
-    color: Colors.primary[500],
   },
   emptyCard: {
     alignItems: "center",
@@ -393,13 +436,11 @@ const styles = StyleSheet.create({
     fontFamily: Typography.fontFamily.primaryBold,
     fontSize: Typography.fontSize.body,
     fontWeight: Typography.fontWeight.bold,
-    color: Colors.text.primary,
     marginTop: Spacing.md,
   },
   emptySubtext: {
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.small,
-    color: Colors.text.secondary,
     textAlign: "center",
     marginTop: Spacing.xs,
   },
@@ -423,10 +464,8 @@ const styles = StyleSheet.create({
     fontFamily: Typography.fontFamily.primaryBold,
     fontSize: Typography.fontSize.small,
     fontWeight: Typography.fontWeight.semibold,
-    color: Colors.text.primary,
   },
   starsContainer: {
-    backgroundColor: Colors.secondary[50],
     paddingHorizontal: Spacing.sm,
     paddingVertical: Spacing.xs,
     borderRadius: 12,
@@ -435,18 +474,15 @@ const styles = StyleSheet.create({
     fontFamily: Typography.fontFamily.primaryBold,
     fontSize: Typography.fontSize.small,
     fontWeight: Typography.fontWeight.bold,
-    color: Colors.secondary[600],
   },
   logNotes: {
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.small,
-    color: Colors.text.secondary,
     marginTop: Spacing.sm,
   },
   logValue: {
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.tiny,
-    color: Colors.text.tertiary,
     marginTop: Spacing.xs,
   },
   buttonContainer: {
@@ -460,7 +496,6 @@ const styles = StyleSheet.create({
   loadingText: {
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.body,
-    color: Colors.text.secondary,
   },
   errorContainer: {
     flex: 1,
@@ -472,7 +507,6 @@ const styles = StyleSheet.create({
     fontFamily: Typography.fontFamily.primaryBold,
     fontSize: Typography.fontSize.h4,
     fontWeight: Typography.fontWeight.bold,
-    color: Colors.text.primary,
     marginVertical: Spacing.md,
   },
 });
