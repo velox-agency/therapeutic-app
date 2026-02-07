@@ -3,14 +3,15 @@ import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import {
-    Alert,
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Alert,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -78,7 +79,11 @@ export default function LoginScreen() {
             style={styles.header}
           >
             <View style={styles.logoContainer}>
-              <Ionicons name="heart-circle" size={72} color="#FFFFFF" />
+              <Image
+                source={require("@/assets/images/adaptive-icon.png")}
+                style={styles.logo}
+                resizeMode="contain"
+              />
             </View>
             <Text style={styles.title}>Therapeutic</Text>
             <Text style={styles.subtitle}>
@@ -102,7 +107,9 @@ export default function LoginScreen() {
           <Animated.View entering={FadeInDown.delay(200).springify()}>
             <Card
               variant="elevated"
-              style={[styles.formCard, { backgroundColor: colors.surface }]}
+              style={
+                [styles.formCard, { backgroundColor: colors.surface }] as any
+              }
             >
               <Text style={[styles.formTitle, { color: colors.text }]}>
                 {t("auth.welcomeBack")} 👋
@@ -289,6 +296,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginBottom: Spacing.lg,
+    overflow: "hidden",
+  },
+  logo: {
+    width: 120,
+    height: 120,
   },
   title: {
     fontFamily: Typography.fontFamily.primaryBold,
