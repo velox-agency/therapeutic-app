@@ -3,19 +3,19 @@ import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
 import {
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    RefreshControl,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { GoalProgressCard } from "@/components/goals";
 import { Avatar, Card } from "@/components/ui";
-import { Colors, Spacing, Typography } from "@/constants/theme";
+import { Colors, ComponentStyle, Spacing, Typography } from "@/constants/theme";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useAuth } from "@/hooks/useAuth";
@@ -663,70 +663,83 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   gradientHeader: {
-    paddingBottom: Spacing.lg,
-    borderBottomLeftRadius: 24,
-    borderBottomRightRadius: 24,
+    paddingBottom: Spacing.xl,
+    borderBottomLeftRadius: 32,
+    borderBottomRightRadius: 32,
   },
   scrollContent: {
     paddingHorizontal: Spacing.lg,
-    paddingBottom: Spacing.xxl,
-    marginTop: -Spacing.md,
+    paddingBottom: 120,
+    marginTop: Spacing.md,
   },
   overviewCardContainer: {
-    marginBottom: Spacing.md,
+    marginBottom: Spacing.lg,
   },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingVertical: Spacing.md,
+    paddingVertical: Spacing.lg,
     paddingHorizontal: Spacing.lg,
   },
   greeting: {
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.body,
     color: "rgba(255, 255, 255, 0.85)",
+    letterSpacing: 0.2,
   },
   name: {
     fontFamily: Typography.fontFamily.primaryBold,
     fontSize: Typography.fontSize.h2,
     fontWeight: Typography.fontWeight.bold,
     color: "#FFFFFF",
+    letterSpacing: -0.5,
   },
   overviewCard: {
     marginBottom: Spacing.lg,
+    borderRadius: 24,
+    padding: Spacing.xl,
   },
   cardTitle: {
-    fontFamily: Typography.fontFamily.primaryBold,
+    fontFamily: Typography.fontFamily.primarySemiBold,
     fontSize: Typography.fontSize.h4,
-    fontWeight: Typography.fontWeight.bold,
-    marginBottom: Spacing.md,
+    fontWeight: Typography.fontWeight.semibold,
+    marginBottom: Spacing.lg,
     textAlign: "center",
+    letterSpacing: -0.2,
   },
   statsRow: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-around",
+    justifyContent: "space-between",
+    paddingHorizontal: Spacing.sm,
+    gap: Spacing.md,
   },
   statItem: {
     alignItems: "center",
     flex: 1,
+    paddingHorizontal: Spacing.sm,
   },
   statValue: {
     fontFamily: Typography.fontFamily.primaryBold,
     fontSize: Typography.fontSize.h2,
     fontWeight: Typography.fontWeight.bold,
+    letterSpacing: -0.5,
   },
   statLabel: {
     fontFamily: Typography.fontFamily.primary,
-    fontSize: Typography.fontSize.tiny,
+    fontSize: Typography.fontSize.caption,
+    marginTop: 4,
+    letterSpacing: 0.2,
+    textAlign: "center",
   },
   statDivider: {
     width: 1,
-    height: 40,
+    height: 44,
+    borderRadius: 1,
   },
   section: {
-    marginBottom: Spacing.lg,
+    marginBottom: Spacing.xl,
   },
   sectionHeader: {
     flexDirection: "row",
@@ -735,14 +748,17 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.md,
   },
   sectionTitle: {
-    fontFamily: Typography.fontFamily.primaryBold,
+    fontFamily: Typography.fontFamily.primarySemiBold,
     fontSize: Typography.fontSize.h4,
-    fontWeight: Typography.fontWeight.bold,
+    fontWeight: Typography.fontWeight.semibold,
     marginBottom: Spacing.md,
+    letterSpacing: -0.2,
   },
   seeAllText: {
-    fontFamily: Typography.fontFamily.primary,
+    fontFamily: Typography.fontFamily.primarySemiBold,
     fontSize: Typography.fontSize.small,
+    fontWeight: Typography.fontWeight.semibold,
+    letterSpacing: 0.2,
   },
   actionsGrid: {
     flexDirection: "row",
@@ -751,51 +767,51 @@ const styles = StyleSheet.create({
   },
   actionCard: {
     width: "47%",
-    borderRadius: 16,
-    padding: Spacing.md,
+    borderRadius: 20,
+    padding: Spacing.lg,
     alignItems: "center",
-    ...{
-      shadowColor: "#000",
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.08,
-      shadowRadius: 8,
-      elevation: 2,
-    },
+    ...ComponentStyle.shadow.small,
   },
   actionIcon: {
-    width: 56,
-    height: 56,
-    borderRadius: 16,
+    width: 60,
+    height: 60,
+    borderRadius: 18,
     alignItems: "center",
     justifyContent: "center",
     marginBottom: Spacing.sm,
   },
   actionText: {
-    fontFamily: Typography.fontFamily.primary,
+    fontFamily: Typography.fontFamily.primarySemiBold,
     fontSize: Typography.fontSize.small,
+    fontWeight: Typography.fontWeight.semibold,
     textAlign: "center",
+    letterSpacing: 0.1,
   },
   emptyCard: {
     alignItems: "center",
-    paddingVertical: Spacing.xl,
+    paddingVertical: Spacing.xxl,
+    borderRadius: 20,
   },
   emptyTitle: {
-    fontFamily: Typography.fontFamily.primaryBold,
+    fontFamily: Typography.fontFamily.primarySemiBold,
     fontSize: Typography.fontSize.body,
-    fontWeight: Typography.fontWeight.bold,
+    fontWeight: Typography.fontWeight.semibold,
     marginTop: Spacing.md,
+    letterSpacing: -0.1,
   },
   emptySubtitle: {
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.small,
     textAlign: "center",
     marginTop: Spacing.xs,
+    letterSpacing: 0.1,
   },
   patientsList: {
-    gap: Spacing.sm,
+    gap: Spacing.md,
   },
   patientCard: {
-    padding: Spacing.md,
+    padding: Spacing.lg,
+    borderRadius: 20,
   },
   patientRow: {
     flexDirection: "row",
@@ -806,20 +822,23 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   patientName: {
-    fontFamily: Typography.fontFamily.primaryBold,
+    fontFamily: Typography.fontFamily.primarySemiBold,
     fontSize: Typography.fontSize.body,
     fontWeight: Typography.fontWeight.semibold,
+    letterSpacing: -0.1,
   },
   patientParent: {
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.small,
-    marginTop: 2,
+    marginTop: 4,
+    letterSpacing: 0.1,
   },
   sessionsList: {
-    gap: Spacing.sm,
+    gap: Spacing.md,
   },
   sessionCard: {
-    padding: Spacing.md,
+    padding: Spacing.lg,
+    borderRadius: 20,
   },
   sessionRow: {
     flexDirection: "row",
@@ -827,9 +846,9 @@ const styles = StyleSheet.create({
     gap: Spacing.md,
   },
   sessionIconContainer: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
+    width: 48,
+    height: 48,
+    borderRadius: 14,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -837,24 +856,27 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   sessionTitle: {
-    fontFamily: Typography.fontFamily.primaryBold,
+    fontFamily: Typography.fontFamily.primarySemiBold,
     fontSize: Typography.fontSize.body,
     fontWeight: Typography.fontWeight.semibold,
+    letterSpacing: -0.1,
   },
   sessionTime: {
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.small,
-    marginTop: 2,
+    marginTop: 4,
+    letterSpacing: 0.1,
   },
   durationBadge: {
-    paddingHorizontal: Spacing.sm,
-    paddingVertical: Spacing.xs,
-    borderRadius: 12,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    borderRadius: 16,
   },
   durationText: {
-    fontFamily: Typography.fontFamily.primaryBold,
+    fontFamily: Typography.fontFamily.primarySemiBold,
     fontSize: Typography.fontSize.tiny,
     fontWeight: Typography.fontWeight.semibold,
+    letterSpacing: 0.3,
   },
   reviewCard: {},
   reviewHeader: {
@@ -863,13 +885,15 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.sm,
   },
   reviewTitle: {
-    fontFamily: Typography.fontFamily.primaryBold,
+    fontFamily: Typography.fontFamily.primarySemiBold,
     fontSize: Typography.fontSize.body,
-    fontWeight: Typography.fontWeight.bold,
+    fontWeight: Typography.fontWeight.semibold,
     marginLeft: Spacing.sm,
+    letterSpacing: -0.1,
   },
   reviewText: {
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.small,
+    letterSpacing: 0.1,
   },
 });

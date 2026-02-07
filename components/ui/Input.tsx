@@ -1,10 +1,10 @@
 import {
   Animation,
-  Colors,
   ComponentStyle,
   Spacing,
   Typography,
 } from "@/constants/theme";
+import { useTheme } from "@/contexts/ThemeContext";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useState } from "react";
 import {
@@ -70,21 +70,29 @@ export function Input({
   required = false,
   ...textInputProps
 }: InputProps) {
+  const { colors } = useTheme();
   const [isFocused, setIsFocused] = useState(false);
   const focusProgress = useSharedValue(0);
 
   const animatedBorderStyle = useAnimatedStyle(() => {
     const borderColor = error
-      ? Colors.error[500]
+      ? colors.error
       : interpolateColor(
           focusProgress.value,
           [0, 1],
-          [Colors.border, Colors.primary[500]],
+          ["transparent", colors.primary],
         );
+
+    const backgroundColor = interpolateColor(
+      focusProgress.value,
+      [0, 1],
+      [colors.surfaceVariant, colors.surface],
+    );
 
     return {
       borderColor,
-      borderWidth: focusProgress.value > 0.5 ? 2 : 1,
+      backgroundColor,
+      borderWidth: 1.5,
     };
   });
 
@@ -120,9 +128,11 @@ export function Input({
     <View style={[styles.container, containerStyle, style]}>
       {label && (
         <View style={styles.labelContainer}>
-          <Text style={styles.label}>
+          <Text style={[styles.label, { color: colors.text }]}>
             {label}
-            {required && <Text style={styles.required}> *</Text>}
+            {required && (
+              <Text style={[styles.required, { color: colors.error }]}> *</Text>
+            )}
           </Text>
         </View>
       )}
@@ -137,7 +147,10 @@ export function Input({
       >
         {leftIcon && (
           <View style={styles.leftIcon}>
-            {renderIcon(leftIcon, Colors.text.secondary)}
+            {renderIcon(
+              leftIcon,
+              isFocused ? colors.primary : colors.textTertiary,
+            )}
           </View>
         )}
 
@@ -146,6 +159,7 @@ export function Input({
           style={[
             styles.input,
             getTextSize(),
+            { color: colors.text },
             leftIcon ? { paddingLeft: 0 } : undefined,
             rightIcon ? { paddingRight: 0 } : undefined,
             inputStyle,
@@ -153,7 +167,7 @@ export function Input({
           onFocus={handleFocus}
           onBlur={handleBlur}
           editable={!disabled}
-          placeholderTextColor={Colors.text.tertiary}
+          placeholderTextColor={colors.textTertiary}
         />
 
         {rightIcon && (
@@ -168,8 +182,14 @@ export function Input({
       </AnimatedView>
 
       {(error || hint) && (
-        <Text style={[styles.helperText, error && styles.errorText]}>
-          {error || hint}
+        <Text
+          style={[
+            styles.helperText,
+            { color: colors.textSecondary },
+            error && { color: colors.error },
+          ]}
+        >
+          {error ?? hint}
         </Text>
       )}
     </View>
@@ -182,50 +202,41 @@ const styles = StyleSheet.create({
   },
   labelContainer: {
     flexDirection: "row",
-    marginBottom: Spacing.xs,
+    marginBottom: Spacing.sm,
   },
   label: {
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.small,
     fontWeight: Typography.fontWeight.medium,
-    color: Colors.text.primary,
   },
-  required: {
-    color: Colors.error[500],
-  },
+  required: {},
   inputContainer: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: Colors.surface,
-    borderRadius: ComponentStyle.borderRadius.md,
-    paddingHorizontal: Spacing.md,
-    borderWidth: 1,
-    borderColor: Colors.border,
+    borderRadius: ComponentStyle.borderRadius.lg,
+    paddingHorizontal: Spacing.lg,
+    borderWidth: 1.5,
+    borderColor: "transparent",
   },
   input: {
     flex: 1,
     fontFamily: Typography.fontFamily.secondary,
-    color: Colors.text.primary,
-    paddingVertical: Spacing.sm,
+    paddingVertical: Spacing.md,
   },
   leftIcon: {
-    marginRight: Spacing.sm,
+    marginRight: Spacing.md,
   },
   rightIcon: {
-    marginLeft: Spacing.sm,
+    marginLeft: Spacing.md,
     padding: Spacing.xs,
   },
   disabled: {
-    backgroundColor: Colors.surfaceVariant,
-    opacity: 0.7,
+    opacity: 0.6,
   },
   helperText: {
     fontFamily: Typography.fontFamily.secondary,
     fontSize: Typography.fontSize.tiny,
-    color: Colors.text.secondary,
-    marginTop: Spacing.xs,
-  },
-  errorText: {
-    color: Colors.error[500],
+    marginTop: Spacing.sm,
+    marginLeft: Spacing.xs,
   },
 });

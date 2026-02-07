@@ -1,15 +1,16 @@
-import { Animation, Colors, ComponentStyle, Spacing } from "@/constants/theme";
+import { Animation, ComponentStyle, Spacing } from "@/constants/theme";
+import { useTheme } from "@/contexts/ThemeContext";
 import React from "react";
 import { Pressable, StyleSheet, View, ViewStyle } from "react-native";
 import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
+    useAnimatedStyle,
+    useSharedValue,
+    withSpring,
 } from "react-native-reanimated";
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
-type CardVariant = "elevated" | "outlined" | "filled";
+type CardVariant = "elevated" | "outlined" | "filled" | "ghost";
 type CardSize = "small" | "medium" | "large";
 
 interface CardProps {
@@ -31,6 +32,7 @@ export function Card({
   style,
   contentStyle,
 }: CardProps) {
+  const { colors } = useTheme();
   const scale = useSharedValue(1);
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -51,18 +53,22 @@ export function Card({
     switch (variant) {
       case "elevated":
         return {
-          backgroundColor: Colors.surface,
+          backgroundColor: colors.surface,
           ...ComponentStyle.shadow.medium,
         };
       case "outlined":
         return {
-          backgroundColor: Colors.surface,
+          backgroundColor: colors.surface,
           borderWidth: 1,
-          borderColor: Colors.border,
+          borderColor: colors.border,
         };
       case "filled":
         return {
-          backgroundColor: Colors.surfaceVariant,
+          backgroundColor: colors.surfaceVariant,
+        };
+      case "ghost":
+        return {
+          backgroundColor: "transparent",
         };
       default:
         return {};
@@ -72,11 +78,11 @@ export function Card({
   const getPaddingStyle = (): ViewStyle => {
     switch (size) {
       case "small":
-        return { padding: Spacing.sm };
-      case "large":
-        return { padding: Spacing.lg };
-      default:
         return { padding: Spacing.md };
+      case "large":
+        return { padding: Spacing.xl };
+      default:
+        return { padding: Spacing.lg };
     }
   };
 
@@ -124,6 +130,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   disabled: {
-    opacity: 0.6,
+    opacity: 0.5,
   },
 });

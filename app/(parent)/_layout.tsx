@@ -2,10 +2,12 @@ import { Typography } from "@/constants/theme";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useTheme } from "@/contexts/ThemeContext";
 import { Ionicons } from "@expo/vector-icons";
+import { BlurView } from "expo-blur";
 import { Tabs } from "expo-router";
+import { Platform, StyleSheet, View } from "react-native";
 
 export default function ParentLayout() {
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
   const { t } = useLanguage();
 
   return (
@@ -13,23 +15,52 @@ export default function ParentLayout() {
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: colors.primary,
-        tabBarInactiveTintColor: colors.textSecondary,
+        tabBarInactiveTintColor: colors.textTertiary,
+        tabBarBackground: () => (
+          <View style={styles.tabBarBackground}>
+            <BlurView
+              intensity={isDark ? 40 : 80}
+              tint={isDark ? "dark" : "light"}
+              style={StyleSheet.absoluteFill}
+            />
+            <View
+              style={[
+                StyleSheet.absoluteFill,
+                {
+                  backgroundColor: isDark
+                    ? "rgba(30, 41, 59, 0.85)"
+                    : "rgba(255, 255, 255, 0.9)",
+                },
+              ]}
+            />
+          </View>
+        ),
         tabBarStyle: {
-          backgroundColor: colors.surface,
           borderTopWidth: 0,
+          position: "absolute",
+          bottom: Platform.OS === "ios" ? 24 : 16,
+          left: 16,
+          right: 16,
+          height: 64,
+          borderRadius: 32,
           elevation: 8,
           shadowColor: "#000",
-          shadowOffset: { width: 0, height: -2 },
-          shadowOpacity: 0.1,
-          shadowRadius: 8,
-          height: 65,
-          paddingBottom: 10,
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: 0.15,
+          shadowRadius: 12,
+          overflow: "hidden",
+          backgroundColor: "transparent",
+        },
+        tabBarItemStyle: {
+          height: 64,
           paddingTop: 8,
+          paddingBottom: 8,
         },
         tabBarLabelStyle: {
           fontFamily: Typography.fontFamily.primary,
-          fontSize: Typography.fontSize.tiny,
-          fontWeight: Typography.fontWeight.semibold,
+          fontSize: 10,
+          fontWeight: "600",
+          marginTop: 4,
         },
         headerStyle: {
           backgroundColor: colors.surface,
@@ -38,7 +69,7 @@ export default function ParentLayout() {
         },
         headerTitleStyle: {
           fontFamily: Typography.fontFamily.primaryBold,
-          fontWeight: Typography.fontWeight.bold,
+          fontWeight: Typography.fontWeight.semibold,
           fontSize: Typography.fontSize.h3,
         },
       }}
@@ -48,11 +79,18 @@ export default function ParentLayout() {
         options={{
           title: t("navigation.home"),
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons
-              name={focused ? "home" : "home-outline"}
-              size={24}
-              color={color}
-            />
+            <View
+              style={[
+                styles.iconWrapper,
+                focused && { backgroundColor: colors.primaryLight },
+              ]}
+            >
+              <Ionicons
+                name={focused ? "home" : "home-outline"}
+                size={20}
+                color={color}
+              />
+            </View>
           ),
         }}
       />
@@ -61,11 +99,18 @@ export default function ParentLayout() {
         options={{
           title: t("navigation.children"),
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons
-              name={focused ? "people" : "people-outline"}
-              size={24}
-              color={color}
-            />
+            <View
+              style={[
+                styles.iconWrapper,
+                focused && { backgroundColor: colors.primaryLight },
+              ]}
+            >
+              <Ionicons
+                name={focused ? "people" : "people-outline"}
+                size={20}
+                color={color}
+              />
+            </View>
           ),
         }}
       />
@@ -74,11 +119,18 @@ export default function ParentLayout() {
         options={{
           title: t("navigation.sessions"),
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons
-              name={focused ? "calendar" : "calendar-outline"}
-              size={24}
-              color={color}
-            />
+            <View
+              style={[
+                styles.iconWrapper,
+                focused && { backgroundColor: colors.primaryLight },
+              ]}
+            >
+              <Ionicons
+                name={focused ? "calendar" : "calendar-outline"}
+                size={20}
+                color={color}
+              />
+            </View>
           ),
         }}
       />
@@ -99,14 +151,36 @@ export default function ParentLayout() {
         options={{
           title: t("navigation.profile"),
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons
-              name={focused ? "person" : "person-outline"}
-              size={24}
-              color={color}
-            />
+            <View
+              style={[
+                styles.iconWrapper,
+                focused && { backgroundColor: colors.primaryLight },
+              ]}
+            >
+              <Ionicons
+                name={focused ? "person" : "person-outline"}
+                size={20}
+                color={color}
+              />
+            </View>
           ),
         }}
       />
     </Tabs>
   );
 }
+
+const styles = StyleSheet.create({
+  tabBarBackground: {
+    ...StyleSheet.absoluteFillObject,
+    borderRadius: 32,
+    overflow: "hidden",
+  },
+  iconWrapper: {
+    width: 36,
+    height: 36,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+});

@@ -1,26 +1,26 @@
 import {
-  Animation,
-  Colors,
-  ComponentStyle,
-  Spacing,
-  Typography,
+    Animation,
+    Colors,
+    ComponentStyle,
+    Spacing,
+    Typography,
 } from "@/constants/theme";
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import React from "react";
 import {
-  ActivityIndicator,
-  StyleSheet,
-  Text,
-  TextStyle,
-  TouchableOpacity,
-  ViewStyle,
+    ActivityIndicator,
+    StyleSheet,
+    Text,
+    TextStyle,
+    TouchableOpacity,
+    ViewStyle,
 } from "react-native";
 import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-  withTiming,
+    useAnimatedStyle,
+    useSharedValue,
+    withSpring,
+    withTiming,
 } from "react-native-reanimated";
 
 const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
@@ -113,13 +113,13 @@ export function Button({
   };
 
   const getTextColor = (): string => {
-    if (disabled) return Colors.text.inverse;
+    if (disabled) return Colors.text.tertiary;
 
     switch (variant) {
       case "outline":
-        return Colors.primary[500];
+        return Colors.primary[600];
       case "ghost":
-        return Colors.text.primary;
+        return Colors.primary[600];
       default:
         return Colors.text.inverse;
     }
@@ -128,8 +128,8 @@ export function Button({
   const getBorderStyle = (): ViewStyle => {
     if (variant === "outline") {
       return {
-        borderWidth: 2,
-        borderColor: disabled ? Colors.text.disabled : Colors.primary[500],
+        borderWidth: 1.5,
+        borderColor: disabled ? Colors.border : Colors.primary[300],
       };
     }
     return {};
@@ -139,10 +139,10 @@ export function Button({
     const height = ComponentStyle.buttonHeight[size];
     const paddingHorizontal =
       size === "small"
-        ? Spacing.md
+        ? Spacing.lg
         : size === "large"
-          ? Spacing.xl
-          : Spacing.lg;
+          ? Spacing.xxl
+          : Spacing.xl;
 
     return {
       height,
@@ -161,6 +161,13 @@ export function Button({
     }
   };
 
+  const getShadowStyle = (): ViewStyle => {
+    if (disabled || variant === "outline" || variant === "ghost") {
+      return ComponentStyle.shadow.none;
+    }
+    return ComponentStyle.shadow.small;
+  };
+
   return (
     <AnimatedTouchable
       onPress={handlePress}
@@ -172,6 +179,7 @@ export function Button({
         styles.button,
         getSizeStyle(),
         getBorderStyle(),
+        getShadowStyle(),
         { backgroundColor: getBackgroundColor() },
         fullWidth && styles.fullWidth,
         animatedStyle,
@@ -186,9 +194,9 @@ export function Button({
           {icon && !leftIcon && (
             <Ionicons
               name={icon as any}
-              size={size === "small" ? 16 : size === "large" ? 24 : 20}
+              size={size === "small" ? 18 : size === "large" ? 24 : 20}
               color={getTextColor()}
-              style={{ marginRight: Spacing.xs }}
+              style={{ marginRight: Spacing.sm }}
             />
           )}
           <Text
@@ -215,15 +223,15 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    borderRadius: ComponentStyle.borderRadius.lg,
-    ...ComponentStyle.shadow.small,
+    borderRadius: ComponentStyle.borderRadius.full,
   },
   fullWidth: {
     width: "100%",
   },
   text: {
     fontFamily: Typography.fontFamily.primaryBold,
-    fontWeight: Typography.fontWeight.bold,
+    fontWeight: Typography.fontWeight.semibold,
     textAlign: "center",
+    letterSpacing: 0.3,
   },
 });

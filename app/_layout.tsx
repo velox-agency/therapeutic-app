@@ -1,12 +1,12 @@
 import { Inter_400Regular, Inter_700Bold } from "@expo-google-fonts/inter";
 import {
-  Poppins_400Regular,
-  Poppins_700Bold,
+    Poppins_400Regular,
+    Poppins_700Bold,
 } from "@expo-google-fonts/poppins";
 import {
-  DarkTheme,
-  DefaultTheme,
-  ThemeProvider as NavigationThemeProvider,
+    DarkTheme,
+    DefaultTheme,
+    ThemeProvider as NavigationThemeProvider,
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
 import { Stack, useRouter, useSegments } from "expo-router";
@@ -27,7 +27,7 @@ export const unstable_settings = {
 function LoadingScreen() {
   return (
     <View style={styles.loading}>
-      <ActivityIndicator size="large" color={Colors.primary[500]} />
+      <ActivityIndicator size="large" color="#8B5CF6" />
     </View>
   );
 }

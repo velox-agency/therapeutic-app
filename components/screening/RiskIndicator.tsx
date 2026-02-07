@@ -2,7 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 
-import { Colors, Spacing, Typography } from "@/constants/theme";
+import { Colors, ComponentStyle, Spacing, Typography } from "@/constants/theme";
 import { RiskLevel, getRiskColor, getRiskDisplayText } from "@/lib/mchat";
 
 interface RiskIndicatorProps {
@@ -131,19 +131,21 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   label: {
-    fontFamily: Typography.fontFamily.primaryBold,
+    fontFamily: Typography.fontFamily.primarySemiBold,
     fontSize: Typography.fontSize.body,
-    fontWeight: Typography.fontWeight.bold,
+    fontWeight: Typography.fontWeight.semibold,
     marginTop: Spacing.sm,
+    letterSpacing: 0.2,
   },
   scoreContainer: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    gap: Spacing.lg,
-    padding: Spacing.lg,
+    gap: Spacing.xl,
+    padding: Spacing.xl,
     backgroundColor: Colors.surface,
-    borderRadius: 16,
+    borderRadius: 24,
+    ...ComponentStyle.shadow.small,
   },
   scoreCircle: {
     alignItems: "center",
@@ -152,37 +154,42 @@ const styles = StyleSheet.create({
     fontFamily: Typography.fontFamily.primaryBold,
     fontSize: Typography.fontSize.h1,
     fontWeight: Typography.fontWeight.bold,
+    letterSpacing: -1,
   },
   scoreDivider: {
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.body,
     color: Colors.text.secondary,
+    letterSpacing: 0.2,
   },
   explanationContainer: {
     backgroundColor: Colors.surface,
-    borderRadius: 16,
-    padding: Spacing.lg,
+    borderRadius: 20,
+    padding: Spacing.xl,
     borderLeftWidth: 4,
+    ...ComponentStyle.shadow.small,
   },
   explanationTitle: {
     fontFamily: Typography.fontFamily.primaryBold,
     fontSize: Typography.fontSize.h4,
     fontWeight: Typography.fontWeight.bold,
     marginBottom: Spacing.sm,
+    letterSpacing: -0.3,
   },
   explanationDescription: {
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.body,
     color: Colors.text.secondary,
-    lineHeight: 24,
-    marginBottom: Spacing.md,
+    lineHeight: 26,
+    marginBottom: Spacing.lg,
+    letterSpacing: 0.1,
   },
   recommendationContainer: {
     flexDirection: "row",
     alignItems: "flex-start",
     backgroundColor: Colors.secondary[50],
-    padding: Spacing.md,
-    borderRadius: 12,
+    padding: Spacing.lg,
+    borderRadius: 16,
   },
   recommendationText: {
     flex: 1,
@@ -190,6 +197,7 @@ const styles = StyleSheet.create({
     fontSize: Typography.fontSize.small,
     color: Colors.secondary[700],
     marginLeft: Spacing.sm,
-    lineHeight: 20,
+    lineHeight: 22,
+    letterSpacing: 0.1,
   },
 });

@@ -2,15 +2,15 @@ import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
-  ActivityIndicator,
-  Alert,
-  FlatList,
-  RefreshControl,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    Alert,
+    FlatList,
+    RefreshControl,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import Animated, { FadeInDown, FadeInRight } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -196,7 +196,10 @@ export default function FindTherapistScreen() {
             <Avatar name={item.full_name} source={item.avatar_url} size="lg" />
             <View style={styles.headerInfo}>
               <View style={styles.nameRow}>
-                <Text style={styles.therapistName} numberOfLines={1}>
+                <Text
+                  style={[styles.therapistName, { color: colors.text }]}
+                  numberOfLines={1}
+                >
                   {item.full_name}
                 </Text>
                 {item.therapist_profile?.is_verified && (
@@ -215,7 +218,9 @@ export default function FindTherapistScreen() {
                 </Text>
               )}
               {item.therapist_profile?.years_experience && (
-                <Text style={styles.experience}>
+                <Text
+                  style={[styles.experience, { color: colors.textSecondary }]}
+                >
                   {item.therapist_profile.years_experience} years experience
                 </Text>
               )}
@@ -223,7 +228,10 @@ export default function FindTherapistScreen() {
           </View>
 
           {item.therapist_profile?.bio && (
-            <Text style={styles.bio} numberOfLines={2}>
+            <Text
+              style={[styles.bio, { color: colors.textSecondary }]}
+              numberOfLines={2}
+            >
               {item.therapist_profile.bio}
             </Text>
           )}
@@ -233,15 +241,18 @@ export default function FindTherapistScreen() {
               <Ionicons
                 name="location-outline"
                 size={14}
-                color={Colors.text.tertiary}
+                color={colors.textSecondary}
               />
-              <Text style={styles.location} numberOfLines={1}>
+              <Text
+                style={[styles.location, { color: colors.textSecondary }]}
+                numberOfLines={1}
+              >
                 {item.therapist_profile.clinic_address}
               </Text>
             </View>
           )}
 
-          <View style={styles.cardFooter}>
+          <View style={[styles.cardFooter, { borderTopColor: colors.border }]}>
             <TouchableOpacity
               style={styles.viewProfileButton}
               onPress={() => handleTherapistPress(item)}
@@ -261,9 +272,17 @@ export default function FindTherapistScreen() {
 
   if (loading) {
     return (
-      <SafeAreaView style={[styles.container, styles.centered]}>
-        <ActivityIndicator size="large" color={Colors.primary[500]} />
-        <Text style={styles.loadingText}>Finding therapists...</Text>
+      <SafeAreaView
+        style={[
+          styles.container,
+          styles.centered,
+          { backgroundColor: colors.background },
+        ]}
+      >
+        <ActivityIndicator size="large" color={colors.primary} />
+        <Text style={[styles.loadingText, { color: colors.textSecondary }]}>
+          Finding therapists...
+        </Text>
       </SafeAreaView>
     );
   }
@@ -342,12 +361,14 @@ export default function FindTherapistScreen() {
               onPress={() => setSelectedSpecialization(item.id)}
               style={[
                 styles.filterChip,
+                { backgroundColor: colors.surface, borderColor: colors.border },
                 selectedSpecialization === item.id && styles.filterChipActive,
               ]}
             >
               <Text
                 style={[
                   styles.filterChipText,
+                  { color: colors.textSecondary },
                   selectedSpecialization === item.id &&
                     styles.filterChipTextActive,
                 ]}

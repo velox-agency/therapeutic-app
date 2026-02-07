@@ -2,19 +2,20 @@ import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
-  ActivityIndicator,
-  Alert,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    Alert,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Avatar, Button, Card } from "@/components/ui";
 import { Colors, ComponentStyle, Spacing, Typography } from "@/constants/theme";
+import { useTheme } from "@/contexts/ThemeContext";
 import { useAuth } from "@/hooks/useAuth";
 import { useChildren } from "@/hooks/useChildren";
 import { supabase } from "@/lib/supabase";
@@ -37,6 +38,7 @@ interface TherapistDetail {
 export default function TherapistDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { user } = useAuth();
+  const { colors } = useTheme();
   const { children } = useChildren();
 
   const [therapist, setTherapist] = useState<TherapistDetail | null>(null);
@@ -159,21 +161,35 @@ export default function TherapistDetailScreen() {
 
   if (loading) {
     return (
-      <SafeAreaView style={[styles.container, styles.centered]}>
-        <ActivityIndicator size="large" color={Colors.primary[500]} />
+      <SafeAreaView
+        style={[
+          styles.container,
+          styles.centered,
+          { backgroundColor: colors.background },
+        ]}
+      >
+        <ActivityIndicator size="large" color={colors.primary} />
       </SafeAreaView>
     );
   }
 
   if (!therapist) {
     return (
-      <SafeAreaView style={[styles.container, styles.centered]}>
+      <SafeAreaView
+        style={[
+          styles.container,
+          styles.centered,
+          { backgroundColor: colors.background },
+        ]}
+      >
         <Ionicons
           name="alert-circle-outline"
           size={48}
-          color={Colors.text.tertiary}
+          color={colors.textSecondary}
         />
-        <Text style={styles.errorText}>Therapist not found</Text>
+        <Text style={[styles.errorText, { color: colors.textSecondary }]}>
+          Therapist not found
+        </Text>
         <Button
           title="Go Back"
           onPress={() => router.back()}
@@ -188,7 +204,9 @@ export default function TherapistDetailScreen() {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
@@ -200,9 +218,9 @@ export default function TherapistDetailScreen() {
         >
           <TouchableOpacity
             onPress={() => router.back()}
-            style={styles.backButton}
+            style={[styles.backButton, { backgroundColor: colors.surface }]}
           >
-            <Ionicons name="arrow-back" size={24} color={Colors.text.primary} />
+            <Ionicons name="arrow-back" size={24} color={colors.text} />
           </TouchableOpacity>
         </Animated.View>
 
@@ -216,7 +234,9 @@ export default function TherapistDetailScreen() {
                 size="xl"
               />
               <View style={styles.nameContainer}>
-                <Text style={styles.therapistName}>{therapist.full_name}</Text>
+                <Text style={[styles.therapistName, { color: colors.text }]}>
+                  {therapist.full_name}
+                </Text>
                 {therapist.therapist_profile?.is_verified && (
                   <View style={styles.verifiedBadge}>
                     <Ionicons
@@ -250,36 +270,42 @@ export default function TherapistDetailScreen() {
           entering={FadeInDown.delay(200).duration(500)}
           style={styles.statsRow}
         >
-          <View style={styles.statCard}>
+          <View style={[styles.statCard, { backgroundColor: colors.surface }]}>
             <Ionicons
               name="time-outline"
               size={24}
               color={Colors.primary[500]}
             />
-            <Text style={styles.statValue}>
+            <Text style={[styles.statValue, { color: colors.text }]}>
               {therapist.therapist_profile?.years_experience || 0}
             </Text>
-            <Text style={styles.statLabel}>Years Exp.</Text>
+            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
+              Years Exp.
+            </Text>
           </View>
-          <View style={styles.statCard}>
+          <View style={[styles.statCard, { backgroundColor: colors.surface }]}>
             <Ionicons
               name="shield-checkmark-outline"
               size={24}
               color={Colors.success[500]}
             />
-            <Text style={styles.statValue}>
+            <Text style={[styles.statValue, { color: colors.text }]}>
               {therapist.therapist_profile?.is_verified ? "Yes" : "No"}
             </Text>
-            <Text style={styles.statLabel}>Verified</Text>
+            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
+              Verified
+            </Text>
           </View>
-          <View style={styles.statCard}>
+          <View style={[styles.statCard, { backgroundColor: colors.surface }]}>
             <Ionicons
               name="star-outline"
               size={24}
               color={Colors.secondary[500]}
             />
-            <Text style={styles.statValue}>--</Text>
-            <Text style={styles.statLabel}>Rating</Text>
+            <Text style={[styles.statValue, { color: colors.text }]}>--</Text>
+            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
+              Rating
+            </Text>
           </View>
         </Animated.View>
 
@@ -287,8 +313,10 @@ export default function TherapistDetailScreen() {
         {therapist.therapist_profile?.bio && (
           <Animated.View entering={FadeInDown.delay(250).duration(500)}>
             <Card variant="elevated" style={styles.section}>
-              <Text style={styles.sectionTitle}>About</Text>
-              <Text style={styles.bioText}>
+              <Text style={[styles.sectionTitle, { color: colors.text }]}>
+                About
+              </Text>
+              <Text style={[styles.bioText, { color: colors.textSecondary }]}>
                 {therapist.therapist_profile.bio}
               </Text>
             </Card>
@@ -298,40 +326,50 @@ export default function TherapistDetailScreen() {
         {/* Contact Info */}
         <Animated.View entering={FadeInDown.delay(300).duration(500)}>
           <Card variant="elevated" style={styles.section}>
-            <Text style={styles.sectionTitle}>Contact & Location</Text>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>
+              Contact & Location
+            </Text>
 
             {therapist.therapist_profile?.clinic_address && (
-              <View style={styles.infoRow}>
+              <View
+                style={[styles.infoRow, { borderBottomColor: colors.border }]}
+              >
                 <Ionicons
                   name="location-outline"
                   size={20}
                   color={Colors.primary[500]}
                 />
-                <Text style={styles.infoText}>
+                <Text style={[styles.infoText, { color: colors.text }]}>
                   {therapist.therapist_profile.clinic_address}
                 </Text>
               </View>
             )}
 
             {therapist.phone && (
-              <View style={styles.infoRow}>
+              <View
+                style={[styles.infoRow, { borderBottomColor: colors.border }]}
+              >
                 <Ionicons
                   name="call-outline"
                   size={20}
                   color={Colors.primary[500]}
                 />
-                <Text style={styles.infoText}>{therapist.phone}</Text>
+                <Text style={[styles.infoText, { color: colors.text }]}>
+                  {therapist.phone}
+                </Text>
               </View>
             )}
 
             {therapist.therapist_profile?.license_number && (
-              <View style={styles.infoRow}>
+              <View
+                style={[styles.infoRow, { borderBottomColor: colors.border }]}
+              >
                 <Ionicons
                   name="document-text-outline"
                   size={20}
                   color={Colors.primary[500]}
                 />
-                <Text style={styles.infoText}>
+                <Text style={[styles.infoText, { color: colors.text }]}>
                   License: {therapist.therapist_profile.license_number}
                 </Text>
               </View>
@@ -342,20 +380,34 @@ export default function TherapistDetailScreen() {
         {/* Enrollment Section */}
         <Animated.View entering={FadeInDown.delay(350).duration(500)}>
           <Card variant="elevated" style={styles.section}>
-            <Text style={styles.sectionTitle}>Request Enrollment</Text>
-            <Text style={styles.enrollmentDesc}>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>
+              Request Enrollment
+            </Text>
+            <Text
+              style={[styles.enrollmentDesc, { color: colors.textSecondary }]}
+            >
               Select a child to enroll with this therapist. They will receive
               your request and can accept or decline.
             </Text>
 
             {availableChildren.length === 0 ? (
-              <View style={styles.noChildrenContainer}>
+              <View
+                style={[
+                  styles.noChildrenContainer,
+                  { backgroundColor: colors.surfaceVariant },
+                ]}
+              >
                 <Ionicons
                   name="information-circle-outline"
                   size={24}
-                  color={Colors.text.tertiary}
+                  color={colors.textSecondary}
                 />
-                <Text style={styles.noChildrenText}>
+                <Text
+                  style={[
+                    styles.noChildrenText,
+                    { color: colors.textSecondary },
+                  ]}
+                >
                   {children.length === 0
                     ? "Add a child first to request enrollment"
                     : "All your children are already enrolled or have pending requests with this therapist"}
@@ -372,7 +424,9 @@ export default function TherapistDetailScreen() {
               </View>
             ) : (
               <>
-                <Text style={styles.selectLabel}>Select Child:</Text>
+                <Text style={[styles.selectLabel, { color: colors.text }]}>
+                  Select Child:
+                </Text>
                 <View style={styles.childrenList}>
                   {availableChildren.map((child) => (
                     <TouchableOpacity
@@ -380,6 +434,10 @@ export default function TherapistDetailScreen() {
                       onPress={() => setSelectedChildId(child.id)}
                       style={[
                         styles.childOption,
+                        {
+                          backgroundColor: colors.surfaceVariant,
+                          borderColor: colors.border,
+                        },
                         selectedChildId === child.id &&
                           styles.childOptionSelected,
                       ]}
@@ -394,12 +452,13 @@ export default function TherapistDetailScreen() {
                         color={
                           selectedChildId === child.id
                             ? Colors.primary[500]
-                            : Colors.text.tertiary
+                            : colors.textSecondary
                         }
                       />
                       <Text
                         style={[
                           styles.childName,
+                          { color: colors.text },
                           selectedChildId === child.id &&
                             styles.childNameSelected,
                         ]}

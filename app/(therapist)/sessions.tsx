@@ -1,18 +1,18 @@
 import { Ionicons } from "@expo/vector-icons";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
-  ActivityIndicator,
-  Alert,
-  FlatList,
-  Modal,
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-  ViewStyle,
+    ActivityIndicator,
+    Alert,
+    FlatList,
+    Modal,
+    RefreshControl,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
+    ViewStyle,
 } from "react-native";
 import { Calendar, DateData } from "react-native-calendars";
 import Animated, { FadeInDown } from "react-native-reanimated";
@@ -1312,20 +1312,25 @@ const styles = StyleSheet.create({
   },
   listContent: {
     paddingHorizontal: Spacing.lg,
-    paddingBottom: Spacing.xxl,
+    paddingBottom: 120,
   },
   sessionCard: {
     marginBottom: Spacing.md,
-    padding: Spacing.md,
-    borderRadius: 12,
+    padding: Spacing.lg,
+    borderRadius: 20,
   },
   sessionHeader: {
     flexDirection: "row",
     alignItems: "flex-start",
+    gap: Spacing.md,
   },
   timeContainer: {
     alignItems: "center",
-    marginRight: Spacing.md,
+    minWidth: 60,
+    backgroundColor: "rgba(139, 92, 246, 0.1)",
+    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.md,
+    borderRadius: 12,
   },
   sessionTime: {
     fontFamily: Typography.fontFamily.primaryBold,
@@ -1335,18 +1340,20 @@ const styles = StyleSheet.create({
   duration: {
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.tiny,
+    marginTop: 2,
   },
   sessionInfo: {
     flex: 1,
+    gap: 4,
   },
   patientRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: Spacing.sm,
     marginBottom: 4,
   },
   patientName: {
-    fontFamily: Typography.fontFamily.primaryBold,
+    fontFamily: Typography.fontFamily.primarySemiBold,
     fontSize: Typography.fontSize.body,
     fontWeight: "600",
   },
@@ -1355,21 +1362,24 @@ const styles = StyleSheet.create({
     fontSize: Typography.fontSize.small,
   },
   statusBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: 6,
+    borderRadius: 10,
   },
   statusText: {
-    fontFamily: Typography.fontFamily.primary,
+    fontFamily: Typography.fontFamily.primarySemiBold,
     fontSize: Typography.fontSize.tiny,
-    fontWeight: "500",
+    fontWeight: "600",
     textTransform: "capitalize",
   },
   locationRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: Spacing.sm,
-    gap: 6,
+    marginTop: Spacing.md,
+    gap: 8,
+    paddingTop: Spacing.sm,
+    borderTopWidth: 1,
+    borderTopColor: "rgba(0,0,0,0.05)",
   },
   locationText: {
     fontFamily: Typography.fontFamily.primary,
@@ -1379,11 +1389,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginTop: Spacing.sm,
-    gap: 6,
+    gap: 8,
   },
   notesPreviewText: {
     fontFamily: Typography.fontFamily.primary,
-    fontSize: Typography.fontSize.tiny,
+    fontSize: Typography.fontSize.caption,
     flex: 1,
   },
   emptyCard: {

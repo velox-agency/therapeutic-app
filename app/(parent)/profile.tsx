@@ -2,11 +2,11 @@ import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React from "react";
 import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -255,58 +255,66 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingHorizontal: Spacing.lg,
-    paddingBottom: Spacing.xxl,
+    paddingBottom: 120,
   },
   header: {
-    paddingVertical: Spacing.lg,
+    paddingVertical: Spacing.xl,
   },
   title: {
     fontFamily: Typography.fontFamily.primaryBold,
     fontSize: Typography.fontSize.h2,
     fontWeight: Typography.fontWeight.bold,
     color: Colors.text.primary,
+    letterSpacing: -0.5,
   },
   profileCard: {
-    marginBottom: Spacing.lg,
+    marginBottom: Spacing.xl,
+    borderRadius: 24,
+    padding: Spacing.lg,
   },
   profileHeader: {
     alignItems: "center",
-    paddingVertical: Spacing.md,
+    paddingVertical: Spacing.lg,
   },
   profileName: {
     fontFamily: Typography.fontFamily.primaryBold,
     fontSize: Typography.fontSize.h3,
     fontWeight: Typography.fontWeight.bold,
     color: Colors.text.primary,
-    marginTop: Spacing.md,
+    marginTop: Spacing.lg,
     marginBottom: Spacing.sm,
+    letterSpacing: -0.3,
   },
   roleBadge: {
     backgroundColor: Colors.primary[50],
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.xs,
-    borderRadius: 20,
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.sm,
+    borderRadius: 9999,
   },
   roleText: {
-    fontFamily: Typography.fontFamily.primary,
+    fontFamily: Typography.fontFamily.primarySemiBold,
     fontSize: Typography.fontSize.small,
+    fontWeight: Typography.fontWeight.semibold,
     color: Colors.primary[500],
+    letterSpacing: 0.3,
   },
   section: {
-    marginBottom: Spacing.lg,
+    marginBottom: Spacing.xl,
   },
   sectionTitle: {
-    fontFamily: Typography.fontFamily.primaryBold,
-    fontSize: Typography.fontSize.body,
-    fontWeight: Typography.fontWeight.bold,
+    fontFamily: Typography.fontFamily.primarySemiBold,
+    fontSize: Typography.fontSize.small,
+    fontWeight: Typography.fontWeight.semibold,
     color: Colors.text.secondary,
-    marginBottom: Spacing.sm,
+    marginBottom: Spacing.md,
     marginLeft: Spacing.xs,
+    textTransform: "uppercase",
+    letterSpacing: 0.8,
   },
   menuItem: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: Spacing.sm,
+    paddingVertical: Spacing.md,
   },
   menuText: {
     flex: 1,
@@ -314,15 +322,16 @@ const styles = StyleSheet.create({
     fontSize: Typography.fontSize.body,
     color: Colors.text.primary,
     marginLeft: Spacing.md,
+    letterSpacing: 0.1,
   },
   menuDivider: {
     height: 1,
     backgroundColor: Colors.border,
-    marginLeft: 40,
+    marginLeft: 44,
   },
   signOutSection: {
-    marginTop: Spacing.lg,
-    paddingTop: Spacing.md,
+    marginTop: Spacing.xl,
+    paddingTop: Spacing.lg,
     borderTopWidth: 1,
     borderTopColor: Colors.border,
   },
@@ -331,6 +340,7 @@ const styles = StyleSheet.create({
     fontSize: Typography.fontSize.tiny,
     color: Colors.text.tertiary,
     textAlign: "center",
-    marginTop: Spacing.lg,
+    marginTop: Spacing.xl,
+    letterSpacing: 0.2,
   },
 });

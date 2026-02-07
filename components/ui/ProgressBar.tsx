@@ -2,9 +2,9 @@ import { Animation, Colors, Spacing, Typography } from "@/constants/theme";
 import React, { useEffect } from "react";
 import { StyleSheet, Text, View, ViewStyle } from "react-native";
 import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
+    useAnimatedStyle,
+    useSharedValue,
+    withSpring,
 } from "react-native-reanimated";
 
 type ProgressBarVariant =
@@ -231,21 +231,21 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: Spacing.xs,
+    marginBottom: Spacing.sm,
   },
   label: {
-    fontFamily: Typography.fontFamily.primary,
+    fontFamily: Typography.fontFamily.secondary,
     fontSize: Typography.fontSize.small,
     color: Colors.text.secondary,
   },
   percentage: {
     fontFamily: Typography.fontFamily.primaryBold,
     fontSize: Typography.fontSize.small,
-    fontWeight: Typography.fontWeight.bold,
+    fontWeight: Typography.fontWeight.semibold,
     color: Colors.text.primary,
   },
   track: {
-    backgroundColor: Colors.surfaceVariant,
+    backgroundColor: Colors.divider,
     overflow: "hidden",
   },
   fill: {
@@ -260,16 +260,16 @@ const styles = StyleSheet.create({
   starInfo: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: Spacing.xs,
+    marginBottom: Spacing.sm,
   },
   starIcon: {
-    fontSize: Typography.fontSize.body,
+    fontSize: Typography.fontSize.h4,
     marginRight: Spacing.xs,
   },
   starText: {
     fontFamily: Typography.fontFamily.primaryBold,
     fontSize: Typography.fontSize.small,
-    fontWeight: Typography.fontWeight.bold,
+    fontWeight: Typography.fontWeight.semibold,
     color: Colors.star,
   },
   starBar: {
@@ -288,7 +288,7 @@ const styles = StyleSheet.create({
   ringPercentage: {
     fontFamily: Typography.fontFamily.primaryBold,
     fontSize: Typography.fontSize.body,
-    fontWeight: Typography.fontWeight.bold,
+    fontWeight: Typography.fontWeight.semibold,
     color: Colors.text.primary,
   },
 });

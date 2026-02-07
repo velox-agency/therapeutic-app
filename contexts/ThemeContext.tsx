@@ -1,10 +1,10 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
+    createContext,
+    useCallback,
+    useContext,
+    useEffect,
+    useState,
 } from "react";
 import { useColorScheme as useSystemColorScheme } from "react-native";
 
@@ -64,22 +64,28 @@ interface ThemeColors {
   // Tab bar
   tabIconDefault: string;
   tabIconSelected: string;
+
+  // Accent colors
+  accentPeach: string;
+  accentLavender: string;
+  accentMint: string;
+  accentSky: string;
 }
 
 const lightTheme: ThemeColors = {
-  // Backgrounds
-  background: "#F8F9FA",
+  // Backgrounds - Soft, airy
+  background: "#FAFBFC",
   surface: "#FFFFFF",
-  surfaceVariant: "#F5F5F5",
+  surfaceVariant: "#F8F9FC",
   surfaceElevated: "#FFFFFF",
 
-  // Primary
+  // Primary - Soft Purple
   primary: Colors.primary[500],
   primaryLight: Colors.primary[50],
   primaryDark: Colors.primary[700],
   onPrimary: "#FFFFFF",
 
-  // Secondary
+  // Secondary - Teal
   secondary: Colors.secondary[500],
   secondaryLight: Colors.secondary[50],
   onSecondary: "#FFFFFF",
@@ -92,84 +98,96 @@ const lightTheme: ThemeColors = {
   warning: Colors.warning[500],
   warningLight: Colors.warning[100],
 
-  // Text
-  text: "#1A1A1A",
-  textSecondary: "#666666",
-  textTertiary: "#999999",
-  textDisabled: "#9E9E9E",
+  // Text - Dark neutrals (not pure black)
+  text: "#1F2937",
+  textSecondary: "#6B7280",
+  textTertiary: "#9CA3AF",
+  textDisabled: "#D1D5DB",
   textInverse: "#FFFFFF",
 
-  // Borders
-  border: "#E0E0E0",
-  divider: "#EEEEEE",
+  // Borders - Soft
+  border: "#E5E7EB",
+  divider: "#F3F4F6",
 
   // Special
   star: Colors.star,
-  badge: Colors.badge,
+  badge: Colors.primary[400],
   streak: Colors.streak,
-  avatar: Colors.avatar,
+  avatar: Colors.secondary[400],
 
   // Risk
   riskLow: Colors.success[500],
-  riskMedium: Colors.secondary[500],
+  riskMedium: Colors.warning[500],
   riskHigh: Colors.error[500],
 
   // Tab bar
-  tabIconDefault: "#9E9E9E",
+  tabIconDefault: "#9CA3AF",
   tabIconSelected: Colors.primary[500],
+
+  // Accent colors
+  accentPeach: "#FECACA",
+  accentLavender: "#DDD6FE",
+  accentMint: "#A7F3D0",
+  accentSky: "#BAE6FD",
 };
 
 const darkTheme: ThemeColors = {
-  // Backgrounds
-  background: "#121212",
-  surface: "#1E1E1E",
-  surfaceVariant: "#2A2A2A",
-  surfaceElevated: "#2D2D2D",
+  // Backgrounds - Deep, rich
+  background: "#0F172A",
+  surface: "#1E293B",
+  surfaceVariant: "#334155",
+  surfaceElevated: "#1E293B",
 
-  // Primary
+  // Primary - Soft Purple (lighter for dark mode)
   primary: Colors.primary[400],
-  primaryLight: "#1E3A5F",
+  primaryLight: "#2E1065",
   primaryDark: Colors.primary[300],
-  onPrimary: "#000000",
+  onPrimary: "#FFFFFF",
 
-  // Secondary
+  // Secondary - Teal
   secondary: Colors.secondary[400],
-  secondaryLight: "#3D2A00",
-  onSecondary: "#000000",
+  secondaryLight: "#134E4A",
+  onSecondary: "#FFFFFF",
 
   // Success/Error/Warning
   success: Colors.success[400],
-  successLight: "#1B3D1B",
+  successLight: "#14532D",
   error: Colors.error[400],
-  errorLight: "#3D1B1B",
+  errorLight: "#881337",
   warning: Colors.warning[400],
-  warningLight: "#3D3500",
+  warningLight: "#78350F",
 
-  // Text
-  text: "#ECEDEE",
-  textSecondary: "#B3B3B3",
-  textTertiary: "#808080",
-  textDisabled: "#666666",
-  textInverse: "#1A1A1A",
+  // Text - Light
+  text: "#F9FAFB",
+  textSecondary: "#D1D5DB",
+  textTertiary: "#9CA3AF",
+  textDisabled: "#6B7280",
+  textInverse: "#1F2937",
 
   // Borders
-  border: "#3D3D3D",
-  divider: "#2A2A2A",
+  border: "#475569",
+  divider: "#334155",
 
   // Special
   star: Colors.star,
-  badge: "#BA68C8",
+  badge: Colors.primary[300],
   streak: Colors.streak,
-  avatar: Colors.avatar,
+  avatar: Colors.secondary[300],
 
   // Risk
   riskLow: Colors.success[400],
-  riskMedium: Colors.secondary[400],
+  riskMedium: Colors.warning[400],
   riskHigh: Colors.error[400],
 
   // Tab bar
-  tabIconDefault: "#808080",
+  tabIconDefault: "#6B7280",
   tabIconSelected: Colors.primary[400],
+
+  // Accent colors
+  accentPeach: "#7F1D1D",
+  accentLavender: "#4C1D95",
+  accentMint: "#14532D",
+  accentSky: "#0C4A6E",
 };
 
 interface ThemeContextType {

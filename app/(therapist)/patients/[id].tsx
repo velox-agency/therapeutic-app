@@ -2,32 +2,33 @@ import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
 import {
-  ActivityIndicator,
-  Alert,
-  FlatList,
-  KeyboardAvoidingView,
-  Modal,
-  Platform,
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-  ViewStyle,
+    ActivityIndicator,
+    Alert,
+    FlatList,
+    KeyboardAvoidingView,
+    Modal,
+    Platform,
+    RefreshControl,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
+    ViewStyle,
 } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Avatar, Button, Card, Input } from "@/components/ui";
 import { Colors, ComponentStyle, Spacing, Typography } from "@/constants/theme";
+import { useTheme } from "@/contexts/ThemeContext";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/lib/supabase";
 import {
-  FrequencyPeriod,
-  GoalCategory,
-  GoalPriority,
+    FrequencyPeriod,
+    GoalCategory,
+    GoalPriority,
 } from "@/types/database.types";
 
 const CATEGORIES = [
@@ -105,6 +106,7 @@ export default function PatientDetailScreen() {
     tab?: string;
   }>();
   const { user } = useAuth();
+  const { colors } = useTheme();
 
   const [activeTab, setActiveTab] = useState<TabType>(
     (initialTab as TabType) || "overview",
@@ -325,21 +327,35 @@ export default function PatientDetailScreen() {
 
   if (loading) {
     return (
-      <SafeAreaView style={[styles.container, styles.centered]}>
-        <ActivityIndicator size="large" color={Colors.secondary[500]} />
+      <SafeAreaView
+        style={[
+          styles.container,
+          styles.centered,
+          { backgroundColor: colors.background },
+        ]}
+      >
+        <ActivityIndicator size="large" color={colors.secondary} />
       </SafeAreaView>
     );
   }
 
   if (!child) {
     return (
-      <SafeAreaView style={[styles.container, styles.centered]}>
+      <SafeAreaView
+        style={[
+          styles.container,
+          styles.centered,
+          { backgroundColor: colors.background },
+        ]}
+      >
         <Ionicons
           name="alert-circle-outline"
           size={48}
-          color={Colors.text.tertiary}
+          color={colors.textSecondary}
         />
-        <Text style={styles.errorText}>Patient not found</Text>
+        <Text style={[styles.errorText, { color: colors.textSecondary }]}>
+          Patient not found
+        </Text>
         <Button
           title="Go Back"
           onPress={() => router.back()}
@@ -363,7 +379,7 @@ export default function PatientDetailScreen() {
         <RefreshControl
           refreshing={refreshing}
           onRefresh={onRefresh}
-          tintColor={Colors.secondary[500]}
+          tintColor={colors.secondary}
         />
       }
     >
@@ -372,8 +388,10 @@ export default function PatientDetailScreen() {
         <View style={styles.profileHeader}>
           <Avatar name={child.first_name} size="xl" />
           <View style={styles.profileInfo}>
-            <Text style={styles.childName}>{child.first_name}</Text>
-            <Text style={styles.ageText}>
+            <Text style={[styles.childName, { color: colors.text }]}>
+              {child.first_name}
+            </Text>
+            <Text style={[styles.ageText, { color: colors.textSecondary }]}>
               {calculateAge(child.birth_date)} years old
             </Text>
             {child.gender && (
@@ -385,16 +403,24 @@ export default function PatientDetailScreen() {
         </View>
 
         {child.total_stars > 0 && (
-          <View style={styles.notesSection}>
-            <Text style={styles.notesLabel}>Stars Earned</Text>
-            <Text style={styles.notesText}>⭐ {child.total_stars}</Text>
+          <View
+            style={[styles.notesSection, { borderTopColor: colors.border }]}
+          >
+            <Text style={[styles.notesLabel, { color: colors.text }]}>
+              Stars Earned
+            </Text>
+            <Text style={[styles.notesText, { color: colors.textSecondary }]}>
+              ⭐ {child.total_stars}
+            </Text>
           </View>
         )}
       </Card>
 
       {/* Parent Contact */}
       <Card variant="elevated" style={styles.contactCard}>
-        <Text style={styles.sectionTitle}>Parent/Guardian</Text>
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>
+          Parent/Guardian
+        </Text>
         <View style={styles.contactRow}>
           <Avatar
             name={child.parent.full_name}
@@ -402,9 +428,15 @@ export default function PatientDetailScreen() {
             size="md"
           />
           <View style={styles.contactInfo}>
-            <Text style={styles.contactName}>{child.parent.full_name}</Text>
+            <Text style={[styles.contactName, { color: colors.text }]}>
+              {child.parent.full_name}
+            </Text>
             {child.parent.phone && (
-              <Text style={styles.contactPhone}>{child.parent.phone}</Text>
+              <Text
+                style={[styles.contactPhone, { color: colors.textSecondary }]}
+              >
+                {child.parent.phone}
+              </Text>
             )}
           </View>
         </View>
@@ -412,31 +444,52 @@ export default function PatientDetailScreen() {
 
       {/* Quick Stats */}
       <View style={styles.statsRow}>
-        <View style={styles.statCard}>
-          <Text style={styles.statValue}>{goals.length}</Text>
-          <Text style={styles.statLabel}>Goals</Text>
+        <View style={[styles.statCard, { backgroundColor: colors.surface }]}>
+          <Text style={[styles.statValue, { color: colors.secondary }]}>
+            {goals.length}
+          </Text>
+          <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
+            Goals
+          </Text>
         </View>
-        <View style={styles.statCard}>
-          <Text style={styles.statValue}>{sessions.length}</Text>
-          <Text style={styles.statLabel}>Sessions</Text>
+        <View style={[styles.statCard, { backgroundColor: colors.surface }]}>
+          <Text style={[styles.statValue, { color: colors.secondary }]}>
+            {sessions.length}
+          </Text>
+          <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
+            Sessions
+          </Text>
         </View>
-        <View style={styles.statCard}>
-          <Text style={styles.statValue}>{screenings.length}</Text>
-          <Text style={styles.statLabel}>Screenings</Text>
+        <View style={[styles.statCard, { backgroundColor: colors.surface }]}>
+          <Text style={[styles.statValue, { color: colors.secondary }]}>
+            {screenings.length}
+          </Text>
+          <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
+            Screenings
+          </Text>
         </View>
       </View>
 
       {/* Recent Activity */}
       {goals.filter((g) => g.status === "active").length > 0 && (
         <Card variant="elevated" style={styles.activityCard}>
-          <Text style={styles.sectionTitle}>Active Goals</Text>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>
+            Active Goals
+          </Text>
           {goals
             .filter((g) => g.status === "active")
             .slice(0, 3)
             .map((goal) => (
               <View key={goal.id} style={styles.goalItem}>
-                <Text style={styles.goalTitle}>{goal.title}</Text>
-                <View style={styles.progressBar}>
+                <Text style={[styles.goalTitle, { color: colors.text }]}>
+                  {goal.title}
+                </Text>
+                <View
+                  style={[
+                    styles.progressBar,
+                    { backgroundColor: colors.surfaceVariant },
+                  ]}
+                >
                   <View
                     style={[
                       styles.progressFill,
@@ -449,7 +502,9 @@ export default function PatientDetailScreen() {
                     ]}
                   />
                 </View>
-                <Text style={styles.progressText}>
+                <Text
+                  style={[styles.progressText, { color: colors.textSecondary }]}
+                >
                   {goal.current_value}/{goal.target_value}
                 </Text>
               </View>
@@ -462,9 +517,11 @@ export default function PatientDetailScreen() {
   const renderGoals = () => (
     <View style={styles.tabContent}>
       <View style={styles.tabHeader}>
-        <Text style={styles.tabTitle}>Goals ({goals.length})</Text>
+        <Text style={[styles.tabTitle, { color: colors.text }]}>
+          Goals ({goals.length})
+        </Text>
         <TouchableOpacity
-          style={styles.addButton}
+          style={[styles.addButton, { backgroundColor: Colors.secondary[50] }]}
           onPress={() => setShowGoalModal(true)}
         >
           <Ionicons name="add" size={24} color={Colors.secondary[500]} />
@@ -476,9 +533,11 @@ export default function PatientDetailScreen() {
           <Ionicons
             name="flag-outline"
             size={48}
-            color={Colors.text.tertiary}
+            color={colors.textSecondary}
           />
-          <Text style={styles.emptyText}>No goals set yet</Text>
+          <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
+            No goals set yet
+          </Text>
           <Button
             title="Create First Goal"
             onPress={() => setShowGoalModal(true)}
@@ -516,7 +575,11 @@ export default function PatientDetailScreen() {
                         },
                       ]}
                     />
-                    <Text style={styles.goalCardTitle}>{item.title}</Text>
+                    <Text
+                      style={[styles.goalCardTitle, { color: colors.text }]}
+                    >
+                      {item.title}
+                    </Text>
                   </View>
                   {item.status === "completed" && (
                     <Ionicons
@@ -528,11 +591,23 @@ export default function PatientDetailScreen() {
                 </View>
 
                 {item.description && (
-                  <Text style={styles.goalDescription}>{item.description}</Text>
+                  <Text
+                    style={[
+                      styles.goalDescription,
+                      { color: colors.textSecondary },
+                    ]}
+                  >
+                    {item.description}
+                  </Text>
                 )}
 
                 <View style={styles.goalProgress}>
-                  <View style={styles.progressBarLarge}>
+                  <View
+                    style={[
+                      styles.progressBarLarge,
+                      { backgroundColor: colors.surfaceVariant },
+                    ]}
+                  >
                     <View
                       style={[
                         styles.progressFillLarge,
@@ -545,7 +620,12 @@ export default function PatientDetailScreen() {
                       ]}
                     />
                   </View>
-                  <Text style={styles.progressTextLarge}>
+                  <Text
+                    style={[
+                      styles.progressTextLarge,
+                      { color: colors.textSecondary },
+                    ]}
+                  >
                     {item.current_value}/{item.target_value} (
                     {Math.round((item.current_value / item.target_value) * 100)}
                     %)
@@ -553,9 +633,17 @@ export default function PatientDetailScreen() {
                 </View>
 
                 {item.status === "active" && (
-                  <View style={styles.goalActions}>
+                  <View
+                    style={[
+                      styles.goalActions,
+                      { borderTopColor: colors.border },
+                    ]}
+                  >
                     <TouchableOpacity
-                      style={styles.incrementButton}
+                      style={[
+                        styles.incrementButton,
+                        { backgroundColor: colors.surfaceVariant },
+                      ]}
                       onPress={() =>
                         handleUpdateGoalProgress(
                           item.id,
@@ -570,7 +658,10 @@ export default function PatientDetailScreen() {
                       />
                     </TouchableOpacity>
                     <TouchableOpacity
-                      style={styles.incrementButton}
+                      style={[
+                        styles.incrementButton,
+                        { backgroundColor: colors.surfaceVariant },
+                      ]}
                       onPress={() =>
                         handleUpdateGoalProgress(
                           item.id,
@@ -599,7 +690,9 @@ export default function PatientDetailScreen() {
   const renderSessions = () => (
     <View style={styles.tabContent}>
       <View style={styles.tabHeader}>
-        <Text style={styles.tabTitle}>Sessions ({sessions.length})</Text>
+        <Text style={[styles.tabTitle, { color: colors.text }]}>
+          Sessions ({sessions.length})
+        </Text>
       </View>
 
       {sessions.length === 0 ? (
@@ -607,9 +700,11 @@ export default function PatientDetailScreen() {
           <Ionicons
             name="calendar-outline"
             size={48}
-            color={Colors.text.tertiary}
+            color={colors.textSecondary}
           />
-          <Text style={styles.emptyText}>No sessions scheduled</Text>
+          <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
+            No sessions scheduled
+          </Text>
         </View>
       ) : (
         <FlatList
@@ -620,14 +715,19 @@ export default function PatientDetailScreen() {
               <Card variant="elevated" style={styles.sessionCard}>
                 <View style={styles.sessionHeader}>
                   <View>
-                    <Text style={styles.sessionDate}>
+                    <Text style={[styles.sessionDate, { color: colors.text }]}>
                       {new Date(item.scheduled_at).toLocaleDateString("en-US", {
                         weekday: "short",
                         month: "short",
                         day: "numeric",
                       })}
                     </Text>
-                    <Text style={styles.sessionTime}>
+                    <Text
+                      style={[
+                        styles.sessionTime,
+                        { color: colors.textSecondary },
+                      ]}
+                    >
                       {new Date(item.scheduled_at).toLocaleTimeString("en-US", {
                         hour: "2-digit",
                         minute: "2-digit",
@@ -670,9 +770,14 @@ export default function PatientDetailScreen() {
                     <Ionicons
                       name="time-outline"
                       size={16}
-                      color={Colors.text.tertiary}
+                      color={colors.textSecondary}
                     />
-                    <Text style={styles.sessionDetailText}>
+                    <Text
+                      style={[
+                        styles.sessionDetailText,
+                        { color: colors.textSecondary },
+                      ]}
+                    >
                       {item.duration_minutes} min
                     </Text>
                   </View>
@@ -680,16 +785,26 @@ export default function PatientDetailScreen() {
                     <Ionicons
                       name="videocam-outline"
                       size={16}
-                      color={Colors.text.tertiary}
+                      color={colors.textSecondary}
                     />
-                    <Text style={styles.sessionDetailText}>
+                    <Text
+                      style={[
+                        styles.sessionDetailText,
+                        { color: colors.textSecondary },
+                      ]}
+                    >
                       {item.session_type}
                     </Text>
                   </View>
                 </View>
 
                 {item.therapist_notes && (
-                  <Text style={styles.sessionNotes}>
+                  <Text
+                    style={[
+                      styles.sessionNotes,
+                      { color: colors.textSecondary },
+                    ]}
+                  >
                     {item.therapist_notes}
                   </Text>
                 )}
@@ -706,7 +821,9 @@ export default function PatientDetailScreen() {
   const renderScreening = () => (
     <View style={styles.tabContent}>
       <View style={styles.tabHeader}>
-        <Text style={styles.tabTitle}>Screenings ({screenings.length})</Text>
+        <Text style={[styles.tabTitle, { color: colors.text }]}>
+          Screenings ({screenings.length})
+        </Text>
       </View>
 
       {screenings.length === 0 ? (
@@ -714,10 +831,12 @@ export default function PatientDetailScreen() {
           <Ionicons
             name="clipboard-outline"
             size={48}
-            color={Colors.text.tertiary}
+            color={colors.textSecondary}
           />
-          <Text style={styles.emptyText}>No screenings completed</Text>
-          <Text style={styles.emptySubtext}>
+          <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
+            No screenings completed
+          </Text>
+          <Text style={[styles.emptySubtext, { color: colors.textSecondary }]}>
             Parent can complete M-CHAT-R screening from their app
           </Text>
         </View>
@@ -730,8 +849,17 @@ export default function PatientDetailScreen() {
               <Card variant="elevated" style={styles.screeningCard}>
                 <View style={styles.screeningHeader}>
                   <View>
-                    <Text style={styles.screeningType}>M-CHAT-R</Text>
-                    <Text style={styles.screeningDate}>
+                    <Text
+                      style={[styles.screeningType, { color: colors.text }]}
+                    >
+                      M-CHAT-R
+                    </Text>
+                    <Text
+                      style={[
+                        styles.screeningDate,
+                        { color: colors.textSecondary },
+                      ]}
+                    >
                       {new Date(item.completed_at).toLocaleDateString("en-US", {
                         month: "short",
                         day: "numeric",
@@ -756,8 +884,20 @@ export default function PatientDetailScreen() {
                   </View>
                 </View>
 
-                <View style={styles.scoreSection}>
-                  <Text style={styles.scoreLabel}>Total Score</Text>
+                <View
+                  style={[
+                    styles.scoreSection,
+                    {
+                      borderTopColor: colors.border,
+                      borderBottomColor: colors.border,
+                    },
+                  ]}
+                >
+                  <Text
+                    style={[styles.scoreLabel, { color: colors.textSecondary }]}
+                  >
+                    Total Score
+                  </Text>
                   <Text
                     style={[
                       styles.scoreValue,
@@ -788,21 +928,27 @@ export default function PatientDetailScreen() {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity
           onPress={() => router.back()}
-          style={styles.backButton}
+          style={[styles.backButton, { backgroundColor: colors.surface }]}
         >
-          <Ionicons name="arrow-back" size={24} color={Colors.text.primary} />
+          <Ionicons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Patient Details</Text>
+        <Text style={[styles.headerTitle, { color: colors.text }]}>
+          Patient Details
+        </Text>
         <View style={{ width: 44 }} />
       </View>
 
       {/* Tabs */}
-      <View style={styles.tabsContainer}>
+      <View
+        style={[styles.tabsContainer, { borderBottomColor: colors.border }]}
+      >
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           {tabs.map((tab) => (
             <TouchableOpacity
@@ -816,12 +962,13 @@ export default function PatientDetailScreen() {
                 color={
                   activeTab === tab.key
                     ? Colors.secondary[500]
-                    : Colors.text.tertiary
+                    : colors.textSecondary
                 }
               />
               <Text
                 style={[
                   styles.tabText,
+                  { color: colors.textSecondary },
                   activeTab === tab.key && styles.activeTabText,
                 ]}
               >
@@ -851,16 +998,20 @@ export default function PatientDetailScreen() {
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           style={styles.modalOverlay}
         >
-          <View style={styles.modalContent}>
+          <View
+            style={[styles.modalContent, { backgroundColor: colors.surface }]}
+          >
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Create Goal</Text>
+              <Text style={[styles.modalTitle, { color: colors.text }]}>
+                Create Goal
+              </Text>
               <TouchableOpacity
                 onPress={() => {
                   setShowGoalModal(false);
                   resetGoalForm();
                 }}
               >
-                <Ionicons name="close" size={24} color={Colors.text.primary} />
+                <Ionicons name="close" size={24} color={colors.text} />
               </TouchableOpacity>
             </View>
 
@@ -892,13 +1043,18 @@ export default function PatientDetailScreen() {
 
               {/* Category */}
               <View style={styles.modalSection}>
-                <Text style={styles.modalSectionTitle}>Category</Text>
+                <Text
+                  style={[styles.modalSectionTitle, { color: colors.text }]}
+                >
+                  Category
+                </Text>
                 <View style={styles.categoryGrid}>
                   {CATEGORIES.map((cat) => (
                     <TouchableOpacity
                       key={cat.id}
                       style={[
                         styles.categoryOption,
+                        { backgroundColor: colors.surfaceVariant },
                         goalForm.category === cat.id &&
                           styles.categoryOptionSelected,
                       ]}
@@ -915,12 +1071,13 @@ export default function PatientDetailScreen() {
                         color={
                           goalForm.category === cat.id
                             ? Colors.primary[500]
-                            : Colors.text.secondary
+                            : colors.textSecondary
                         }
                       />
                       <Text
                         style={[
                           styles.categoryOptionText,
+                          { color: colors.textSecondary },
                           goalForm.category === cat.id &&
                             styles.categoryOptionTextSelected,
                         ]}
@@ -934,14 +1091,21 @@ export default function PatientDetailScreen() {
 
               {/* Priority */}
               <View style={styles.modalSection}>
-                <Text style={styles.modalSectionTitle}>Priority</Text>
+                <Text
+                  style={[styles.modalSectionTitle, { color: colors.text }]}
+                >
+                  Priority
+                </Text>
                 <View style={styles.priorityRow}>
                   {PRIORITIES.map((p) => (
                     <TouchableOpacity
                       key={p.id}
                       style={[
                         styles.priorityOption,
-                        { borderColor: p.color },
+                        {
+                          borderColor: p.color,
+                          backgroundColor: colors.surface,
+                        },
                         goalForm.priority === p.id && {
                           backgroundColor: p.color,
                         },
@@ -973,10 +1137,21 @@ export default function PatientDetailScreen() {
 
               {/* Frequency */}
               <View style={styles.modalSection}>
-                <Text style={styles.modalSectionTitle}>Target Frequency</Text>
+                <Text
+                  style={[styles.modalSectionTitle, { color: colors.text }]}
+                >
+                  Target Frequency
+                </Text>
                 <View style={styles.frequencyRow}>
                   <TextInput
-                    style={styles.frequencyInput}
+                    style={[
+                      styles.frequencyInput,
+                      {
+                        backgroundColor: colors.surfaceVariant,
+                        color: colors.text,
+                        borderColor: colors.border,
+                      },
+                    ]}
                     value={goalForm.targetFrequency}
                     onChangeText={(text) =>
                       setGoalForm((prev) => ({
@@ -986,15 +1161,26 @@ export default function PatientDetailScreen() {
                     }
                     keyboardType="number-pad"
                     placeholder="1"
-                    placeholderTextColor={Colors.text.tertiary}
+                    placeholderTextColor={colors.textSecondary}
                   />
-                  <Text style={styles.frequencyLabel}>times per</Text>
+                  <Text
+                    style={[
+                      styles.frequencyLabel,
+                      { color: colors.textSecondary },
+                    ]}
+                  >
+                    times per
+                  </Text>
                   <View style={styles.frequencyOptions}>
                     {FREQUENCIES.map((f) => (
                       <TouchableOpacity
                         key={f.id}
                         style={[
                           styles.frequencyOption,
+                          {
+                            backgroundColor: colors.surfaceVariant,
+                            borderColor: colors.border,
+                          },
                           goalForm.frequency === f.id &&
                             styles.frequencyOptionSelected,
                         ]}
@@ -1008,6 +1194,7 @@ export default function PatientDetailScreen() {
                         <Text
                           style={[
                             styles.frequencyOptionText,
+                            { color: colors.textSecondary },
                             goalForm.frequency === f.id &&
                               styles.frequencyOptionTextSelected,
                           ]}
@@ -1022,38 +1209,61 @@ export default function PatientDetailScreen() {
 
               {/* Target Value & Unit */}
               <View style={styles.modalSection}>
-                <Text style={styles.modalSectionTitle}>
+                <Text
+                  style={[styles.modalSectionTitle, { color: colors.text }]}
+                >
                   Target Measurement (Optional)
                 </Text>
-                <Text style={styles.modalSectionSubtitle}>
+                <Text
+                  style={[
+                    styles.modalSectionSubtitle,
+                    { color: colors.textSecondary },
+                  ]}
+                >
                   Set a specific target for progress tracking
                 </Text>
                 <View style={styles.targetRow}>
                   <View style={styles.targetInputContainer}>
                     <TextInput
-                      style={styles.targetInput}
+                      style={[
+                        styles.targetInput,
+                        {
+                          backgroundColor: colors.surfaceVariant,
+                          color: colors.text,
+                          borderColor: colors.border,
+                        },
+                      ]}
                       value={goalForm.targetValue}
                       onChangeText={(text) =>
                         setGoalForm((prev) => ({ ...prev, targetValue: text }))
                       }
                       keyboardType="number-pad"
                       placeholder="5"
-                      placeholderTextColor={Colors.text.tertiary}
+                      placeholderTextColor={colors.textSecondary}
                     />
                   </View>
                   <View style={styles.unitInputContainer}>
                     <TextInput
-                      style={styles.targetInput}
+                      style={[
+                        styles.targetInput,
+                        {
+                          backgroundColor: colors.surfaceVariant,
+                          color: colors.text,
+                          borderColor: colors.border,
+                        },
+                      ]}
                       value={goalForm.unit}
                       onChangeText={(text) =>
                         setGoalForm((prev) => ({ ...prev, unit: text }))
                       }
                       placeholder="seconds"
-                      placeholderTextColor={Colors.text.tertiary}
+                      placeholderTextColor={colors.textSecondary}
                     />
                   </View>
                 </View>
-                <Text style={styles.exampleText}>
+                <Text
+                  style={[styles.exampleText, { color: colors.textSecondary }]}
+                >
                   💡 Example: "5 seconds" of eye contact, "10 words" spoken
                 </Text>
               </View>

@@ -2,16 +2,17 @@ import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
 import {
-  ActivityIndicator,
-  Alert,
-  FlatList,
-  RefreshControl,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-  ViewStyle,
+    ActivityIndicator,
+    Alert,
+    FlatList,
+    RefreshControl,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
+    ViewStyle,
 } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -243,7 +244,9 @@ export default function PatientsListScreen() {
             <Avatar name={item.child.first_name} size="lg" />
             <View style={styles.patientInfo}>
               <View style={styles.nameRow}>
-                <Text style={styles.patientName}>{item.child.first_name}</Text>
+                <Text style={[styles.patientName, { color: colors.text }]}>
+                  {item.child.first_name}
+                </Text>
                 <View
                   style={[
                     styles.statusBadge,
@@ -257,22 +260,28 @@ export default function PatientsListScreen() {
                   <Text style={styles.statusText}>{item.status}</Text>
                 </View>
               </View>
-              <Text style={styles.ageText}>
+              <Text style={[styles.ageText, { color: colors.textSecondary }]}>
                 {calculateAge(item.child.birth_date)} years old
               </Text>
               <View style={styles.parentRow}>
                 <Ionicons
                   name="person-outline"
                   size={14}
-                  color={Colors.text.tertiary}
+                  color={colors.textSecondary}
                 />
-                <Text style={styles.parentName}>{item.parent.full_name}</Text>
+                <Text
+                  style={[styles.parentName, { color: colors.textSecondary }]}
+                >
+                  {item.parent.full_name}
+                </Text>
               </View>
             </View>
           </View>
 
           {item.status === "pending" && (
-            <View style={styles.actionButtons}>
+            <View
+              style={[styles.actionButtons, { borderTopColor: colors.border }]}
+            >
               <Button
                 title="Accept"
                 onPress={() => handleAccept(item.id)}
@@ -291,7 +300,9 @@ export default function PatientsListScreen() {
           )}
 
           {item.status === "active" && (
-            <View style={styles.quickActions}>
+            <View
+              style={[styles.quickActions, { borderTopColor: colors.border }]}
+            >
               <TouchableOpacity
                 style={styles.quickAction}
                 onPress={() =>
@@ -301,7 +312,14 @@ export default function PatientsListScreen() {
                 }
               >
                 <Ionicons name="flag" size={20} color={Colors.success[500]} />
-                <Text style={styles.quickActionText}>Goals</Text>
+                <Text
+                  style={[
+                    styles.quickActionText,
+                    { color: colors.textSecondary },
+                  ]}
+                >
+                  Goals
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.quickAction}
@@ -316,7 +334,14 @@ export default function PatientsListScreen() {
                   size={20}
                   color={Colors.primary[500]}
                 />
-                <Text style={styles.quickActionText}>Sessions</Text>
+                <Text
+                  style={[
+                    styles.quickActionText,
+                    { color: colors.textSecondary },
+                  ]}
+                >
+                  Sessions
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.quickAction}
@@ -331,7 +356,14 @@ export default function PatientsListScreen() {
                   size={20}
                   color={Colors.secondary[500]}
                 />
-                <Text style={styles.quickActionText}>Screening</Text>
+                <Text
+                  style={[
+                    styles.quickActionText,
+                    { color: colors.textSecondary },
+                  ]}
+                >
+                  Screening
+                </Text>
               </TouchableOpacity>
             </View>
           )}
@@ -401,7 +433,12 @@ export default function PatientsListScreen() {
       </View>
 
       {/* Tab Filters */}
-      <View style={styles.tabsContainer}>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={styles.tabsContainer}
+        contentContainerStyle={styles.tabsContent}
+      >
         {(["all", "active", "pending"] as TabFilter[]).map((tab) => (
           <TouchableOpacity
             key={tab}
@@ -427,7 +464,7 @@ export default function PatientsListScreen() {
             </Text>
           </TouchableOpacity>
         ))}
-      </View>
+      </ScrollView>
 
       {/* Patient List */}
       {filteredPatients.length === 0 ? (
@@ -525,9 +562,10 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.xs,
   },
   tabsContainer: {
-    flexDirection: "row",
-    paddingHorizontal: Spacing.lg,
     marginBottom: Spacing.md,
+  },
+  tabsContent: {
+    paddingHorizontal: Spacing.lg,
     gap: Spacing.sm,
   },
   tab: {

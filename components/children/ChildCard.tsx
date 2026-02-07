@@ -5,7 +5,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Animated, { FadeInUp } from "react-native-reanimated";
 
 import { Avatar } from "@/components/ui";
-import { Colors, Spacing, Typography } from "@/constants/theme";
+import { Colors, ComponentStyle, Spacing, Typography } from "@/constants/theme";
 import type { Child } from "@/types/database.types";
 
 interface ChildCardProps {
@@ -80,25 +80,22 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: Colors.surface,
-    padding: Spacing.md,
-    borderRadius: 16,
-    marginBottom: Spacing.sm,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 3,
+    padding: Spacing.lg,
+    borderRadius: 20,
+    marginBottom: Spacing.md,
+    ...ComponentStyle.shadow.small,
   },
   info: {
     flex: 1,
-    marginLeft: Spacing.md,
+    marginLeft: Spacing.lg,
   },
   name: {
     fontFamily: Typography.fontFamily.primaryBold,
     fontSize: Typography.fontSize.h4,
-    fontWeight: Typography.fontWeight.bold,
+    fontWeight: Typography.fontWeight.semibold,
     color: Colors.text.primary,
-    marginBottom: 2,
+    marginBottom: 4,
+    letterSpacing: -0.3,
   },
   age: {
     fontFamily: Typography.fontFamily.secondary,
@@ -108,16 +105,20 @@ const styles = StyleSheet.create({
   starsContainer: {
     flexDirection: "row",
     alignItems: "center",
+    backgroundColor: Colors.warning[50],
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    borderRadius: 14,
     marginRight: Spacing.sm,
   },
   starIcon: {
     fontSize: 18,
-    marginRight: 4,
+    marginRight: 6,
   },
   starsCount: {
     fontFamily: Typography.fontFamily.primaryBold,
-    fontSize: Typography.fontSize.h4,
-    fontWeight: Typography.fontWeight.bold,
-    color: Colors.secondary[600],
+    fontSize: Typography.fontSize.body,
+    fontWeight: Typography.fontWeight.semibold,
+    color: Colors.warning[600],
   },
 });

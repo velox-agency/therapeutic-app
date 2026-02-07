@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 
-import { Colors, Spacing, Typography } from "@/constants/theme";
+import { Colors, ComponentStyle, Spacing, Typography } from "@/constants/theme";
 
 interface StatCardProps {
   icon: string;
@@ -20,6 +20,7 @@ interface StatCardProps {
   onPress?: () => void;
   delay?: number;
   style?: ViewStyle;
+  variant?: "default" | "compact";
 }
 
 export function StatCard({
@@ -31,18 +32,35 @@ export function StatCard({
   onPress,
   delay = 0,
   style,
+  variant = "default",
 }: StatCardProps) {
+  const isCompact = variant === "compact";
+
   const content = (
-    <View style={[styles.card, style]}>
-      <View style={[styles.iconContainer, { backgroundColor: color + "20" }]}>
+    <View style={[styles.card, isCompact && styles.cardCompact, style]}>
+      <View
+        style={[
+          styles.iconContainer,
+          isCompact && styles.iconContainerCompact,
+          { backgroundColor: color + "15" },
+        ]}
+      >
         {iconName ? (
-          <Ionicons name={iconName} size={24} color={color} />
+          <Ionicons name={iconName} size={isCompact ? 20 : 24} color={color} />
         ) : (
-          <Text style={[styles.icon, { color }]}>{icon}</Text>
+          <Text style={[styles.icon, { color, fontSize: isCompact ? 18 : 22 }]}>
+            {icon}
+          </Text>
         )}
       </View>
-      <Text style={styles.label}>{label}</Text>
-      <Text style={styles.value}>{value}</Text>
+      <View style={styles.textContainer}>
+        <Text style={[styles.value, isCompact && styles.valueCompact]}>
+          {value}
+        </Text>
+        <Text style={[styles.label, isCompact && styles.labelCompact]}>
+          {label}
+        </Text>
+      </View>
     </View>
   );
 
@@ -69,35 +87,49 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: Colors.surface,
     padding: Spacing.lg,
-    borderRadius: 16,
-    minHeight: 120,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 3,
+    borderRadius: ComponentStyle.borderRadius.lg,
+    minHeight: 130,
+    ...ComponentStyle.shadow.small,
+  },
+  cardCompact: {
+    minHeight: 100,
+    padding: Spacing.md,
   },
   iconContainer: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+    width: 52,
+    height: 52,
+    borderRadius: ComponentStyle.borderRadius.md,
     alignItems: "center",
     justifyContent: "center",
+    marginBottom: Spacing.md,
+  },
+  iconContainerCompact: {
+    width: 40,
+    height: 40,
     marginBottom: Spacing.sm,
   },
   icon: {
-    fontSize: 24,
+    fontWeight: "600",
   },
-  label: {
-    fontFamily: Typography.fontFamily.secondary,
-    fontSize: Typography.fontSize.small,
-    color: Colors.text.secondary,
-    marginBottom: 4,
+  textContainer: {
+    gap: 2,
   },
   value: {
     fontFamily: Typography.fontFamily.primaryBold,
     fontSize: Typography.fontSize.h2,
     fontWeight: Typography.fontWeight.bold,
     color: Colors.text.primary,
+    letterSpacing: -0.5,
+  },
+  valueCompact: {
+    fontSize: Typography.fontSize.h3,
+  },
+  label: {
+    fontFamily: Typography.fontFamily.secondary,
+    fontSize: Typography.fontSize.small,
+    color: Colors.text.secondary,
+  },
+  labelCompact: {
+    fontSize: Typography.fontSize.tiny,
   },
 });

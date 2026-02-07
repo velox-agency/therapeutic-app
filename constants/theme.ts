@@ -1,140 +1,152 @@
 /**
  * Therapeutic App Design System
- * "Therapeutic Playful Professional" - Duolingo meets medical app
+ * Modern Health-Tech UI - Calm, Friendly, and Professional
+ * Primary Brand: Purple (from logo)
  */
 
-// Color Palette - Calming yet energetic
+// Color Palette - Soft, calming, health-tech inspired
 export const Colors = {
-  // Primary - Calming yet energetic
+  // Primary - Soft Purple (Brand Color)
   primary: {
-    50: '#E3F2FD',
-    100: '#BBDEFB',
-    200: '#90CAF9',
-    300: '#64B5F6',
-    400: '#42A5F5',
-    500: '#2196F3', // Main brand blue
-    600: '#1976D2',
-    700: '#1565C0',
-    800: '#0D47A1',
-    900: '#0A2472',
+    50: "#F5F0FF",
+    100: "#EDE5FF",
+    200: "#DBC9FF",
+    300: "#C4A7FF",
+    400: "#A78BFA",
+    500: "#8B5CF6", // Main brand purple
+    600: "#7C3AED",
+    700: "#6D28D9",
+    800: "#5B21B6",
+    900: "#4C1D95",
   },
 
-  // Secondary - Warm encouragement
+  // Secondary - Teal/Mint accent
   secondary: {
-    50: '#FFF3E0',
-    100: '#FFE0B2',
-    200: '#FFCC80',
-    300: '#FFB74D',
-    400: '#FFA726',
-    500: '#FF9800', // Achievement orange
-    600: '#FB8C00',
-    700: '#F57C00',
-    800: '#EF6C00',
-    900: '#E65100',
+    50: "#F0FDFA",
+    100: "#CCFBF1",
+    200: "#99F6E4",
+    300: "#5EEAD4",
+    400: "#2DD4BF",
+    500: "#14B8A6", // Teal accent
+    600: "#0D9488",
+    700: "#0F766E",
+    800: "#115E59",
+    900: "#134E4A",
   },
 
-  // Success - Growth green
+  // Success - Soft green
   success: {
-    50: '#E8F5E9',
-    100: '#C8E6C9',
-    200: '#A5D6A7',
-    300: '#81C784',
-    400: '#66BB6A',
-    500: '#4CAF50',
-    600: '#43A047',
-    700: '#388E3C',
-    800: '#2E7D32',
-    900: '#1B5E20',
+    50: "#F0FDF4",
+    100: "#DCFCE7",
+    200: "#BBF7D0",
+    300: "#86EFAC",
+    400: "#4ADE80",
+    500: "#22C55E",
+    600: "#16A34A",
+    700: "#15803D",
+    800: "#166534",
+    900: "#14532D",
   },
 
-  // Error - Alert red
+  // Error - Soft coral red
   error: {
-    50: '#FFEBEE',
-    100: '#FFCDD2',
-    200: '#EF9A9A',
-    300: '#E57373',
-    400: '#EF5350',
-    500: '#F44336',
-    600: '#E53935',
-    700: '#D32F2F',
-    800: '#C62828',
-    900: '#B71C1C',
+    50: "#FFF1F2",
+    100: "#FFE4E6",
+    200: "#FECDD3",
+    300: "#FDA4AF",
+    400: "#FB7185",
+    500: "#F43F5E",
+    600: "#E11D48",
+    700: "#BE123C",
+    800: "#9F1239",
+    900: "#881337",
   },
 
-  // Warning - Caution yellow
+  // Warning - Soft amber
   warning: {
-    50: '#FFFDE7',
-    100: '#FFF9C4',
-    200: '#FFF59D',
-    300: '#FFF176',
-    400: '#FFEE58',
-    500: '#FFEB3B',
-    600: '#FDD835',
-    700: '#FBC02D',
-    800: '#F9A825',
-    900: '#F57F17',
+    50: "#FFFBEB",
+    100: "#FEF3C7",
+    200: "#FDE68A",
+    300: "#FCD34D",
+    400: "#FBBF24",
+    500: "#F59E0B",
+    600: "#D97706",
+    700: "#B45309",
+    800: "#92400E",
+    900: "#78350F",
   },
 
-  // Gamification
-  star: '#FFD700',
-  badge: '#9C27B0',
-  avatar: '#00BCD4',
-  streak: '#FF5722',
+  // Accent colors for variety
+  accent: {
+    peach: "#FECACA",
+    lavender: "#DDD6FE",
+    mint: "#A7F3D0",
+    sky: "#BAE6FD",
+    rose: "#FBCFE8",
+    amber: "#FDE68A",
+  },
 
-  // Functional
-  background: '#F8F9FA',
-  surface: '#FFFFFF',
-  surfaceVariant: '#F5F5F5',
-  border: '#E0E0E0',
-  divider: '#EEEEEE',
+  // Gamification - Vibrant but friendly
+  star: "#FBBF24",
+  badge: "#A78BFA",
+  avatar: "#2DD4BF",
+  streak: "#FB923C",
 
-  // Text
+  // Functional - Off-white and soft grays
+  background: "#FAFBFC",
+  surface: "#FFFFFF",
+  surfaceVariant: "#F8F9FC",
+  surfaceElevated: "#FFFFFF",
+  border: "#E5E7EB",
+  divider: "#F3F4F6",
+
+  // Text - Dark neutrals (not pure black)
   text: {
-    primary: '#1A1A1A',
-    secondary: '#666666',
-    tertiary: '#999999',
-    disabled: '#9E9E9E',
-    inverse: '#FFFFFF',
+    primary: "#1F2937",
+    secondary: "#6B7280",
+    tertiary: "#9CA3AF",
+    disabled: "#D1D5DB",
+    inverse: "#FFFFFF",
   },
 
   // Risk levels (M-CHAT-R)
   risk: {
-    low: '#4CAF50',
-    medium: '#FF9800',
-    high: '#F44336',
+    low: "#22C55E",
+    medium: "#F59E0B",
+    high: "#F43F5E",
   },
 
   // Light/Dark mode compatibility
   light: {
-    text: '#1A1A1A',
-    background: '#F8F9FA',
-    tint: '#2196F3',
-    icon: '#666666',
-    tabIconDefault: '#9E9E9E',
-    tabIconSelected: '#2196F3',
+    text: "#1F2937",
+    background: "#FAFBFC",
+    tint: "#8B5CF6",
+    icon: "#6B7280",
+    tabIconDefault: "#9CA3AF",
+    tabIconSelected: "#8B5CF6",
   },
   dark: {
-    text: '#ECEDEE',
-    background: '#151718',
-    tint: '#64B5F6',
-    icon: '#9BA1A6',
-    tabIconDefault: '#9BA1A6',
-    tabIconSelected: '#64B5F6',
+    text: "#F9FAFB",
+    background: "#111827",
+    tint: "#A78BFA",
+    icon: "#9CA3AF",
+    tabIconDefault: "#6B7280",
+    tabIconSelected: "#A78BFA",
   },
 };
 
-// Typography - Friendly but readable
+// Typography - Clean, modern sans-serif
 export const Typography = {
   fontFamily: {
-    primary: 'Poppins_400Regular', // Friendly, rounded - like Duolingo
-    primaryBold: 'Poppins_700Bold',
-    secondary: 'Inter_400Regular', // Clean for data/forms
-    secondaryBold: 'Inter_700Bold',
+    primary: "Poppins_400Regular", // Friendly, rounded
+    primaryBold: "Poppins_700Bold",
+    secondary: "Inter_400Regular", // Clean for data/forms
+    secondaryBold: "Inter_700Bold",
   },
 
-  // Sizes with Duolingo's playful scale
+  // Modern, well-balanced type scale
   fontSize: {
-    hero: 32,
+    hero: 34,
     h1: 28,
     h2: 24,
     h3: 20,
@@ -146,7 +158,7 @@ export const Typography = {
   },
 
   lineHeight: {
-    hero: 40,
+    hero: 42,
     h1: 36,
     h2: 32,
     h3: 28,
@@ -158,14 +170,22 @@ export const Typography = {
   },
 
   fontWeight: {
-    regular: '400' as const,
-    medium: '500' as const,
-    semibold: '600' as const,
-    bold: '700' as const,
+    regular: "400" as const,
+    medium: "500" as const,
+    semibold: "600" as const,
+    bold: "700" as const,
+  },
+
+  // Letter spacing for better readability
+  letterSpacing: {
+    tight: -0.5,
+    normal: 0,
+    wide: 0.5,
+    wider: 1,
   },
 };
 
-// Spacing system (8px base)
+// Spacing system (8px base) - Generous for airy feel
 export const Spacing = {
   xs: 4,
   sm: 8,
@@ -176,62 +196,69 @@ export const Spacing = {
   xxxl: 64,
 };
 
-// Component Style
+// Component Style - Rounded, soft, modern
 export const ComponentStyle = {
-  // Duolingo-style rounded corners
+  // Rounded corners - more generous for modern feel
   borderRadius: {
-    xs: 4,
-    sm: 8,
-    md: 12,
-    lg: 16,
-    xl: 24,
+    xs: 6,
+    sm: 10,
+    md: 14,
+    lg: 20,
+    xl: 28,
     full: 9999,
   },
 
-  // Soft shadows for depth
+  // Soft, diffuse shadows for depth
   shadow: {
     none: {
-      shadowColor: 'transparent',
+      shadowColor: "transparent",
       shadowOffset: { width: 0, height: 0 },
       shadowOpacity: 0,
       shadowRadius: 0,
       elevation: 0,
     },
     small: {
-      shadowColor: '#000',
+      shadowColor: "#6B7280",
       shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.08,
-      shadowRadius: 8,
+      shadowOpacity: 0.06,
+      shadowRadius: 6,
       elevation: 2,
     },
     medium: {
-      shadowColor: '#000',
+      shadowColor: "#6B7280",
       shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.12,
-      shadowRadius: 16,
+      shadowOpacity: 0.08,
+      shadowRadius: 12,
       elevation: 4,
     },
     large: {
-      shadowColor: '#000',
+      shadowColor: "#6B7280",
       shadowOffset: { width: 0, height: 8 },
-      shadowOpacity: 0.16,
-      shadowRadius: 24,
+      shadowOpacity: 0.12,
+      shadowRadius: 20,
       elevation: 8,
+    },
+    xl: {
+      shadowColor: "#6B7280",
+      shadowOffset: { width: 0, height: 12 },
+      shadowOpacity: 0.15,
+      shadowRadius: 28,
+      elevation: 12,
     },
   },
 
-  // Button heights
+  // Button heights - comfortable touch targets
   buttonHeight: {
-    small: 36,
-    medium: 48,
-    large: 56,
+    small: 40,
+    medium: 52,
+    large: 60,
   },
 
   // Input heights
   inputHeight: {
-    small: 40,
-    medium: 48,
-    large: 56,
+    small: 44,
+    medium: 52,
+    large: 60,
   },
 };
 
@@ -239,24 +266,24 @@ export const ComponentStyle = {
 export const Animation = {
   duration: {
     fast: 150,
-    normal: 300,
-    slow: 500,
+    normal: 250,
+    slow: 400,
   },
 
   spring: {
     bounce: {
-      damping: 10,
-      stiffness: 100,
-      mass: 1,
+      damping: 12,
+      stiffness: 120,
+      mass: 0.8,
     },
     smooth: {
       damping: 20,
-      stiffness: 300,
+      stiffness: 200,
       mass: 0.5,
     },
     snappy: {
-      damping: 15,
-      stiffness: 400,
+      damping: 18,
+      stiffness: 350,
       mass: 0.3,
     },
   },
@@ -273,12 +300,12 @@ export const IconSize = {
 
 // Avatar sizes
 export const AvatarSize = {
-  xs: 24,
-  sm: 32,
+  xs: 28,
+  sm: 36,
   md: 48,
   lg: 64,
-  xl: 96,
-  xxl: 128,
+  xl: 88,
+  xxl: 120,
 };
 
 // Default theme export for convenience

@@ -3,7 +3,7 @@ import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Animated, { FadeInRight } from "react-native-reanimated";
 
-import { Colors, Spacing, Typography } from "@/constants/theme";
+import { Colors, ComponentStyle, Spacing, Typography } from "@/constants/theme";
 import type { Session } from "@/types/database.types";
 
 interface SessionCardProps {
@@ -139,15 +139,11 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     backgroundColor: Colors.surface,
-    padding: Spacing.md,
-    borderRadius: 16,
+    padding: Spacing.lg,
+    borderRadius: 20,
     marginBottom: Spacing.md,
     gap: Spacing.md,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 2,
+    ...ComponentStyle.shadow.small,
   },
   containerCancelled: {
     opacity: 0.6,
@@ -158,9 +154,9 @@ const styles = StyleSheet.create({
     minWidth: 70,
   },
   statusBadge: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+    width: 52,
+    height: 52,
+    borderRadius: 16,
     alignItems: "center",
     justifyContent: "center",
     marginBottom: Spacing.xs,
@@ -170,30 +166,33 @@ const styles = StyleSheet.create({
     fontSize: Typography.fontSize.body,
     fontWeight: Typography.fontWeight.bold,
     color: Colors.text.primary,
+    letterSpacing: -0.2,
   },
   date: {
     fontFamily: Typography.fontFamily.primary,
-    fontSize: Typography.fontSize.tiny,
+    fontSize: Typography.fontSize.caption,
     color: Colors.text.secondary,
+    letterSpacing: 0.1,
   },
   infoColumn: {
     flex: 1,
-    gap: Spacing.xs,
+    gap: Spacing.sm,
     justifyContent: "center",
   },
   infoRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: Spacing.xs,
+    gap: Spacing.sm,
   },
   infoEmoji: {
-    fontSize: 14,
+    fontSize: 16,
   },
   name: {
-    fontFamily: Typography.fontFamily.primaryBold,
+    fontFamily: Typography.fontFamily.primarySemiBold,
     fontSize: Typography.fontSize.body,
     fontWeight: Typography.fontWeight.semibold,
     color: Colors.text.primary,
+    letterSpacing: -0.1,
   },
   detailsRow: {
     flexDirection: "row",
@@ -203,27 +202,33 @@ const styles = StyleSheet.create({
   detailItem: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 4,
+    gap: 6,
+    backgroundColor: Colors.surfaceVariant,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: 4,
+    borderRadius: 8,
   },
   detailText: {
     fontFamily: Typography.fontFamily.primary,
-    fontSize: Typography.fontSize.tiny,
-    color: Colors.text.tertiary,
+    fontSize: Typography.fontSize.caption,
+    color: Colors.text.secondary,
+    letterSpacing: 0.1,
   },
   statusColumn: {
     alignItems: "flex-end",
     justifyContent: "space-between",
   },
   statusPill: {
-    paddingHorizontal: Spacing.sm,
-    paddingVertical: 4,
-    borderRadius: 12,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: 6,
+    borderRadius: 20,
   },
   statusLabel: {
-    fontFamily: Typography.fontFamily.primaryBold,
+    fontFamily: Typography.fontFamily.primarySemiBold,
     fontSize: Typography.fontSize.tiny,
-    fontWeight: Typography.fontWeight.bold,
+    fontWeight: Typography.fontWeight.semibold,
     textTransform: "uppercase",
+    letterSpacing: 0.5,
   },
 });
 

@@ -2,20 +2,21 @@ import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
-  ActivityIndicator,
-  Alert,
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    Alert,
+    RefreshControl,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ResourceCard } from "@/components/resources";
-import { Colors, Spacing, Typography } from "@/constants/theme";
+import { Spacing, Typography } from "@/constants/theme";
+import { useTheme } from "@/contexts/ThemeContext";
 import { supabase } from "@/lib/supabase";
 
 interface Resource {
@@ -39,6 +40,7 @@ const CATEGORIES = [
 ];
 
 export default function ResourcesScreen() {
+  const { colors } = useTheme();
   const [resources, setResources] = useState<Resource[]>([]);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [loading, setLoading] = useState(true);
@@ -91,15 +93,25 @@ export default function ResourcesScreen() {
 
   if (loading) {
     return (
-      <SafeAreaView style={[styles.container, styles.centerContent]}>
-        <ActivityIndicator size="large" color={Colors.primary[500]} />
-        <Text style={styles.loadingText}>Loading resources...</Text>
+      <SafeAreaView
+        style={[
+          styles.container,
+          styles.centerContent,
+          { backgroundColor: colors.background },
+        ]}
+      >
+        <ActivityIndicator size="large" color={colors.primary} />
+        <Text style={[styles.loadingText, { color: colors.textSecondary }]}>
+          Loading resources...
+        </Text>
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
       {/* Header */}
       <Animated.View
         entering={FadeInDown.delay(100).duration(500)}
@@ -107,13 +119,15 @@ export default function ResourcesScreen() {
       >
         <TouchableOpacity
           onPress={() => router.back()}
-          style={styles.backButton}
+          style={[styles.backButton, { backgroundColor: colors.surface }]}
         >
-          <Ionicons name="arrow-back" size={24} color={Colors.text.primary} />
+          <Ionicons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
         <View style={styles.headerContent}>
-          <Text style={styles.title}>Resources 📚</Text>
-          <Text style={styles.subtitle}>
+          <Text style={[styles.title, { color: colors.text }]}>
+            Resources 📚
+          </Text>
+          <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
             Learn strategies for at-home therapy
           </Text>
         </View>
@@ -133,12 +147,17 @@ export default function ResourcesScreen() {
               onPress={() => setSelectedCategory(category)}
               style={[
                 styles.categoryChip,
-                selectedCategory === category && styles.categoryChipSelected,
+                { backgroundColor: colors.surface, borderColor: colors.border },
+                selectedCategory === category && {
+                  backgroundColor: colors.primary,
+                  borderColor: colors.primary,
+                },
               ]}
             >
               <Text
                 style={[
                   styles.categoryText,
+                  { color: colors.text },
                   selectedCategory === category && styles.categoryTextSelected,
                 ]}
               >
@@ -158,18 +177,22 @@ export default function ResourcesScreen() {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintColor={Colors.primary[500]}
+            tintColor={colors.primary}
           />
         }
       >
         {filteredResources.length === 0 ? (
           <Animated.View
             entering={FadeInDown.delay(300).duration(500)}
-            style={styles.emptyState}
+            style={[styles.emptyState, { backgroundColor: colors.surface }]}
           >
             <Text style={styles.emptyIcon}>📚</Text>
-            <Text style={styles.emptyTitle}>No resources available</Text>
-            <Text style={styles.emptySubtitle}>
+            <Text style={[styles.emptyTitle, { color: colors.text }]}>
+              No resources available
+            </Text>
+            <Text
+              style={[styles.emptySubtitle, { color: colors.textSecondary }]}
+            >
               {selectedCategory === "All"
                 ? "Resources will appear here once added"
                 : `No ${selectedCategory.toLowerCase()} resources yet`}
@@ -193,7 +216,6 @@ export default function ResourcesScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
   },
   centerContent: {
     justifyContent: "center",
@@ -202,7 +224,6 @@ const styles = StyleSheet.create({
   loadingText: {
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.body,
-    color: Colors.text.secondary,
     marginTop: Spacing.md,
   },
   header: {
@@ -216,7 +237,6 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: Colors.surface,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -227,13 +247,11 @@ const styles = StyleSheet.create({
     fontFamily: Typography.fontFamily.primaryBold,
     fontSize: Typography.fontSize.h2,
     fontWeight: Typography.fontWeight.bold,
-    color: Colors.text.primary,
     marginBottom: 4,
   },
   subtitle: {
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.body,
-    color: Colors.text.secondary,
   },
   categoriesScroll: {
     maxHeight: 50,
@@ -247,41 +265,28 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
     borderRadius: 20,
-    backgroundColor: Colors.surface,
     borderWidth: 1,
-    borderColor: Colors.primary[100],
-  },
-  categoryChipSelected: {
-    backgroundColor: Colors.primary[500],
-    borderColor: Colors.primary[500],
   },
   categoryText: {
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.small,
-    color: Colors.text.primary,
     fontWeight: Typography.fontWeight.semibold,
   },
   categoryTextSelected: {
-    color: Colors.text.inverse,
+    color: "#FFFFFF",
   },
   content: {
     flex: 1,
   },
   contentContainer: {
     paddingHorizontal: Spacing.lg,
-    paddingBottom: Spacing.xxl,
+    paddingBottom: 120,
   },
   emptyState: {
-    backgroundColor: Colors.surface,
     padding: Spacing.xl,
-    borderRadius: 16,
+    borderRadius: 20,
     alignItems: "center",
     marginTop: Spacing.lg,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 2,
   },
   emptyIcon: {
     fontSize: 64,
@@ -291,13 +296,11 @@ const styles = StyleSheet.create({
     fontFamily: Typography.fontFamily.primaryBold,
     fontSize: Typography.fontSize.h4,
     fontWeight: Typography.fontWeight.bold,
-    color: Colors.text.primary,
     marginBottom: Spacing.xs,
   },
   emptySubtitle: {
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.body,
-    color: Colors.text.secondary,
     textAlign: "center",
   },
 });

@@ -3,7 +3,7 @@ import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Animated, { FadeInUp } from "react-native-reanimated";
 
-import { Colors, Spacing, Typography } from "@/constants/theme";
+import { Colors, ComponentStyle, Spacing, Typography } from "@/constants/theme";
 
 type ResourceType = "article" | "video" | "exercise";
 
@@ -95,53 +95,56 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: Colors.surface,
-    padding: Spacing.md,
-    borderRadius: 16,
+    padding: Spacing.lg,
+    borderRadius: 20,
     marginBottom: Spacing.md,
     gap: Spacing.md,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 2,
+    ...ComponentStyle.shadow.small,
   },
   typeBadge: {
-    width: 56,
-    height: 56,
-    borderRadius: 16,
+    width: 60,
+    height: 60,
+    borderRadius: 18,
     alignItems: "center",
     justifyContent: "center",
   },
   typeIcon: {
-    fontSize: 28,
+    fontSize: 30,
   },
   content: {
     flex: 1,
-    gap: 4,
+    gap: 6,
   },
   category: {
-    fontFamily: Typography.fontFamily.primaryBold,
+    fontFamily: Typography.fontFamily.primarySemiBold,
     fontSize: Typography.fontSize.tiny,
-    fontWeight: Typography.fontWeight.bold,
+    fontWeight: Typography.fontWeight.semibold,
     textTransform: "uppercase",
-    letterSpacing: 0.5,
+    letterSpacing: 0.8,
   },
   title: {
-    fontFamily: Typography.fontFamily.primaryBold,
+    fontFamily: Typography.fontFamily.primarySemiBold,
     fontSize: Typography.fontSize.body,
-    fontWeight: Typography.fontWeight.bold,
+    fontWeight: Typography.fontWeight.semibold,
     color: Colors.text.primary,
     lineHeight: 22,
+    letterSpacing: -0.2,
   },
   preview: {
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.small,
     color: Colors.text.secondary,
-    lineHeight: 18,
+    lineHeight: 20,
     marginTop: 2,
+    letterSpacing: 0.1,
   },
   arrowContainer: {
-    padding: Spacing.xs,
+    width: 36,
+    height: 36,
+    borderRadius: 12,
+    backgroundColor: Colors.surfaceVariant,
+    alignItems: "center",
+    justifyContent: "center",
   },
 });
 

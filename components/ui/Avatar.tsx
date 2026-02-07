@@ -20,15 +20,15 @@ const generateColorFromSeed = (seed: string): string => {
     Colors.primary[400],
     Colors.secondary[400],
     Colors.success[400],
-    Colors.avatar,
-    Colors.badge,
-    Colors.primary[600],
-    Colors.secondary[600],
-    Colors.success[600],
-    "#E91E63", // Pink
-    "#673AB7", // Deep Purple
-    "#009688", // Teal
-    "#795548", // Brown
+    Colors.primary[500],
+    Colors.secondary[500],
+    Colors.primary[300],
+    Colors.secondary[300],
+    Colors.warning[500],
+    "#EC4899", // Pink
+    "#8B5CF6", // Violet
+    "#06B6D4", // Cyan
+    "#F97316", // Orange
   ];
 
   let hash = 0;

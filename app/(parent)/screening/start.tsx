@@ -2,31 +2,33 @@ import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import {
-  Alert,
-  Dimensions,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    Alert,
+    Dimensions,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import Animated, {
-  runOnJS,
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-  withTiming,
+    runOnJS,
+    useAnimatedStyle,
+    useSharedValue,
+    withSpring,
+    withTiming,
 } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Button, Card, ProgressBar } from "@/components/ui";
 import { MCHAT_QUESTIONS } from "@/constants/mchat-questions";
 import { Animation, Colors, Spacing, Typography } from "@/constants/theme";
+import { useTheme } from "@/contexts/ThemeContext";
 import { useScreening } from "@/hooks/useScreening";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
 export default function ScreeningStartScreen() {
   const params = useLocalSearchParams<{ childId: string; childName: string }>();
+  const { colors } = useTheme();
   const {
     answers,
     currentQuestion,
@@ -118,14 +120,20 @@ export default function ScreeningStartScreen() {
   }));
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={handleClose}>
-          <Ionicons name="close" size={28} color={Colors.text.primary} />
+          <Ionicons name="close" size={28} color={colors.text} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>M-CHAT-R</Text>
-        <Text style={styles.questionCount}>{currentQuestion}/20</Text>
+        <Text style={[styles.headerTitle, { color: colors.text }]}>
+          M-CHAT-R
+        </Text>
+        <Text style={[styles.questionCount, { color: colors.textSecondary }]}>
+          {currentQuestion}/20
+        </Text>
       </View>
 
       {/* Progress */}
@@ -134,19 +142,35 @@ export default function ScreeningStartScreen() {
       </View>
 
       {/* Child Name */}
-      <Text style={styles.childName}>Screening for {params.childName}</Text>
+      <Text style={[styles.childName, { color: colors.textSecondary }]}>
+        Screening for {params.childName}
+      </Text>
 
       {/* Question Card */}
       <Animated.View style={[styles.cardContainer, animatedCardStyle]}>
         <Card variant="elevated" style={styles.questionCard}>
           <Text style={styles.questionNumber}>Question {currentQuestion}</Text>
-          <Text style={styles.questionText}>{question.question}</Text>
+          <Text style={[styles.questionText, { color: colors.text }]}>
+            {question.question}
+          </Text>
 
           {question.examples && question.examples.length > 0 && (
-            <View style={styles.examplesContainer}>
-              <Text style={styles.examplesTitle}>Examples:</Text>
+            <View
+              style={[
+                styles.examplesContainer,
+                { backgroundColor: colors.surfaceVariant },
+              ]}
+            >
+              <Text
+                style={[styles.examplesTitle, { color: colors.textSecondary }]}
+              >
+                Examples:
+              </Text>
               {question.examples.map((example, index) => (
-                <Text key={index} style={styles.exampleText}>
+                <Text
+                  key={index}
+                  style={[styles.exampleText, { color: colors.textSecondary }]}
+                >
                   • {example}
                 </Text>
               ))}
@@ -179,6 +203,7 @@ export default function ScreeningStartScreen() {
           <Text
             style={[
               styles.answerText,
+              { color: colors.text },
               currentAnswer === true && styles.selectedAnswerText,
             ]}
           >
@@ -206,6 +231,7 @@ export default function ScreeningStartScreen() {
           <Text
             style={[
               styles.answerText,
+              { color: colors.text },
               currentAnswer === false && styles.selectedAnswerText,
             ]}
           >
@@ -224,14 +250,13 @@ export default function ScreeningStartScreen() {
           <Ionicons
             name="chevron-back"
             size={24}
-            color={
-              currentQuestion === 1 ? Colors.text.disabled : Colors.text.primary
-            }
+            color={currentQuestion === 1 ? colors.textSecondary : colors.text}
           />
           <Text
             style={[
               styles.navText,
-              currentQuestion === 1 && styles.navTextDisabled,
+              { color: colors.text },
+              currentQuestion === 1 && { color: colors.textSecondary },
             ]}
           >
             Previous
@@ -254,12 +279,8 @@ export default function ScreeningStartScreen() {
             style={styles.navButton}
             onPress={() => animateCardChange("next")}
           >
-            <Text style={styles.navText}>Next</Text>
-            <Ionicons
-              name="chevron-forward"
-              size={24}
-              color={Colors.text.primary}
-            />
+            <Text style={[styles.navText, { color: colors.text }]}>Next</Text>
+            <Ionicons name="chevron-forward" size={24} color={colors.text} />
           </TouchableOpacity>
         )}
       </View>
