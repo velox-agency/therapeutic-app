@@ -1,25 +1,25 @@
 import { Ionicons } from "@expo/vector-icons";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
-    ActivityIndicator,
-    Alert,
-    FlatList,
-    Modal,
-    RefreshControl,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
-    ViewStyle,
+  ActivityIndicator,
+  Alert,
+  FlatList,
+  Modal,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+  ViewStyle,
 } from "react-native";
 import { Calendar, DateData } from "react-native-calendars";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Avatar, Button, Card } from "@/components/ui";
-import { Colors, Spacing, Typography } from "@/constants/theme";
+import { Spacing, Typography } from "@/constants/theme";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useAuth } from "@/hooks/useAuth";
@@ -246,10 +246,10 @@ export default function TherapistSessionsScreen() {
       marks[date].dots.push({
         key: session.id,
         color: isCompleted
-          ? Colors.success[500]
+          ? colors.success
           : isCancelled
-            ? Colors.error[500]
-            : Colors.primary[500],
+            ? colors.error
+            : colors.primary,
       });
     });
 
@@ -258,12 +258,12 @@ export default function TherapistSessionsScreen() {
       marks[selectedDate] = {
         ...marks[selectedDate],
         selected: true,
-        selectedColor: Colors.primary[500],
+        selectedColor: colors.primary,
       };
     } else {
       marks[selectedDate] = {
         selected: true,
-        selectedColor: Colors.primary[500],
+        selectedColor: colors.primary,
       };
     }
 
@@ -389,13 +389,13 @@ export default function TherapistSessionsScreen() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "completed":
-        return Colors.success[500];
+        return colors.success;
       case "cancelled":
-        return Colors.error[500];
+        return colors.error;
       case "no_show":
-        return Colors.secondary[500];
+        return colors.secondary;
       default:
-        return Colors.primary[500];
+        return colors.primary;
     }
   };
 
@@ -434,30 +434,19 @@ export default function TherapistSessionsScreen() {
             ]) as ViewStyle
           }
         >
-          <View style={styles.sessionHeader}>
-            <View style={styles.timeContainer}>
-              <Text style={[styles.sessionTime, { color: colors.primary }]}>
-                {formatTime(item.scheduled_at)}
+          {/* Top row: Avatar + Name + Status badge */}
+          <View style={styles.cardTopRow}>
+            <Avatar name={item.child.first_name} size="md" />
+            <View style={styles.cardNameCol}>
+              <Text style={[styles.patientName, { color: colors.text }]}>
+                {item.child.first_name}
               </Text>
-              <Text style={[styles.duration, { color: colors.textSecondary }]}>
-                {item.duration_minutes} min
-              </Text>
-            </View>
-
-            <View style={styles.sessionInfo}>
-              <View style={styles.patientRow}>
-                <Avatar name={item.child.first_name} size="sm" />
-                <Text style={[styles.patientName, { color: colors.text }]}>
-                  {item.child.first_name}
-                </Text>
-              </View>
               <Text
                 style={[styles.parentName, { color: colors.textSecondary }]}
               >
-                Parent: {item.parent.full_name}
+                {item.parent.full_name}
               </Text>
             </View>
-
             <View
               style={[
                 styles.statusBadge,
@@ -475,11 +464,62 @@ export default function TherapistSessionsScreen() {
             </View>
           </View>
 
+          {/* Info chips row */}
+          <View
+            style={[styles.infoChipsRow, { borderTopColor: colors.border }]}
+          >
+            <View
+              style={[
+                styles.infoChip,
+                { backgroundColor: colors.primaryLight },
+              ]}
+            >
+              <Ionicons name="time-outline" size={14} color={colors.primary} />
+              <Text style={[styles.infoChipText, { color: colors.primary }]}>
+                {formatTime(item.scheduled_at)}
+              </Text>
+            </View>
+            <View
+              style={[
+                styles.infoChip,
+                { backgroundColor: colors.surfaceVariant },
+              ]}
+            >
+              <Ionicons
+                name="hourglass-outline"
+                size={14}
+                color={colors.textSecondary}
+              />
+              <Text
+                style={[styles.infoChipText, { color: colors.textSecondary }]}
+              >
+                {item.duration_minutes} min
+              </Text>
+            </View>
+            <View
+              style={[
+                styles.infoChip,
+                { backgroundColor: colors.surfaceVariant },
+              ]}
+            >
+              <Ionicons
+                name={getSessionTypeIcon(item.session_type) as any}
+                size={14}
+                color={colors.textSecondary}
+              />
+              <Text
+                style={[styles.infoChipText, { color: colors.textSecondary }]}
+              >
+                {item.session_type.replace("_", " ")}
+              </Text>
+            </View>
+          </View>
+
           {item.location && (
             <View style={styles.locationRow}>
               <Ionicons
-                name={getSessionTypeIcon(item.session_type) as any}
-                size={16}
+                name="location-outline"
+                size={15}
                 color={colors.textSecondary}
               />
               <Text
@@ -1316,44 +1356,39 @@ const styles = StyleSheet.create({
   },
   sessionCard: {
     marginBottom: Spacing.md,
-    padding: Spacing.lg,
     borderRadius: 20,
   },
-  sessionHeader: {
+  cardTopRow: {
     flexDirection: "row",
-    alignItems: "flex-start",
+    alignItems: "center",
     gap: Spacing.md,
   },
-  timeContainer: {
-    alignItems: "center",
-    minWidth: 60,
-    backgroundColor: "rgba(139, 92, 246, 0.1)",
-    paddingVertical: Spacing.sm,
-    paddingHorizontal: Spacing.md,
-    borderRadius: 12,
-  },
-  sessionTime: {
-    fontFamily: Typography.fontFamily.primaryBold,
-    fontSize: Typography.fontSize.body,
-    fontWeight: "600",
-  },
-  duration: {
-    fontFamily: Typography.fontFamily.primary,
-    fontSize: Typography.fontSize.tiny,
-    marginTop: 2,
-  },
-  sessionInfo: {
+  cardNameCol: {
     flex: 1,
-    gap: 4,
   },
-  patientRow: {
+  infoChipsRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: Spacing.sm,
+    marginTop: Spacing.md,
+    paddingTop: Spacing.md,
+    borderTopWidth: 1,
+  },
+  infoChip: {
     flexDirection: "row",
     alignItems: "center",
-    gap: Spacing.sm,
-    marginBottom: 4,
+    gap: 4,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: 6,
+    borderRadius: 10,
+  },
+  infoChipText: {
+    fontFamily: Typography.fontFamily.primary,
+    fontSize: Typography.fontSize.tiny,
+    fontWeight: "500",
   },
   patientName: {
-    fontFamily: Typography.fontFamily.primarySemiBold,
+    fontFamily: Typography.fontFamily.primaryBold,
     fontSize: Typography.fontSize.body,
     fontWeight: "600",
   },
@@ -1367,7 +1402,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   statusText: {
-    fontFamily: Typography.fontFamily.primarySemiBold,
+    fontFamily: Typography.fontFamily.primaryBold,
     fontSize: Typography.fontSize.tiny,
     fontWeight: "600",
     textTransform: "capitalize",
@@ -1375,11 +1410,8 @@ const styles = StyleSheet.create({
   locationRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: Spacing.md,
-    gap: 8,
-    paddingTop: Spacing.sm,
-    borderTopWidth: 1,
-    borderTopColor: "rgba(0,0,0,0.05)",
+    marginTop: Spacing.sm,
+    gap: 6,
   },
   locationText: {
     fontFamily: Typography.fontFamily.primary,
@@ -1393,7 +1425,7 @@ const styles = StyleSheet.create({
   },
   notesPreviewText: {
     fontFamily: Typography.fontFamily.primary,
-    fontSize: Typography.fontSize.caption,
+    fontSize: Typography.fontSize.tiny,
     flex: 1,
   },
   emptyCard: {
