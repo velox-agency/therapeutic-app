@@ -669,7 +669,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingHorizontal: Spacing.lg,
-    paddingBottom: 120,
+    paddingBottom: Spacing.tabBarClearance,
     marginTop: Spacing.md,
   },
   overviewCardContainer: {

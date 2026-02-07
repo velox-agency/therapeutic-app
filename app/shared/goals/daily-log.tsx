@@ -3,13 +3,13 @@ import * as Haptics from "expo-haptics";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import {
-  ActivityIndicator,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import Animated, { FadeInDown, ZoomIn } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -366,7 +366,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingHorizontal: Spacing.lg,
-    paddingBottom: Spacing.xxl,
+    paddingBottom: Spacing.tabBarClearance,
   },
   header: {
     flexDirection: "row",

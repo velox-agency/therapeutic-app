@@ -6,7 +6,8 @@ import Animated, { FadeIn, FadeInDown } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Button, Card } from "@/components/ui";
-import { Colors, Spacing, Typography } from "@/constants/theme";
+import { Spacing, Typography } from "@/constants/theme";
+import { useTheme } from "@/contexts/ThemeContext";
 import { getRiskColor, getRiskDisplayText } from "@/lib/mchat";
 import { RiskLevel } from "@/types/database.types";
 
@@ -18,6 +19,7 @@ export default function ScreeningResultScreen() {
     childName: string;
   }>();
 
+  const { colors } = useTheme();
   const riskLevel = params.riskLevel || "low";
   const score = parseInt(params.score || "0", 10);
   const riskColor = getRiskColor(riskLevel);
@@ -76,7 +78,9 @@ export default function ScreeningResultScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Result Icon */}
         <Animated.View
@@ -92,17 +96,23 @@ export default function ScreeningResultScreen() {
 
         {/* Result Title */}
         <Animated.View entering={FadeInDown.delay(200).duration(500)}>
-          <Text style={styles.childName}>{params.childName}'s Result</Text>
+          <Text style={[styles.childName, { color: colors.textSecondary }]}>
+            {params.childName}'s Result
+          </Text>
           <Text style={[styles.riskLevel, { color: riskColor }]}>
             {riskText}
           </Text>
-          <Text style={styles.score}>Score: {score} / 20</Text>
+          <Text style={[styles.score, { color: colors.textSecondary }]}>
+            Score: {score} / 20
+          </Text>
         </Animated.View>
 
         {/* Message */}
         <Animated.View entering={FadeInDown.delay(400).duration(500)}>
           <Card variant="elevated" style={styles.messageCard}>
-            <Text style={styles.messageText}>{getMessage()}</Text>
+            <Text style={[styles.messageText, { color: colors.text }]}>
+              {getMessage()}
+            </Text>
           </Card>
         </Animated.View>
 
@@ -111,7 +121,9 @@ export default function ScreeningResultScreen() {
           entering={FadeInDown.delay(600).duration(500)}
           style={styles.section}
         >
-          <Text style={styles.sectionTitle}>Recommended Next Steps</Text>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>
+            Recommended Next Steps
+          </Text>
           <Card variant="outlined">
             {getNextSteps().map((step, index) => (
               <View key={index} style={styles.stepItem}>
@@ -125,7 +137,9 @@ export default function ScreeningResultScreen() {
                     {index + 1}
                   </Text>
                 </View>
-                <Text style={styles.stepText}>{step}</Text>
+                <Text style={[styles.stepText, { color: colors.text }]}>
+                  {step}
+                </Text>
               </View>
             ))}
           </Card>
@@ -138,11 +152,20 @@ export default function ScreeningResultScreen() {
               <Ionicons
                 name="information-circle"
                 size={20}
-                color={Colors.text.secondary}
+                color={colors.textSecondary}
               />
-              <Text style={styles.disclaimerTitle}>Important Note</Text>
+              <Text
+                style={[
+                  styles.disclaimerTitle,
+                  { color: colors.textSecondary },
+                ]}
+              >
+                Important Note
+              </Text>
             </View>
-            <Text style={styles.disclaimerText}>
+            <Text
+              style={[styles.disclaimerText, { color: colors.textSecondary }]}
+            >
               This screening is not a diagnosis. Only a qualified healthcare
               professional can diagnose autism spectrum disorder. Please consult
               with your pediatrician or a specialist for a comprehensive
@@ -158,7 +181,7 @@ export default function ScreeningResultScreen() {
         >
           <Button
             title="Find Therapist"
-            onPress={() => {}}
+            onPress={() => router.push("/(parent)/therapists")}
             variant="primary"
             fullWidth
             style={styles.primaryAction}
@@ -179,11 +202,11 @@ export default function ScreeningResultScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
   },
   scrollContent: {
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.xl,
+    paddingBottom: Spacing.tabBarClearance,
   },
   iconContainer: {
     alignItems: "center",
@@ -199,7 +222,6 @@ const styles = StyleSheet.create({
   childName: {
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.body,
-    color: Colors.text.secondary,
     textAlign: "center",
     marginBottom: Spacing.xs,
   },
@@ -213,7 +235,6 @@ const styles = StyleSheet.create({
   score: {
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.h4,
-    color: Colors.text.secondary,
     textAlign: "center",
     marginBottom: Spacing.lg,
   },
@@ -223,7 +244,6 @@ const styles = StyleSheet.create({
   messageText: {
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.body,
-    color: Colors.text.primary,
     lineHeight: Typography.lineHeight.body,
     textAlign: "center",
   },
@@ -234,7 +254,6 @@ const styles = StyleSheet.create({
     fontFamily: Typography.fontFamily.primaryBold,
     fontSize: Typography.fontSize.h4,
     fontWeight: Typography.fontWeight.bold,
-    color: Colors.text.primary,
     marginBottom: Spacing.md,
   },
   stepItem: {
@@ -259,7 +278,6 @@ const styles = StyleSheet.create({
     flex: 1,
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.body,
-    color: Colors.text.primary,
   },
   disclaimerCard: {
     marginBottom: Spacing.lg,
@@ -273,13 +291,11 @@ const styles = StyleSheet.create({
     fontFamily: Typography.fontFamily.primaryBold,
     fontSize: Typography.fontSize.small,
     fontWeight: Typography.fontWeight.bold,
-    color: Colors.text.secondary,
     marginLeft: Spacing.sm,
   },
   disclaimerText: {
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.small,
-    color: Colors.text.secondary,
     lineHeight: Typography.lineHeight.small,
   },
   actions: {

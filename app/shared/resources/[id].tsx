@@ -2,13 +2,13 @@ import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
-  ActivityIndicator,
-  ScrollView,
-  Share,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    ScrollView,
+    Share,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import Markdown from "react-native-markdown-display";
 import Animated, { FadeInDown } from "react-native-reanimated";
@@ -212,7 +212,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingHorizontal: Spacing.lg,
-    paddingBottom: Spacing.xxl,
+    paddingBottom: Spacing.tabBarClearance,
   },
   header: {
     flexDirection: "row",

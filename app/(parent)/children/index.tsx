@@ -2,11 +2,11 @@ import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React from "react";
 import {
-  FlatList,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    FlatList,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
   },
   listContent: {
     paddingHorizontal: Spacing.lg,
-    paddingBottom: Spacing.xxl,
+    paddingBottom: Spacing.tabBarClearance,
   },
   childCard: {
     marginBottom: Spacing.md,

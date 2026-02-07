@@ -2,14 +2,14 @@ import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React, { useMemo, useState } from "react";
 import {
-  ActivityIndicator,
-  FlatList,
-  RefreshControl,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-  ViewStyle,
+    ActivityIndicator,
+    FlatList,
+    RefreshControl,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
+    ViewStyle,
 } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -310,7 +310,7 @@ const styles = StyleSheet.create({
   },
   listContent: {
     paddingHorizontal: Spacing.lg,
-    paddingBottom: Spacing.xxl,
+    paddingBottom: Spacing.tabBarClearance,
   },
   goalCard: {
     marginBottom: Spacing.md,

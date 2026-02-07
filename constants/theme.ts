@@ -194,6 +194,8 @@ export const Spacing = {
   xl: 32,
   xxl: 48,
   xxxl: 64,
+  /** Bottom padding to clear the floating tab bar */
+  tabBarClearance: 100,
 };
 
 // Component Style - Rounded, soft, modern

@@ -2,25 +2,25 @@ import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import {
-    Alert,
-    Dimensions,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Alert,
+  Dimensions,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import Animated, {
-    runOnJS,
-    useAnimatedStyle,
-    useSharedValue,
-    withSpring,
-    withTiming,
+  runOnJS,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withTiming,
 } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Button, Card, ProgressBar } from "@/components/ui";
 import { MCHAT_QUESTIONS } from "@/constants/mchat-questions";
-import { Animation, Colors, Spacing, Typography } from "@/constants/theme";
+import { Animation, Spacing, Typography } from "@/constants/theme";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useScreening } from "@/hooks/useScreening";
 
@@ -147,9 +147,13 @@ export default function ScreeningStartScreen() {
       </Text>
 
       {/* Question Card */}
-      <Animated.View style={[styles.cardContainer, animatedCardStyle]}>
+      <Animated.View
+        style={[styles.cardContainer, { marginBottom: 16 }, animatedCardStyle]}
+      >
         <Card variant="elevated" style={styles.questionCard}>
-          <Text style={styles.questionNumber}>Question {currentQuestion}</Text>
+          <Text style={[styles.questionNumber, { color: colors.primary }]}>
+            Question {currentQuestion}
+          </Text>
           <Text style={[styles.questionText, { color: colors.text }]}>
             {question.question}
           </Text>
@@ -185,7 +189,11 @@ export default function ScreeningStartScreen() {
           style={[
             styles.answerButton,
             styles.yesButton,
-            currentAnswer === true && styles.selectedYes,
+            {
+              borderColor: colors.success,
+              backgroundColor: colors.successLight,
+            },
+            currentAnswer === true && { backgroundColor: colors.success },
           ]}
           onPress={() => handleAnswer(true)}
         >
@@ -196,15 +204,13 @@ export default function ScreeningStartScreen() {
                 : "checkmark-circle-outline"
             }
             size={32}
-            color={
-              currentAnswer === true ? Colors.text.inverse : Colors.success[500]
-            }
+            color={currentAnswer === true ? colors.textInverse : colors.success}
           />
           <Text
             style={[
               styles.answerText,
               { color: colors.text },
-              currentAnswer === true && styles.selectedAnswerText,
+              currentAnswer === true && { color: colors.textInverse },
             ]}
           >
             Yes
@@ -215,7 +221,8 @@ export default function ScreeningStartScreen() {
           style={[
             styles.answerButton,
             styles.noButton,
-            currentAnswer === false && styles.selectedNo,
+            { borderColor: colors.error, backgroundColor: colors.errorLight },
+            currentAnswer === false && { backgroundColor: colors.error },
           ]}
           onPress={() => handleAnswer(false)}
         >
@@ -224,15 +231,13 @@ export default function ScreeningStartScreen() {
               currentAnswer === false ? "close-circle" : "close-circle-outline"
             }
             size={32}
-            color={
-              currentAnswer === false ? Colors.text.inverse : Colors.error[500]
-            }
+            color={currentAnswer === false ? colors.textInverse : colors.error}
           />
           <Text
             style={[
               styles.answerText,
               { color: colors.text },
-              currentAnswer === false && styles.selectedAnswerText,
+              currentAnswer === false && { color: colors.textInverse },
             ]}
           >
             No
@@ -291,7 +296,6 @@ export default function ScreeningStartScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
   },
   header: {
     flexDirection: "row",
@@ -304,12 +308,10 @@ const styles = StyleSheet.create({
     fontFamily: Typography.fontFamily.primaryBold,
     fontSize: Typography.fontSize.h4,
     fontWeight: Typography.fontWeight.bold,
-    color: Colors.text.primary,
   },
   questionCount: {
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.body,
-    color: Colors.text.secondary,
   },
   progressContainer: {
     paddingHorizontal: Spacing.lg,
@@ -318,12 +320,11 @@ const styles = StyleSheet.create({
   childName: {
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.small,
-    color: Colors.text.secondary,
     textAlign: "center",
     marginBottom: Spacing.lg,
   },
   cardContainer: {
-    flex: 1,
+    flex: 0.8,
     paddingHorizontal: Spacing.lg,
   },
   questionCard: {
@@ -334,7 +335,6 @@ const styles = StyleSheet.create({
   questionNumber: {
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.small,
-    color: Colors.primary[500],
     textAlign: "center",
     marginBottom: Spacing.md,
   },
@@ -342,27 +342,23 @@ const styles = StyleSheet.create({
     fontFamily: Typography.fontFamily.primaryBold,
     fontSize: Typography.fontSize.h3,
     fontWeight: Typography.fontWeight.bold,
-    color: Colors.text.primary,
     textAlign: "center",
     lineHeight: Typography.lineHeight.h3,
   },
   examplesContainer: {
     marginTop: Spacing.lg,
     padding: Spacing.md,
-    backgroundColor: Colors.surfaceVariant,
     borderRadius: 12,
   },
   examplesTitle: {
     fontFamily: Typography.fontFamily.primaryBold,
     fontSize: Typography.fontSize.small,
     fontWeight: Typography.fontWeight.bold,
-    color: Colors.text.secondary,
     marginBottom: Spacing.sm,
   },
   exampleText: {
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.small,
-    color: Colors.text.secondary,
     marginBottom: Spacing.xs,
   },
   answerContainer: {
@@ -381,28 +377,12 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     gap: Spacing.sm,
   },
-  yesButton: {
-    borderColor: Colors.success[500],
-    backgroundColor: Colors.success[50],
-  },
-  noButton: {
-    borderColor: Colors.error[500],
-    backgroundColor: Colors.error[50],
-  },
-  selectedYes: {
-    backgroundColor: Colors.success[500],
-  },
-  selectedNo: {
-    backgroundColor: Colors.error[500],
-  },
+  yesButton: {},
+  noButton: {},
   answerText: {
     fontFamily: Typography.fontFamily.primaryBold,
     fontSize: Typography.fontSize.h4,
     fontWeight: Typography.fontWeight.bold,
-    color: Colors.text.primary,
-  },
-  selectedAnswerText: {
-    color: Colors.text.inverse,
   },
   navigation: {
     flexDirection: "row",
@@ -419,9 +399,6 @@ const styles = StyleSheet.create({
   navText: {
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.body,
-    color: Colors.text.primary,
   },
-  navTextDisabled: {
-    color: Colors.text.disabled,
-  },
+  navTextDisabled: {},
 });

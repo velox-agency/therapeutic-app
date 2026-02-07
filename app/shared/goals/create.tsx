@@ -2,13 +2,13 @@ import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import {
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -17,9 +17,9 @@ import { Button, Input } from "@/components/ui";
 import { Colors, Spacing, Typography } from "@/constants/theme";
 import { useGoals } from "@/hooks/useGoals";
 import {
-  FrequencyPeriod,
-  GoalCategory,
-  GoalPriority,
+    FrequencyPeriod,
+    GoalCategory,
+    GoalPriority,
 } from "@/types/database.types";
 
 const CATEGORIES = [
@@ -297,7 +297,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingHorizontal: Spacing.lg,
-    paddingBottom: Spacing.xxl,
+    paddingBottom: Spacing.tabBarClearance,
   },
   header: {
     flexDirection: "row",

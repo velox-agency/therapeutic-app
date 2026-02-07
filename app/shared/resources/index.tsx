@@ -280,7 +280,7 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     paddingHorizontal: Spacing.lg,
-    paddingBottom: 120,
+    paddingBottom: Spacing.tabBarClearance,
   },
   emptyState: {
     padding: Spacing.xl,

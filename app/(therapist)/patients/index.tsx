@@ -588,7 +588,7 @@ const styles = StyleSheet.create({
   },
   listContent: {
     paddingHorizontal: Spacing.lg,
-    paddingBottom: Spacing.xxl,
+    paddingBottom: Spacing.tabBarClearance,
   },
   patientCard: {
     marginBottom: Spacing.md,

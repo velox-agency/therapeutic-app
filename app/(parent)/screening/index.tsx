@@ -11,31 +11,40 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Button, Card } from "@/components/ui";
-import { Colors, Spacing, Typography } from "@/constants/theme";
+import { Spacing, Typography } from "@/constants/theme";
+import { useTheme } from "@/contexts/ThemeContext";
 import { useChildren } from "@/hooks/useChildren";
 
 export default function ScreeningIndexScreen() {
   const { children } = useChildren();
+  const { colors } = useTheme();
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.title}>Screenings</Text>
+          <Text style={[styles.title, { color: colors.text }]}>Screenings</Text>
         </View>
 
         {/* Info Card */}
-        <Card variant="filled" style={styles.infoCard}>
+        <Card
+          variant="filled"
+          style={{ ...styles.infoCard, backgroundColor: colors.primaryLight }}
+        >
           <View style={styles.infoHeader}>
             <Ionicons
               name="information-circle"
               size={24}
-              color={Colors.primary[500]}
+              color={colors.primary}
             />
-            <Text style={styles.infoTitle}>M-CHAT-R Screening</Text>
+            <Text style={[styles.infoTitle, { color: colors.primary }]}>
+              M-CHAT-R Screening
+            </Text>
           </View>
-          <Text style={styles.infoText}>
+          <Text style={[styles.infoText, { color: colors.textSecondary }]}>
             The Modified Checklist for Autism in Toddlers, Revised (M-CHAT-R) is
             a scientifically validated screening tool for children between 16-30
             months old.
@@ -44,17 +53,23 @@ export default function ScreeningIndexScreen() {
 
         {/* Start Screening */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Start New Screening</Text>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>
+            Start New Screening
+          </Text>
 
           {children.length === 0 ? (
             <Card variant="outlined" style={styles.emptyCard}>
               <Ionicons
                 name="people-outline"
                 size={48}
-                color={Colors.text.tertiary}
+                color={colors.textTertiary}
               />
-              <Text style={styles.emptyTitle}>No children added</Text>
-              <Text style={styles.emptySubtitle}>
+              <Text style={[styles.emptyTitle, { color: colors.text }]}>
+                No children added
+              </Text>
+              <Text
+                style={[styles.emptySubtitle, { color: colors.textSecondary }]}
+              >
                 Add a child first to begin a screening
               </Text>
               <Button
@@ -78,23 +93,35 @@ export default function ScreeningIndexScreen() {
               >
                 <Card variant="elevated" style={styles.childCard}>
                   <View style={styles.childInfo}>
-                    <View style={styles.childIcon}>
+                    <View
+                      style={[
+                        styles.childIcon,
+                        { backgroundColor: colors.primaryLight },
+                      ]}
+                    >
                       <Ionicons
                         name="person"
                         size={24}
-                        color={Colors.primary[500]}
+                        color={colors.primary}
                       />
                     </View>
                     <View style={styles.childDetails}>
-                      <Text style={styles.childName}>{child.first_name}</Text>
-                      <Text style={styles.childHint}>
+                      <Text style={[styles.childName, { color: colors.text }]}>
+                        {child.first_name}
+                      </Text>
+                      <Text
+                        style={[
+                          styles.childHint,
+                          { color: colors.textSecondary },
+                        ]}
+                      >
                         Tap to start screening
                       </Text>
                     </View>
                     <Ionicons
                       name="chevron-forward"
                       size={24}
-                      color={Colors.text.tertiary}
+                      color={colors.textTertiary}
                     />
                   </View>
                 </Card>
@@ -105,15 +132,21 @@ export default function ScreeningIndexScreen() {
 
         {/* Previous Screenings */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Previous Screenings</Text>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>
+            Previous Screenings
+          </Text>
           <Card variant="outlined" style={styles.emptyCard}>
             <Ionicons
               name="document-text-outline"
               size={48}
-              color={Colors.text.tertiary}
+              color={colors.textTertiary}
             />
-            <Text style={styles.emptyTitle}>No screenings yet</Text>
-            <Text style={styles.emptySubtitle}>
+            <Text style={[styles.emptyTitle, { color: colors.text }]}>
+              No screenings yet
+            </Text>
+            <Text
+              style={[styles.emptySubtitle, { color: colors.textSecondary }]}
+            >
               Complete a screening to see results here
             </Text>
           </Card>
@@ -126,11 +159,10 @@ export default function ScreeningIndexScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
   },
   scrollContent: {
     paddingHorizontal: Spacing.lg,
-    paddingBottom: Spacing.xxl,
+    paddingBottom: Spacing.tabBarClearance,
   },
   header: {
     paddingVertical: Spacing.lg,
@@ -139,10 +171,8 @@ const styles = StyleSheet.create({
     fontFamily: Typography.fontFamily.primaryBold,
     fontSize: Typography.fontSize.h2,
     fontWeight: Typography.fontWeight.bold,
-    color: Colors.text.primary,
   },
   infoCard: {
-    backgroundColor: Colors.primary[50],
     marginBottom: Spacing.lg,
   },
   infoHeader: {
@@ -154,13 +184,11 @@ const styles = StyleSheet.create({
     fontFamily: Typography.fontFamily.primaryBold,
     fontSize: Typography.fontSize.body,
     fontWeight: Typography.fontWeight.bold,
-    color: Colors.primary[700],
     marginLeft: Spacing.sm,
   },
   infoText: {
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.small,
-    color: Colors.text.secondary,
     lineHeight: Typography.lineHeight.small,
   },
   section: {
@@ -170,7 +198,6 @@ const styles = StyleSheet.create({
     fontFamily: Typography.fontFamily.primaryBold,
     fontSize: Typography.fontSize.h4,
     fontWeight: Typography.fontWeight.bold,
-    color: Colors.text.primary,
     marginBottom: Spacing.md,
   },
   emptyCard: {
@@ -181,13 +208,11 @@ const styles = StyleSheet.create({
     fontFamily: Typography.fontFamily.primaryBold,
     fontSize: Typography.fontSize.body,
     fontWeight: Typography.fontWeight.bold,
-    color: Colors.text.primary,
     marginTop: Spacing.md,
   },
   emptySubtitle: {
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.small,
-    color: Colors.text.secondary,
     textAlign: "center",
     marginTop: Spacing.xs,
   },
@@ -205,7 +230,6 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: Colors.primary[50],
     alignItems: "center",
     justifyContent: "center",
   },
@@ -217,11 +241,9 @@ const styles = StyleSheet.create({
     fontFamily: Typography.fontFamily.primaryBold,
     fontSize: Typography.fontSize.body,
     fontWeight: Typography.fontWeight.bold,
-    color: Colors.text.primary,
   },
   childHint: {
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.small,
-    color: Colors.text.secondary,
   },
 });

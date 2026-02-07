@@ -1312,7 +1312,7 @@ const styles = StyleSheet.create({
   },
   listContent: {
     paddingHorizontal: Spacing.lg,
-    paddingBottom: 120,
+    paddingBottom: Spacing.tabBarClearance,
   },
   sessionCard: {
     marginBottom: Spacing.md,

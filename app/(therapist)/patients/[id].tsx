@@ -1514,7 +1514,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   listContent: {
-    paddingBottom: Spacing.xxl,
+    paddingBottom: Spacing.tabBarClearance,
   },
   emptyTab: {
     flex: 1,
