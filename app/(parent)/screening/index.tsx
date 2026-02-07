@@ -1,7 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import React from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
+  ActivityIndicator,
   ScrollView,
   StyleSheet,
   Text,
@@ -13,11 +14,56 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Button, Card } from "@/components/ui";
 import { Spacing, Typography } from "@/constants/theme";
 import { useTheme } from "@/contexts/ThemeContext";
+import { useAuth } from "@/hooks/useAuth";
 import { useChildren } from "@/hooks/useChildren";
+import { getRiskColor, getRiskDisplayText } from "@/lib/mchat";
+import { supabase } from "@/lib/supabase";
+import { RiskLevel, Screening } from "@/types/database.types";
+
+type ScreeningWithChild = Screening & { child?: { first_name: string } };
 
 export default function ScreeningIndexScreen() {
   const { children } = useChildren();
+  const { user } = useAuth();
   const { colors } = useTheme();
+  const [screenings, setScreenings] = useState<ScreeningWithChild[]>([]);
+  const [screeningsLoading, setScreeningsLoading] = useState(true);
+
+  const fetchScreenings = useCallback(async () => {
+    if (!user) return;
+    setScreeningsLoading(true);
+    const { data } = await supabase
+      .from("screenings")
+      .select("*, child:children(first_name)")
+      .eq("parent_id", user.id)
+      .order("completed_at", { ascending: false })
+      .limit(20);
+    setScreenings(data || []);
+    setScreeningsLoading(false);
+  }, [user]);
+
+  useEffect(() => {
+    fetchScreenings();
+  }, [fetchScreenings]);
+
+  const getRiskIcon = (risk: RiskLevel) => {
+    switch (risk) {
+      case "low":
+        return "checkmark-circle";
+      case "medium":
+        return "alert-circle";
+      case "high":
+        return "warning";
+    }
+  };
+
+  const getChildName = (screening: ScreeningWithChild) => {
+    if (screening.child && typeof screening.child === "object") {
+      return (screening.child as { first_name: string }).first_name;
+    }
+    const child = children.find((c) => c.id === screening.child_id);
+    return child?.first_name || "Unknown";
+  };
 
   return (
     <SafeAreaView
@@ -135,21 +181,105 @@ export default function ScreeningIndexScreen() {
           <Text style={[styles.sectionTitle, { color: colors.text }]}>
             Previous Screenings
           </Text>
-          <Card variant="outlined" style={styles.emptyCard}>
-            <Ionicons
-              name="document-text-outline"
-              size={48}
-              color={colors.textTertiary}
-            />
-            <Text style={[styles.emptyTitle, { color: colors.text }]}>
-              No screenings yet
-            </Text>
-            <Text
-              style={[styles.emptySubtitle, { color: colors.textSecondary }]}
-            >
-              Complete a screening to see results here
-            </Text>
-          </Card>
+          {screeningsLoading ? (
+            <View style={styles.loadingSection}>
+              <ActivityIndicator size="small" color={colors.primary} />
+            </View>
+          ) : screenings.length > 0 ? (
+            <View style={styles.screeningsList}>
+              {screenings.map((screening) => {
+                const riskColor = getRiskColor(screening.risk_level);
+                const riskText = getRiskDisplayText(screening.risk_level);
+                const childName = getChildName(screening);
+                const date = new Date(
+                  screening.completed_at,
+                ).toLocaleDateString(undefined, {
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                });
+
+                return (
+                  <TouchableOpacity
+                    key={screening.id}
+                    onPress={() =>
+                      router.push({
+                        pathname: "/(parent)/screening/result",
+                        params: {
+                          score: screening.total_score,
+                          riskLevel: screening.risk_level,
+                          childName,
+                        },
+                      })
+                    }
+                  >
+                    <Card variant="elevated" style={styles.screeningCard}>
+                      <View style={styles.screeningRow}>
+                        <View
+                          style={[
+                            styles.riskBadge,
+                            { backgroundColor: riskColor + "20" },
+                          ]}
+                        >
+                          <Ionicons
+                            name={getRiskIcon(screening.risk_level) as any}
+                            size={24}
+                            color={riskColor}
+                          />
+                        </View>
+                        <View style={styles.screeningContent}>
+                          <Text
+                            style={[
+                              styles.screeningChildName,
+                              { color: colors.text },
+                            ]}
+                          >
+                            {childName}
+                          </Text>
+                          <Text
+                            style={[
+                              styles.screeningDate,
+                              { color: colors.textSecondary },
+                            ]}
+                          >
+                            {date} • Score: {screening.total_score}/20
+                          </Text>
+                        </View>
+                        <View
+                          style={[
+                            styles.riskPill,
+                            { backgroundColor: riskColor + "20" },
+                          ]}
+                        >
+                          <Text
+                            style={[styles.riskPillText, { color: riskColor }]}
+                          >
+                            {riskText}
+                          </Text>
+                        </View>
+                      </View>
+                    </Card>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          ) : (
+            <Card variant="outlined" style={styles.emptyCard}>
+              <Ionicons
+                name="document-text-outline"
+                size={48}
+                color={colors.textTertiary}
+              />
+              <Text style={[styles.emptyTitle, { color: colors.text }]}>
+                No screenings yet
+              </Text>
+              <Text
+                style={[styles.emptySubtitle, { color: colors.textSecondary }]}
+              >
+                Complete a screening to see results here
+              </Text>
+            </Card>
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -245,5 +375,50 @@ const styles = StyleSheet.create({
   childHint: {
     fontFamily: Typography.fontFamily.primary,
     fontSize: Typography.fontSize.small,
+  },
+  loadingSection: {
+    padding: Spacing.xl,
+    alignItems: "center",
+  },
+  screeningsList: {
+    gap: Spacing.sm,
+  },
+  screeningCard: {
+    marginBottom: Spacing.xs,
+  },
+  screeningRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  riskBadge: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  screeningContent: {
+    flex: 1,
+    marginLeft: Spacing.md,
+  },
+  screeningChildName: {
+    fontFamily: Typography.fontFamily.primaryBold,
+    fontSize: Typography.fontSize.body,
+    fontWeight: Typography.fontWeight.bold,
+  },
+  screeningDate: {
+    fontFamily: Typography.fontFamily.primary,
+    fontSize: Typography.fontSize.small,
+    marginTop: 2,
+  },
+  riskPill: {
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.xs,
+    borderRadius: 12,
+  },
+  riskPillText: {
+    fontFamily: Typography.fontFamily.primaryBold,
+    fontSize: Typography.fontSize.tiny,
+    fontWeight: Typography.fontWeight.bold,
   },
 });
